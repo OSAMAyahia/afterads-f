@@ -6,7 +6,7 @@ export const API_CONFIG = {
   },
   // للإنتاج - PRODUCTION READY 🚀
   production: {
-    baseURL: 'https://afterads-b.onrender.com', // AfterAds backend on Render
+    baseURL: 'https://afterads-b-production.up.railway.app', // AfterAds backend on Render
   }
 };
 
