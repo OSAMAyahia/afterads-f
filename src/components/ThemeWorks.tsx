@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Monitor, Tablet, Smartphone, Eye, X, ExternalLink, MessageSquare, Calendar, User } from 'lucide-react';
-import { apiCall, API_ENDPOINTS } from '../config/api';
+import { apiCall, API_ENDPOINTS, buildImageUrl } from '../config/api';
 import { useApiQuery } from '../hooks/useApiQuery';
 import fallbackImg from '../assets/search_not_found.png';
 import { useTranslation } from 'react-i18next';
@@ -34,160 +34,126 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ work, isOpen, onClose }) =>
 
   if (!isOpen) return null;
 
-  const currentImage = device === 'desktop' ? work.imageDesktop : 
-                       device === 'tablet' ? work.imageTablet : 
-                       work.imageMobile;
+  const getImageUrl = (path: string) => buildImageUrl(path);
 
-  const getImageUrl = (path: string) => {
-    if (!path) return '';
-    if (path.startsWith('http') || path.startsWith('data:')) return path;
-    return `http://localhost:3001${path}`;
-  };
+  const currentImage =
+    device === 'desktop'
+      ? work.imageDesktop
+      : device === 'tablet'
+      ? work.imageTablet
+      : work.imageMobile;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={onClose}>
-      <div className="relative bg-gradient-to-br from-[#1a1a1a]/98 via-[#292929]/95 to-[#1a1a1a]/98 rounded-2xl border border-[#18b5d8]/30 shadow-2xl max-w-3xl w-full max-h-[85vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
-        
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-[#18b5d8]/20">
-          <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-r from-[#18b5d8] to-[#16a8cc] p-2 rounded-lg">
-              <Eye className="w-5 h-5 text-white" />
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-2 sm:p-4"
+      onClick={onClose}
+    >
+      <div
+        className="relative bg-[#121212] rounded-2xl border border-[#2a2a2a] max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header: Preview label + Close button (non-absolute) */}
+        <div className="p-3 pb-2 bg-[#0f0f0f] border-b border-[#2a2a2a]">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-full backdrop-blur-sm">
+              <Eye className="w-3.5 h-3.5 text-[#929292]" />
+              <span className="text-[#929292] text-xs font-medium">
+                {t('theme_works.overlay.preview')}
+              </span>
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-white">{t('theme_works.modal.title')}</h3>
+            <button
+              onClick={onClose}
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm transition-colors"
+              aria-label={t('close')}
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-white/10 rounded-lg transition-all duration-200"
-          >
-            <X className="w-6 h-6 text-white" />
-          </button>
         </div>
 
-        {/* Device Selector */}
-        <div className="flex justify-center items-center gap-3 p-4 bg-gradient-to-r from-[#18b5d8]/10 to-transparent border-b border-[#18b5d8]/20">
-          <span className="text-[#18b5d8] text-sm font-medium">{t('theme_works.modal.preview_label')}</span>
+        {/* Device Selector Buttons */}
+        <div className="flex flex-wrap justify-center gap-2 p-3 sm:p-4 bg-[#0f0f0f] border-b border-[#2a2a2a]">
           <button
             onClick={() => setDevice('desktop')}
-            className={`p-2 rounded-lg transition-all ${
-              device === 'desktop' 
-                ? 'bg-[#18b5d8] text-white shadow-lg' 
-                : 'bg-white/10 text-[#18b5d8] hover:bg-white/20'
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              device === 'desktop'
+                ? 'bg-[#929292] text-white shadow-md'
+                : 'bg-[#929292]/20 text-[#929292] border border-[#929292]/30 hover:bg-[#929292]/30'
             }`}
-            title={t('theme_works.modal.device.desktop')}
           >
-            <Monitor className="w-5 h-5" />
+            <Monitor className="w-3.5 h-3.5" />
+            <span>{t('theme_works.modal.device.desktop')}</span>
           </button>
           <button
             onClick={() => setDevice('tablet')}
-            className={`p-2 rounded-lg transition-all ${
-              device === 'tablet' 
-                ? 'bg-[#18b5d8] text-white shadow-lg' 
-                : 'bg-white/10 text-[#18b5d8] hover:bg-white/20'
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              device === 'tablet'
+                ? 'bg-[#929292] text-white shadow-md'
+                : 'bg-[#929292]/20 text-[#929292] border border-[#929292]/30 hover:bg-[#929292]/30'
             }`}
-            title={t('theme_works.modal.device.tablet')}
           >
-            <Tablet className="w-5 h-5" />
+            <Tablet className="w-3.5 h-3.5" />
+            <span>{t('theme_works.modal.device.tablet')}</span>
           </button>
           <button
             onClick={() => setDevice('mobile')}
-            className={`p-2 rounded-lg transition-all ${
-              device === 'mobile' 
-                ? 'bg-[#18b5d8] text-white shadow-lg' 
-                : 'bg-white/10 text-[#18b5d8] hover:bg-white/20'
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              device === 'mobile'
+                ? 'bg-[#929292] text-white shadow-md'
+                : 'bg-[#929292]/20 text-[#929292] border border-[#929292]/30 hover:bg-[#929292]/30'
             }`}
-            title={t('theme_works.modal.device.mobile')}
           >
-            <Smartphone className="w-5 h-5" />
+            <Smartphone className="w-3.5 h-3.5" />
+            <span>{t('theme_works.modal.device.mobile')}</span>
           </button>
         </div>
 
         {/* Image Preview */}
-        <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(90vh-300px)]">
-          <div className="relative">
-            <div className="absolute top-4 right-4 bg-[#18b5d8]/90 backdrop-blur-sm px-4 py-2 rounded-full text-white text-sm font-semibold border border-[#18b5d8]/30 z-10 flex items-center gap-2">
-              {device === 'desktop' && <><Monitor className="w-4 h-4" /> {t('theme_works.modal.device.desktop')}</>}
-              {device === 'tablet' && <><Tablet className="w-4 h-4" /> {t('theme_works.modal.device.tablet')}</>}
-              {device === 'mobile' && <><Smartphone className="w-4 h-4" /> {t('theme_works.modal.device.mobile')}</>}
-            </div>
-
-            <div className={`bg-white/5 rounded-lg overflow-hidden mx-auto transition-all duration-500 ${
-              device === 'desktop' ? 'aspect-video max-w-full' :
-              device === 'tablet' ? 'aspect-[3/4] max-w-2xl' :
-              'aspect-[9/16] max-w-sm'
-            }`}>
-              <img 
-                src={getImageUrl(currentImage)}
-                alt={`${device} Preview`}
-                className="w-full h-full object-contain"
-                onError={(e) => {
-                  e.currentTarget.src = fallbackImg;
-                }}
-              />
-            </div>
-
-            {work.clientOpinion && (
-              <div className="mt-6 bg-gradient-to-r from-[#18b5d8]/10 to-transparent rounded-xl p-4 border border-[#18b5d8]/20">
-                <div className="flex items-start gap-3">
-                  <MessageSquare className="w-5 h-5 text-[#18b5d8] flex-shrink-0 mt-1" />
-                  <div>
-                    <h4 className="text-white font-semibold mb-2">{t('theme_works.modal.client_opinion_title')}</h4>
-                    <p className="text-[#a1a1a1] text-sm leading-relaxed">
-                      {work.clientOpinion}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Client Info in Modal */}
-            {(work.clientName || work.clientImage) && (
-              <div className="mt-4">
-                <div className="h-px bg-gradient-to-r from-transparent via-[#18b5d8]/20 to-transparent mb-4"></div>
-                <div className="flex items-center gap-3">
-                  {work.clientImage ? (
-                    <img
-                      src={getImageUrl(work.clientImage)}
-                      alt={work.clientName || 'Client'}
-                      className="w-12 h-12 rounded-xl object-cover border-2 border-[#18b5d8]/20 shadow-lg"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 bg-gradient-to-br from-[#18b5d8] to-[#0f8aa3] rounded-xl flex items-center justify-center shadow-lg">
-                      <User className="w-6 h-6 text-white" />
-                    </div>
-                  )}
-                  <div>
-                    <h3 className="font-bold text-white text-base">{work.clientName || t('theme_works.modal.client_name_placeholder')}</h3>
-                    {work.workDate && (
-                      <p className="text-xs text-gray-400 flex items-center gap-1 mt-1">
-                        <Calendar className="w-3 h-3" />
-                        {new Date(work.workDate).toLocaleDateString('ar-SA')}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
+        <div className="flex items-center justify-center p-3 sm:p-4 flex-1 bg-[#0f0f0f]">
+          <div
+            className={`bg-[#1a1a1a] rounded-lg overflow-hidden w-full h-full flex items-center justify-center ${
+              device === 'desktop'
+                ? 'max-w-full max-h-full'
+                : device === 'tablet'
+                ? 'max-w-md sm:max-w-lg'
+                : 'max-w-[260px] sm:max-w-[300px]'
+            }`}
+          >
+            <img
+              src={getImageUrl(currentImage)}
+              alt={`${device} preview`}
+              className={`w-full h-full ${
+                device === 'desktop' ? 'object-contain' : 'object-cover'
+              }`}
+              onError={(e) => {
+                e.currentTarget.src = fallbackImg;
+              }}
+            />
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="flex gap-3 p-4 sm:p-6 border-t border-[#18b5d8]/20">
+        {/* Action Buttons */}
+        <div className="flex gap-2.5 p-3 sm:p-4 bg-[#0f0f0f] border-t border-[#2a2a2a]">
+          <button
+            onClick={() =>
+              setDevice(prev =>
+                prev === 'desktop' ? 'tablet' : prev === 'tablet' ? 'mobile' : 'desktop'
+              )
+            }
+            className="flex-1 flex items-center justify-center gap-1.5 bg-[#929292]/20 backdrop-blur-sm text-white px-2.5 py-2 sm:px-3 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium border border-[#929292]/30 hover:bg-[#929292]/30 transition-all"
+          >
+            <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span>{t('theme_works.overlay.preview')}</span>
+          </button>
           <a
             href={work.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-[#18b5d8] to-[#16a8cc] text-white px-6 py-3 rounded-xl font-semibold hover:from-[#16a8cc] hover:to-[#18b5d8] transition-all duration-300 transform hover:scale-105"
+            className="flex-1 flex items-center justify-center gap-1.5 bg-[#929292]/20 backdrop-blur-sm text-white px-2.5 py-2 sm:px-3 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium border border-[#929292]/30 hover:bg-[#929292]/30 transition-all"
           >
-            <ExternalLink className="w-5 h-5" />
-            <span>{t('theme_works.footer.visit_site')}</span>
+            <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span>{t('theme_works.overlay.visit')}</span>
           </a>
-          <button
-            onClick={onClose}
-            className="px-6 py-3 bg-white/10 text-white rounded-xl font-semibold hover:bg-white/20 transition-all duration-200"
-          >
-            {t('theme_works.footer.close')}
-          </button>
         </div>
       </div>
     </div>
@@ -216,11 +182,7 @@ const ThemeWorks: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const getImageUrl = (path: string) => {
-    if (!path) return '';
-    if (path.startsWith('http') || path.startsWith('data:')) return path;
-    return `http://localhost:3001${path}`;
-  };
+  const getImageUrl = (path: string) => buildImageUrl(path);
 
   if (loading) {
     return (

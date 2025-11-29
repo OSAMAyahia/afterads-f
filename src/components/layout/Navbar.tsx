@@ -1028,7 +1028,7 @@ useEffect(() => {
                   />
                 </div>
               ) : (
-                <div className="h-10 sm:h-12 w-28 sm:w-32 rounded-lg overflow-hidden border border-white/20">
+                <div className="h-10 sm:h-12 w-28 sm:w-32 rounded-lg overflow-hidden   border-white/20">
                   <img
                     src={logo}
                     alt={storeName}
@@ -1043,7 +1043,7 @@ useEffect(() => {
                 </div>
               )}
               <Link to="/" onClick={() => setIsMenuOpen(false)} className="transition-all duration-200">
-                <span className="text-white font-bold text-sm">{storeName}</span>
+                {/* <span className="text-white font-bold text-sm">{storeName}</span> */}
               </Link>
             </div>
             <button 
