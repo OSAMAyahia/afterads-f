@@ -227,11 +227,34 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <button type="button" class="delete-img-btn" onclick="this.parentElement.remove(); document.dispatchEvent(new Event('contentChanged'));">×</button>
           </div>
         `).join('') + '<p><br></p>';
-        const anchor = getCurrentTextElement();
-        if (anchor) {
-          anchor.insertAdjacentHTML('afterend', html);
-        } else if (editorRef.current) {
-          editorRef.current.insertAdjacentHTML('beforeend', html);
+
+        let inserted = false;
+        const currentImg = getCurrentImageContainer();
+        if (currentImg) {
+          let last = currentImg as HTMLElement;
+          let next = last.nextElementSibling as HTMLElement | null;
+          while (next && next.classList.contains('image-container')) {
+            last = next;
+            next = last.nextElementSibling as HTMLElement | null;
+          }
+          last.insertAdjacentHTML('afterend', html);
+          inserted = true;
+        } else {
+          const anchor = getCurrentTextElement();
+          if (anchor) {
+            let last = anchor as HTMLElement;
+            let next = last.nextElementSibling as HTMLElement | null;
+            while (next && next.classList.contains('image-container')) {
+              last = next;
+              next = last.nextElementSibling as HTMLElement | null;
+            }
+            last.insertAdjacentHTML('afterend', html);
+            inserted = true;
+          }
+        }
+
+        if (!inserted) {
+          insertHtmlAtCursor(html);
         }
         handleContentChange();
       }

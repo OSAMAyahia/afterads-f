@@ -759,7 +759,7 @@ const DocumentationManagement: React.FC = () => {
         {isModalOpen && editingLevel && (
           <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
             <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl">
-              <div className="sticky top-0 bg-gradient-to-r from-[#203f61] to-[#2a537e] text-white p-6 rounded-t-2xl">
+              <div className="sticky top-0 z-20 bg-gradient-to-r from-[#203f61] to-[#2a537e] text-white p-6 rounded-t-2xl">
                 <div className="flex items-center justify-between">
                   <h3 className="text-2xl font-bold">
                     {editingItem
