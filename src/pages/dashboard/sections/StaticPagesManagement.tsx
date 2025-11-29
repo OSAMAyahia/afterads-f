@@ -105,8 +105,11 @@ const htmlToBlocks = (html: string) => {
   const normalizeSrc = (src: string) => {
     if (!src) return '';
     if (src.startsWith('data:')) return '';
-    const m = src.match(/\/images\/(.+)$/);
-    return m ? `/images/${m[1]}` : src;
+    const imagesMatch = src.match(/\/(?:api\/)?images\/(.+)$/);
+    if (imagesMatch) return `/images/${imagesMatch[1]}`;
+    const uploadsMatch = src.match(/\/(?:api\/)?uploads\/(.+)$/);
+    if (uploadsMatch) return `/uploads/${uploadsMatch[1]}`;
+    return src;
   };
   const blocks: Array<{ text: string; images: Array<{ url: string; orientation?: 'horizontal' | 'vertical' }> }> = [];
   let currentText = '';

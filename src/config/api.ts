@@ -36,30 +36,41 @@ export const buildApiUrl = (endpoint: string): string => {
 
 // دالة مساعدة لبناء URL الصور - محدثة
 export const buildImageUrl = (imagePath: string): string => {
-  if (!imagePath) return 'https://tse1.mm.bing.net/th/id/OIP.M6p4cLkcKW9PWIObAjYi8gHaHa?cb=ucfimg2ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3';
-  if (imagePath.startsWith('http')) return imagePath;
-  if (imagePath.startsWith('data:image/')) return imagePath;
-  
+  const fallback = 'https://tse1.mm.bing.net/th/id/OIP.M6p4cLkcKW9PWIObAjYi8gHaHa?cb=ucfimg2ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3';
+  const raw = (imagePath || '').trim();
+  if (!raw) return fallback;
+  if (/^https?:\/\//i.test(raw)) return raw;
+  if (raw.startsWith('data:image/')) return raw;
+
   const baseUrl = getApiBaseUrl();
-  
-  // إذا كان المسار يبدأ بـ /api/ فهو endpoint API - لا نضيف /images/
-  if (imagePath.startsWith('/api/')) {
-    return `${baseUrl}${imagePath}`;
+  const normalized = raw.replace(/\\/g, '/');
+
+  const join = (p: string) => (p.startsWith('/') ? `${baseUrl}${p}` : `${baseUrl}/${p}`);
+
+  // API-prefixed paths
+  if (normalized.startsWith('/api/')) return `${baseUrl}${normalized}`;
+  if (normalized.startsWith('api/')) return join(normalized);
+
+  // Common static directories
+  if (normalized.startsWith('/images/')) return `${baseUrl}${normalized}`;
+  if (normalized.startsWith('images/')) return `${baseUrl}/${normalized}`;
+  if (normalized.startsWith('/uploads/')) return `${baseUrl}${normalized}`;
+  if (normalized.startsWith('uploads/')) return `${baseUrl}/${normalized}`;
+  if (normalized.startsWith('/static/')) return `${baseUrl}${normalized}`;
+  if (normalized.startsWith('static/')) return `${baseUrl}/${normalized}`;
+
+  // Handle explicit api images path
+  if (normalized.startsWith('/api/images/')) return `${baseUrl}${normalized}`;
+  if (normalized.startsWith('api/images/')) return `${baseUrl}/${normalized}`;
+
+  // Filename or relative path without a known folder
+  const filename = normalized.replace(/^\/+/, '');
+  const hasExt = /\.[a-z0-9]+$/i.test(filename);
+  if (hasExt) {
+    const preferredDir = import.meta.env.DEV ? 'images' : 'uploads';
+    return `${baseUrl}/${preferredDir}/${filename}`;
   }
-  
-  // إذا كان المسار يبدأ بـ /images/ فهو مسار نسبي من الباك إند
-  if (imagePath.startsWith('/images/')) {
-    return `${baseUrl}${imagePath}`;
-  }
-  
-  // إذا كان المسار يبدأ بـ images/ بدون slash
-  if (imagePath.startsWith('images/')) {
-    return `${baseUrl}/${imagePath}`;
-  }
-  
-  // إذا كان مسار عادي، أضف /images/ قبله
-  const cleanPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
-  return `${baseUrl}/images${cleanPath}`;
+  return `${baseUrl}/images/${filename}`;
 };
 
 // دالة مركزية لجميع API calls
