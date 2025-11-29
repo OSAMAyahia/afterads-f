@@ -1099,6 +1099,7 @@
   },
   "auth": {
     "login": "تسجيل الدخول",
+    "logout_success": "تم تسجيل الخروج بنجاح",
     "createNewAccount": "إنشاء حساب جديد",
     "newAccount": "حساب جديد",
     "enterAccountData": "أدخل بيانات حسابك للدخول",

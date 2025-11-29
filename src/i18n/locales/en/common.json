@@ -1100,6 +1100,7 @@
   },
   "auth": {
     "login": "Login",
+    "logout_success": "Logout successful",
     "createNewAccount": "Create New Account",
     "newAccount": "New Account",
     "enterAccountData": "Enter your account details to login",

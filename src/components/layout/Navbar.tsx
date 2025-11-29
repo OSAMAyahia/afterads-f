@@ -6,7 +6,7 @@ import { Menu, X, ShoppingCart, Heart, User, LogOut, Search, Package, Settings, 
 import logo from '../../assets/logo.webp';
 import AuthModal from '../modals/AuthModal';
 import CartDropdown from '../ui/CartDropdown';
-import notfoundImg from '../../assets/search_not_found.png';
+import notfoundImg from '../../assets/istockphoto-1300845620-612x612-removebg-preview.png';
 import LiveSearch from '../ui/LiveSearch';
 import LanguageCurrencySelector from '../ui/LanguageCurrencySelector';
 import { createCategorySlug } from '../../utils/slugify';
@@ -1018,14 +1018,24 @@ useEffect(() => {
             className="relative flex justify-between items-center p-3 border-b border-white/10"
           >
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full overflow-hidden border border-white/20">
-                <img
-                  src={(user?.avatar || user?.storeLogo || user?.storeImage) ? buildImageUrl(user?.avatar || user?.storeLogo || user?.storeImage || '') : logo}
-                  alt={storeName}
-                  className="w-full h-full object-cover"
-                  onError={(e) => { e.currentTarget.src = logo; }}
-                />
-              </div>
+              {user ? (
+                <div className="w-9 h-9 rounded-full overflow-hidden border border-white/20">
+                  <img
+                    src={(user?.avatar || user?.storeLogo || user?.storeImage) ? buildImageUrl(user?.avatar || user?.storeLogo || user?.storeImage || '') : logo}
+                    alt={storeName}
+                    className="w-full h-full object-cover"
+                    onError={(e) => { e.currentTarget.src = logo; }}
+                  />
+                </div>
+              ) : (
+                <div className="h-10 sm:h-12 w-28 sm:w-32 rounded-lg overflow-hidden border border-white/20">
+                  <img
+                    src={logo}
+                    alt={storeName}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+              )}
               {isVIP && (
                 <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-400 text-black font-bold text-xs shadow-md">
                   <Crown className="w-3 h-3" />

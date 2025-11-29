@@ -450,6 +450,7 @@ const CartDropdown: React.FC<CartDropdownProps> = ({ isOpen, onClose, onHoverCha
       setCartItems(updatedItems);
       localStorage.setItem('cart', JSON.stringify(updatedItems));
       window.dispatchEvent(new CustomEvent('cartCountChanged'));
+      if (userId) refetchCart();
     } catch (error) {
       console.error('Error updating quantity:', error);
       
@@ -460,6 +461,7 @@ const CartDropdown: React.FC<CartDropdownProps> = ({ isOpen, onClose, onHoverCha
       setCartItems(updatedItems);
       localStorage.setItem('cart', JSON.stringify(updatedItems));
       window.dispatchEvent(new CustomEvent('cartCountChanged'));
+      if (userId) refetchCart();
     }
   }, [cartItems]);
 
@@ -482,6 +484,7 @@ const CartDropdown: React.FC<CartDropdownProps> = ({ isOpen, onClose, onHoverCha
       localStorage.setItem('cart', JSON.stringify(updatedItems));
       window.dispatchEvent(new CustomEvent('cartCountChanged'));
       smartToast.frontend.success(t('cart_dropdown.product_removed'));
+      if (userId) refetchCart();
     } catch (error) {
       console.error('Error removing item:', error);
       
@@ -490,6 +493,7 @@ const CartDropdown: React.FC<CartDropdownProps> = ({ isOpen, onClose, onHoverCha
       localStorage.setItem('cart', JSON.stringify(updatedItems));
       window.dispatchEvent(new CustomEvent('cartCountChanged'));
       smartToast.frontend.success(t('cart_dropdown.product_removed'));
+      if (userId) refetchCart();
     }
   }, [cartItems, t]);
 
