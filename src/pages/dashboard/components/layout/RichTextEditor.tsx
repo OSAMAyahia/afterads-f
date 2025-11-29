@@ -64,6 +64,12 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     }
   };
 
+  const getNormalizedHtml = (el: HTMLElement): string => {
+    const clone = el.cloneNode(true) as HTMLElement;
+    clone.querySelectorAll('.delete-img-btn, .delete-image-btn').forEach(n => n.remove());
+    return clone.innerHTML;
+  };
+
   const execCommand = (command: string, value?: string) => {
     document.execCommand(command, false, value);
     editorRef.current?.focus();
@@ -387,11 +393,9 @@ function example() {
     if (editorRef.current) {
       if (!value || value.trim() === '') {
         editorRef.current.innerHTML = '<p><br></p>';
-      } else if (editorRef.current.innerHTML !== value) {
+      } else {
         const selection = window.getSelection();
         const hadFocus = editorRef.current.contains(document.activeElement);
-
-        editorRef.current.innerHTML = value;
 
         const ensureImageDeleteButtons = () => {
           if (!editorRef.current) return;
@@ -412,6 +416,11 @@ function example() {
             }
           });
         };
+
+        const currentNormalized = getNormalizedHtml(editorRef.current);
+        if (currentNormalized !== value) {
+          editorRef.current.innerHTML = value;
+        }
         ensureImageDeleteButtons();
 
         if (hadFocus && selection) {
