@@ -393,6 +393,27 @@ function example() {
 
         editorRef.current.innerHTML = value;
 
+        const ensureImageDeleteButtons = () => {
+          if (!editorRef.current) return;
+          const containers = editorRef.current.querySelectorAll('.image-container');
+          containers.forEach((el) => {
+            const he = el as HTMLElement;
+            const exists = he.querySelector('.delete-img-btn') || he.querySelector('.delete-image-btn');
+            if (!exists) {
+              const btn = document.createElement('button');
+              btn.type = 'button';
+              btn.className = 'delete-img-btn';
+              btn.textContent = '×';
+              btn.addEventListener('click', () => {
+                he.remove();
+                document.dispatchEvent(new Event('contentChanged'));
+              });
+              he.appendChild(btn);
+            }
+          });
+        };
+        ensureImageDeleteButtons();
+
         if (hadFocus && selection) {
           editorRef.current.focus();
         }
