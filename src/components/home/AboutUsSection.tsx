@@ -235,7 +235,8 @@ const AboutUsSection = () => {
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 md:mb-6 leading-tight">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-center lg:gap-4">
                   <span className="gradient-text">
-                    AfterAds
+                 {t('home.about.AfterAds')}
+
                   </span>
                   <span className="text-white">
                     {t('home.about.main_title')}

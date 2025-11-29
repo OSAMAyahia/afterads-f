@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { apiCall, API_ENDPOINTS, buildImageUrl } from '../../../../config/api';
-import { smartToast } from '../../../../utils/toastConfig';
 import {
   Bold,
   Italic,
@@ -41,12 +40,11 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
 }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const savedRangeRef = useRef<Range | null>(null);
-  const [imageUrl, setImageUrl] = useState('');
-  const [imageOrientation, setImageOrientation] = useState<'horizontal' | 'vertical'>('horizontal');
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
   const [linkText, setLinkText] = useState('');
   const [textDirection, setTextDirection] = useState<'rtl' | 'ltr'>('rtl');
+  const [imageOrientation, setImageOrientation] = useState<'horizontal' | 'vertical'>('horizontal');
   const imageInputRef = useRef<HTMLInputElement>(null);
 
   const toggleDirection = () => {
@@ -66,13 +64,11 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     }
   };
 
-  // Format commands
   const execCommand = (command: string, value?: string) => {
     document.execCommand(command, false, value);
     editorRef.current?.focus();
   };
 
-  // Insert HTML at cursor
   const insertHtmlAtCursor = (html: string) => {
     const selection = window.getSelection();
     let range: Range | null = null;
@@ -117,198 +113,179 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     handleContentChange();
   };
 
-  // Ensure last row exists and return it
-  const ensureLastRow = () => {
-    if (!editorRef.current) return null;
-    const rows = editorRef.current.querySelectorAll('.row-item');
-    if (!rows || rows.length === 0) {
-      const row = document.createElement('div');
-      row.className = 'row-item relative my-4 p-4 border-2 border-gray-200 rounded-lg bg-gray-50';
-      row.innerHTML = `
-        <div class="row-grid grid md:grid-cols-2 gap-4">
-          <div class="block-item text-block" contenteditable="true" data-type="text" style="min-height: 3rem; padding: 0.75rem; border: 2px dashed #e5e7eb; border-radius: 0.5rem;">
-            <p><br></p>
-          </div>
-          <div class="block-item image-block" contenteditable="false" data-type="images">
-            <div class="images-grid grid gap-2" data-orientation="horizontal" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));"></div>
-            <div class="mt-3 flex gap-2 flex-wrap">
-              <button type="button" class="add-more-images px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">+ إضافة صور</button>
-              <select class="orientation-selector px-2 py-1 border border-gray-300 rounded text-sm">
-                <option value="horizontal" selected>أفقي</option>
-                <option value="vertical">عمودي</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <button type="button" class="delete-row-btn absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg hover:bg-red-600">حذف الصف</button>
-      `;
-      editorRef.current.appendChild(row);
-      // Move existing standalone text-block (outside rows) into the new row
-      const existingTextBlock = editorRef.current.querySelector(':scope > .block-item.text-block') as HTMLElement | null;
-      if (existingTextBlock) {
-        const rowText = row.querySelector('.text-block') as HTMLElement | null;
-        if (rowText) {
-          rowText.innerHTML = existingTextBlock.innerHTML;
-          existingTextBlock.remove();
-        }
-      }
-      attachImageRowListeners();
-      return row;
+  const getCurrentTextElement = () => {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return null;
+    const range = selection.getRangeAt(0);
+    let el: Element | null = range.startContainer instanceof Element ? range.startContainer : (range.startContainer as any)?.parentElement || null;
+    const isTextEl = (e: Element | null) => {
+      if (!e) return false;
+      const t = (e.tagName || '').toLowerCase();
+      return ['p','h1','h2','h3','blockquote','pre','li','div'].includes(t) && !(e as HTMLElement).classList.contains('image-container');
+    };
+    while (el && editorRef.current && el !== editorRef.current && !isTextEl(el)) {
+      el = el.parentElement;
     }
-    return rows[rows.length - 1] as HTMLElement;
+    return isTextEl(el) ? (el as HTMLElement) : null;
   };
 
-  // Insert image into last row (row with text + images)
-  const insertImage = (url: string, orientation: 'horizontal' | 'vertical') => {
-    const row = ensureLastRow();
-    if (!row) return;
-    const grid = row.querySelector('.images-grid') as HTMLElement | null;
-    if (!grid) return;
-    grid.setAttribute('data-orientation', orientation);
-    grid.style.gridTemplateColumns = orientation === 'vertical'
-      ? 'repeat(auto-fit, minmax(150px, 200px))'
-      : 'repeat(auto-fit, minmax(250px, 1fr))';
-    const img = document.createElement('img');
-    img.src = url;
-    img.alt = 'صورة';
-    img.className = 'w-full h-auto rounded-lg shadow-md';
-    grid.appendChild(img);
+  // تطبيق الاتجاه على الصور الموجودة
+  const applyOrientationToImages = (orientation: 'horizontal' | 'vertical') => {
+    if (!editorRef.current) return;
+    const images = editorRef.current.querySelectorAll('.image-container');
+    images.forEach(img => {
+      img.setAttribute('data-orientation', orientation);
+    });
     handleContentChange();
   };
 
-  // Attach event listeners to rows (images controls)
-  const attachImageRowListeners = () => {
-    setTimeout(() => {
-      const rows = editorRef.current?.querySelectorAll('.row-item');
-      rows?.forEach(row => {
-        // Add more images button
-        const addBtn = row.querySelector('.add-more-images');
-        if (addBtn && !addBtn.hasAttribute('data-listener')) {
-          addBtn.setAttribute('data-listener', 'true');
-          addBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.multiple = true;
-
-            input.onchange = async (ev) => {
-              const files = (ev.target as HTMLInputElement).files;
-              if (!files) return;
-
-              const grid = row.querySelector('.images-grid');
-              if (!grid) return;
-
-              try {
-                for (const file of Array.from(files)) {
-                  const fd = new FormData();
-                  fd.append('image', file);
-                  const resp = await apiCall(API_ENDPOINTS.UPLOAD_ATTACHMENTS, {
-                    method: 'POST',
-                    body: fd
-                  });
-                  let uploadedUrl = '';
-                  if (resp?.imagePaths && Array.isArray(resp.imagePaths) && resp.imagePaths[0]) {
-                    uploadedUrl = resp.imagePaths[0];
-                  } else if (resp?.data?.url) {
-                    uploadedUrl = resp.data.url;
-                  } else if (resp?.url) {
-                    uploadedUrl = resp.url;
-                  }
-                  const finalUrl = buildImageUrl(uploadedUrl);
-                  if (!finalUrl) continue;
-                  const img = document.createElement('img');
-                  img.src = finalUrl;
-                  img.alt = 'صورة';
-                  img.className = 'w-full h-auto rounded-lg shadow-md';
-                  grid.appendChild(img);
-                }
-                handleContentChange();
-              } catch (err) {
-                console.error('Upload error:', err);
-                smartToast.dashboard.error('فشل رفع الصور، حاول مرة أخرى');
-              }
-            };
-
-            input.click();
-          });
-        }
-
-        // Orientation selector
-        const selector = row.querySelector('.orientation-selector') as HTMLSelectElement;
-        if (selector && !selector.hasAttribute('data-listener')) {
-          selector.setAttribute('data-listener', 'true');
-          selector.addEventListener('change', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-
-            const grid = row.querySelector('.images-grid');
-            if (!grid) return;
-
-            const orientation = (e.target as HTMLSelectElement).value;
-            grid.setAttribute('data-orientation', orientation);
-
-            if (orientation === 'vertical') {
-              (grid as HTMLElement).style.gridTemplateColumns = 'repeat(auto-fit, minmax(150px, 200px))';
-            } else {
-              (grid as HTMLElement).style.gridTemplateColumns = 'repeat(auto-fit, minmax(250px, 1fr))';
-            }
-
-            handleContentChange();
-          });
-        }
-
-        const delRowBtn = row.querySelector('.delete-row-btn');
-        if (delRowBtn && !delRowBtn.hasAttribute('data-listener')) {
-          delRowBtn.setAttribute('data-listener', 'true');
-          delRowBtn.addEventListener('click', (ev) => {
-            ev.preventDefault();
-            ev.stopPropagation();
-            row.remove();
-            handleContentChange();
-          });
-        }
-
-        if (!row.querySelector('.delete-row-btn')) {
-          const del = document.createElement('button');
-          del.type = 'button';
-          del.className = 'delete-row-btn absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg hover:bg-red-600';
-          del.textContent = 'حذف الصف';
-          row.appendChild(del);
-        }
-
-        const grid = row.querySelector('.images-grid') as HTMLElement | null;
-        if (grid) {
-          const imgs = Array.from(grid.querySelectorAll('img'));
-          imgs.forEach(img => {
-            const parent = img.parentElement;
-            if (!parent || !parent.classList.contains('image-item-container')) {
-              const wrapper = document.createElement('div');
-              wrapper.className = 'image-item-container';
-              parent?.insertBefore(wrapper, img);
-              wrapper.appendChild(img);
-
-              const delBtn = document.createElement('button');
-              delBtn.type = 'button';
-              delBtn.className = 'delete-image-btn';
-              delBtn.textContent = 'حذف';
-              delBtn.addEventListener('click', (ev) => {
-                ev.preventDefault();
-                ev.stopPropagation();
-                wrapper.remove();
-                handleContentChange();
-              });
-              wrapper.appendChild(delBtn);
-            }
-          });
-        }
-      });
-    }, 50);
+  const getCurrentImageContainer = () => {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return null;
+    const range = selection.getRangeAt(0);
+    let el: Element | null = range.startContainer instanceof Element ? range.startContainer : (range.startContainer as any)?.parentElement || null;
+    while (el && editorRef.current && el !== editorRef.current) {
+      const he = el as HTMLElement;
+      if (he.classList && he.classList.contains('image-container')) return he;
+      el = el.parentElement;
+    }
+    return null;
   };
 
-  // Insert special blocks
+  const applyOrientationToCurrentGroup = (orientation: 'horizontal' | 'vertical') => {
+    const target = getCurrentImageContainer();
+    const anchor = getCurrentTextElement();
+    const containers: HTMLElement[] = [];
+    if (target) {
+      containers.push(target);
+    } else if (anchor && editorRef.current) {
+      let next = anchor.nextElementSibling as HTMLElement | null;
+      while (next && next.classList.contains('image-container')) {
+        containers.push(next);
+        next = next.nextElementSibling as HTMLElement | null;
+      }
+    }
+    if (containers.length === 0 && editorRef.current) {
+      const all = editorRef.current.querySelectorAll('.image-container');
+      all.forEach(el => containers.push(el as HTMLElement));
+    }
+    containers.forEach(el => el.setAttribute('data-orientation', orientation));
+    handleContentChange();
+  };
+
+  const insertImageAtCursor = (url: string, orientation: 'horizontal' | 'vertical', rawPath?: string) => {
+    const imageClass = orientation === 'vertical' 
+      ? 'w-64 h-auto' 
+      : 'w-36 h-auto';
+    
+    const html = `
+      <div class="image-container my-4" contenteditable="false" data-orientation="${orientation}">
+        <img src="${url}" alt="صورة" ${rawPath ? `data-src-path="${rawPath}"` : ''} class="${imageClass} rounded-lg shadow-md mx-auto" />
+        <button type="button" class="delete-img-btn" onclick="this.parentElement.remove(); document.dispatchEvent(new Event('contentChanged'));">×</button>
+      </div>
+      <p><br></p>
+    `;
+    insertHtmlAtCursor(html);
+  };
+
+  const handleUploadImages = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files ? Array.from(e.target.files) : [];
+    if (files.length === 0) return;
+
+    try {
+      const fd = new FormData();
+      for (const file of files) {
+        if (!file.type.startsWith('image/')) continue;
+        fd.append('images', file);
+      }
+
+      const resp = await apiCall(API_ENDPOINTS.UPLOAD_ATTACHMENTS, { method: 'POST', body: fd });
+      const urls: string[] = [];
+      if (resp?.imagePaths && Array.isArray(resp.imagePaths)) {
+        resp.imagePaths.forEach((p: string) => urls.push(buildImageUrl(p)));
+      } else if (resp?.data?.imagePaths && Array.isArray(resp.data.imagePaths)) {
+        resp.data.imagePaths.forEach((p: string) => urls.push(buildImageUrl(p)));
+      } else if (resp?.data?.urls && Array.isArray(resp.data.urls)) {
+        resp.data.urls.forEach((p: string) => urls.push(buildImageUrl(p)));
+      } else if (resp?.urls && Array.isArray(resp.urls)) {
+        resp.urls.forEach((p: string) => urls.push(buildImageUrl(p)));
+      } else if (resp?.url) {
+        urls.push(buildImageUrl(resp.url));
+      }
+
+      if (urls.length > 0) {
+        const imgSizeClass = imageOrientation === 'horizontal' ? 'w-36 h-auto' : 'w-64 h-auto';
+        const html = urls.map(u => `
+          <div class="image-container my-3" contenteditable="false" data-orientation="${imageOrientation}">
+            <img src="${u}" alt="صورة" class="${imgSizeClass} rounded-lg shadow-md mx-auto" />
+            <button type="button" class="delete-img-btn" onclick="this.parentElement.remove(); document.dispatchEvent(new Event('contentChanged'));">×</button>
+          </div>
+        `).join('') + '<p><br></p>';
+        const anchor = getCurrentTextElement();
+        if (anchor) {
+          anchor.insertAdjacentHTML('afterend', html);
+        } else if (editorRef.current) {
+          editorRef.current.insertAdjacentHTML('beforeend', html);
+        }
+        handleContentChange();
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+      alert('فشل رفع الصور، حاول مرة أخرى');
+    } finally {
+      e.target.value = '';
+    }
+  };
+
+  const uploadAndInsertFile = async (file: File) => {
+    if (!file.type.startsWith('image/')) return;
+    const fd = new FormData();
+    fd.append('images', file);
+    const resp = await apiCall(API_ENDPOINTS.UPLOAD_ATTACHMENTS, { method: 'POST', body: fd });
+    let uploadedUrl = '';
+    if (resp?.imagePaths && Array.isArray(resp.imagePaths) && resp.imagePaths[0]) {
+      uploadedUrl = resp.imagePaths[0];
+    } else if (resp?.data?.imagePaths && Array.isArray(resp.data.imagePaths) && resp.data.imagePaths[0]) {
+      uploadedUrl = resp.data.imagePaths[0];
+    } else if (resp?.data?.url) {
+      uploadedUrl = resp.data.url;
+    } else if (resp?.url) {
+      uploadedUrl = resp.url;
+    }
+    const finalUrl = buildImageUrl(uploadedUrl);
+    insertImageAtCursor(finalUrl, imageOrientation, uploadedUrl);
+  };
+
+  const handlePaste = async (e: React.ClipboardEvent<HTMLDivElement>) => {
+    const items = e.clipboardData?.items;
+    if (!items || items.length === 0) return;
+    const imageItems = Array.from(items).filter(it => it.kind === 'file' && it.type.startsWith('image/'));
+    if (imageItems.length === 0) return;
+    e.preventDefault();
+    for (const it of imageItems) {
+      const file = it.getAsFile();
+      if (file) {
+        try {
+          await uploadAndInsertFile(file);
+        } catch (err) {
+          console.error('Paste upload error:', err);
+        }
+      }
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const files = e.dataTransfer?.files ? Array.from(e.dataTransfer.files) : [];
+    for (const file of files) {
+      try {
+        await uploadAndInsertFile(file);
+      } catch (err) {
+        console.error('Drop upload error:', err);
+      }
+    }
+  };
+
   const insertNote = (type: 'info' | 'warning') => {
     const icons = {
       info: '💡',
@@ -335,7 +312,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     insertHtmlAtCursor(html);
   };
 
-  // Insert code block
   const insertCodeBlock = () => {
     const html = `
       <pre class="my-4 p-4 bg-gray-900 text-gray-100 rounded-lg overflow-x-auto" contenteditable="true"><code>// اكتب الكود هنا
@@ -347,7 +323,6 @@ function example() {
     insertHtmlAtCursor(html);
   };
 
-  // Insert quote
   const insertQuote = () => {
     const html = `
       <blockquote class="my-4 pl-4 pr-4 py-2 border-r-4 border-[#203f61] bg-gray-50 italic text-gray-700" contenteditable="true">
@@ -358,52 +333,6 @@ function example() {
     insertHtmlAtCursor(html);
   };
 
-  // Handle insert image from URL
-  const handleInsertImage = () => {
-    if (imageUrl) {
-      insertImage(imageUrl, imageOrientation);
-      setImageUrl('');
-      setImageOrientation('horizontal');
-    }
-  };
-
-  // Handle upload images
-  const handleUploadImages = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files ? Array.from(e.target.files) : [];
-    if (files.length === 0) return;
-    const row = ensureLastRow();
-    const grid = row?.querySelector('.images-grid') as HTMLElement | null;
-    const currentOrientation = grid?.getAttribute('data-orientation') as 'horizontal' | 'vertical' || 'horizontal';
-    try {
-      for (const file of files) {
-        if (!file.type.startsWith('image/')) continue;
-        const fd = new FormData();
-        fd.append('image', file);
-        const resp = await apiCall(API_ENDPOINTS.UPLOAD_ATTACHMENTS, {
-          method: 'POST',
-          body: fd
-        });
-        let uploadedUrl = '';
-        if (resp?.imagePaths && Array.isArray(resp.imagePaths) && resp.imagePaths[0]) {
-          uploadedUrl = resp.imagePaths[0];
-        } else if (resp?.data?.url) {
-          uploadedUrl = resp.data.url;
-        } else if (resp?.url) {
-          uploadedUrl = resp.url;
-        }
-        const finalUrl = buildImageUrl(uploadedUrl);
-        if (!finalUrl) continue;
-        insertImage(finalUrl, currentOrientation);
-      }
-    } catch (err) {
-      console.error('Upload error:', err);
-      smartToast.dashboard.error('فشل رفع الصور، حاول مرة أخرى');
-    } finally {
-      e.target.value = '';
-    }
-  };
-
-  // Insert link
   const handleInsertLink = () => {
     if (linkUrl && linkText) {
       const html = `<a href="${linkUrl}" class="text-[#203f61] underline hover:text-[#2a537e]" target="_blank" rel="noopener noreferrer">${linkText}</a>`;
@@ -414,13 +343,14 @@ function example() {
     }
   };
 
-  // Handle content changes
   const handleContentChange = () => {
     if (editorRef.current) {
       const selection = window.getSelection();
       const range = selection && selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
 
-      onChange(editorRef.current.innerHTML);
+      const clone = editorRef.current.cloneNode(true) as HTMLElement;
+      clone.querySelectorAll('.delete-img-btn, .delete-image-btn').forEach(el => el.remove());
+      onChange(clone.innerHTML);
 
       if (range) {
         setTimeout(() => {
@@ -435,7 +365,6 @@ function example() {
     }
   };
 
-  // Toolbar button component
   const ToolbarButton: React.FC<{
     icon: React.ReactNode;
     onClick: () => void;
@@ -446,8 +375,9 @@ function example() {
       type="button"
       onClick={onClick}
       title={title}
-      className={`p-2 rounded-lg transition-all hover:bg-gray-200 ${active ? 'bg-gray-300' : 'bg-white'
-        }`}
+      className={`p-2 rounded-lg transition-all hover:bg-gray-200 ${
+        active ? 'bg-gray-300' : 'bg-white'
+      }`}
     >
       {icon}
     </button>
@@ -466,11 +396,17 @@ function example() {
         if (hadFocus && selection) {
           editorRef.current.focus();
         }
-
-        // Re-attach listeners when content is loaded
-        attachImageRowListeners();
       }
     }
+
+    const handleContentChanged = () => {
+      handleContentChange();
+    };
+
+    document.addEventListener('contentChanged', handleContentChanged);
+    return () => {
+      document.removeEventListener('contentChanged', handleContentChanged);
+    };
   }, [value]);
 
   return (
@@ -483,7 +419,6 @@ function example() {
 
       {/* Toolbar */}
       <div className="bg-gray-100 border border-gray-300 rounded-t-lg p-2 flex flex-wrap gap-1">
-        {/* Text formatting */}
         <div className="flex gap-1 border-l border-gray-300 pl-2">
           <ToolbarButton
             icon={<Heading1 className="w-4 h-4" />}
@@ -507,7 +442,6 @@ function example() {
           />
         </div>
 
-        {/* Text style */}
         <div className="flex gap-1 border-l border-gray-300 pl-2">
           <ToolbarButton
             icon={<Bold className="w-4 h-4" />}
@@ -526,7 +460,6 @@ function example() {
           />
         </div>
 
-        {/* Alignment */}
         <div className="flex gap-1 border-l border-gray-300 pl-2">
           <ToolbarButton
             icon={<AlignRight className="w-4 h-4" />}
@@ -545,7 +478,6 @@ function example() {
           />
         </div>
 
-        {/* Lists */}
         <div className="flex gap-1 border-l border-gray-300 pl-2">
           <ToolbarButton
             icon={<List className="w-4 h-4" />}
@@ -559,7 +491,6 @@ function example() {
           />
         </div>
 
-        {/* Special blocks */}
         <div className="flex gap-1 border-l border-gray-300 pl-2">
           <ToolbarButton
             icon={<Quote className="w-4 h-4" />}
@@ -583,7 +514,6 @@ function example() {
           />
         </div>
 
-        {/* Media */}
         <div className="flex gap-1 border-l border-gray-300 pl-2">
           <ToolbarButton
             icon={<Image className="w-4 h-4" />}
@@ -597,99 +527,22 @@ function example() {
           />
         </div>
 
-        {/* Add New Row */}
-        <div className="flex gap-1 border-l border-gray-300 pl-2">
-          <button
-            type="button"
-            onClick={() => {
-              if (!editorRef.current) return;
-              const row = document.createElement('div');
-              row.className = 'row-item relative my-4 p-4 border-2 border-dashed border-blue-300 rounded-lg bg-blue-50';
-              row.innerHTML = `
-                <div class="row-grid grid md:grid-cols-2 gap-4">
-                  <div class="block-item text-block" contenteditable="true" data-type="text" style="min-height: 3rem; padding: 0.75rem; border: 2px dashed #93c5fd; border-radius: 0.5rem;"><p><br></p></div>
-                  <div class="block-item image-block" contenteditable="false" data-type="images">
-                    <div class="images-grid grid gap-2" data-orientation="horizontal" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));"></div>
-                    <div class="mt-3 flex gap-2 flex-wrap">
-                      <button type="button" class="add-more-images px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">+ إضافة صور</button>
-                      <select class="orientation-selector px-2 py-1 border border-gray-300 rounded text-sm">
-                        <option value="horizontal" selected>أفقي</option>
-                        <option value="vertical">عمودي</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <button type="button" class="delete-row-btn absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg hover:bg-red-600">حذف الصف</button>
-              `;
-              editorRef.current.appendChild(row);
-              attachImageRowListeners();
-            }}
-            title="إضافة صف جديد"
-            className="p-2 rounded-lg transition-all bg-blue-500 text-white hover:bg-blue-600 font-semibold"
-          >
-            + صف جديد
-          </button>
-        </div>
-
-        {/* Language Direction Toggle */}
         <div className="flex gap-1 border-l border-gray-300 pl-2">
           <button
             type="button"
             onClick={toggleDirection}
             title={textDirection === 'rtl' ? 'تبديل للإنجليزية' : 'تبديل للعربية'}
-            className={`p-2 rounded-lg transition-all font-bold ${textDirection === 'rtl'
-              ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-              : 'bg-green-100 text-green-700 hover:bg-green-200'
-              }`}
+            className={`p-2 rounded-lg transition-all font-bold ${
+              textDirection === 'rtl'
+                ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                : 'bg-green-100 text-green-700 hover:bg-green-200'
+            }`}
           >
             {textDirection === 'rtl' ? 'ع' : 'EN'}
           </button>
         </div>
       </div>
 
-      {/* Image and Link Controls */}
-      <div className="flex gap-2 mb-2 flex-wrap">
-        <div className="flex gap-2 items-end">
-          <div>
-            {/* <label className="block text-xs font-semibold text-gray-700 mb-1">رابط صورة</label>
-            <input
-              type="url"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61]"
-              placeholder="https://example.com/image.jpg"
-            /> */}
-          </div>
-          <select
-            value={imageOrientation}
-            onChange={(e) => setImageOrientation(e.target.value as 'horizontal' | 'vertical')}
-            className="px-3 py-2 border border-gray-300 rounded-lg"
-          >
-            <option value="horizontal">أفقي</option>
-            <option value="vertical">عمودي</option>
-          </select>
-          {/* <button
-            type="button"
-            onClick={handleInsertImage}
-            disabled={!imageUrl}
-            className="px-4 py-2.5 bg-[#203f61] text-white rounded-lg hover:bg-[#2a537e] disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            إضافة
-          </button> */}
-
-            <button
-          type="button"
-          onClick={() => imageInputRef.current?.click()}
-            className="px-4 py-2.5 bg-[#203f61] text-white rounded-lg hover:bg-[#2a537e] disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          📁 رفع صور
-        </button>
-        </div>
-
-      
-      </div>
-
-      {/* Image Upload Input */}
       <input
         type="file"
         accept="image/*"
@@ -699,7 +552,6 @@ function example() {
         ref={imageInputRef}
       />
 
-      {/* Link input */}
       {showLinkInput && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 space-y-2">
           <input
@@ -735,11 +587,51 @@ function example() {
         </div>
       )}
 
-      {/* Editor */}
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          اتجاه الصور:
+        </label>
+        <div className="flex gap-3">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="orientation"
+              value="horizontal"
+              checked={imageOrientation === 'horizontal'}
+              onChange={(e) => {
+                const ori = e.target.value as 'horizontal' | 'vertical';
+                setImageOrientation(ori);
+                applyOrientationToCurrentGroup(ori);
+              }}
+              className="w-4 h-4 text-[#203f61] focus:ring-2 focus:ring-[#203f61]"
+            />
+            <span className="text-sm">أفقي (عريض)</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="orientation"
+              value="vertical"
+              checked={imageOrientation === 'vertical'}
+              onChange={(e) => {
+                const ori = e.target.value as 'horizontal' | 'vertical';
+                setImageOrientation(ori);
+                applyOrientationToCurrentGroup(ori);
+              }}
+              className="w-4 h-4 text-[#203f61] focus:ring-2 focus:ring-[#203f61]"
+            />
+            <span className="text-sm">رأسي (طويل)</span>
+          </label>
+        </div>
+      </div>
+
       <div
         ref={editorRef}
         contentEditable
         onInput={handleContentChange}
+        onPaste={handlePaste}
+        onDrop={handleDrop}
+        onDragOver={(e) => e.preventDefault()}
         onKeyUp={saveSelection}
         onMouseUp={saveSelection}
         onFocus={saveSelection}
@@ -793,33 +685,52 @@ function example() {
           text-align: left;
         }
         
-        /* Row styling */
-        [contenteditable] .row-item {
-          margin: 1rem 0;
+        [contenteditable] .image-container {
           position: relative;
+          justify-content: center;
+          align-items: center;
+          margin: 0.75rem 0.5rem;
+        }
+        [contenteditable] .image-container[data-orientation="horizontal"] {
+          display: inline-flex;
+        }
+        [contenteditable] .image-container[data-orientation="vertical"] {
+          display: block;
         }
         
-        [contenteditable] .row-item:hover {
-          border-color: #203f61;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        [contenteditable] .image-container img {
+          display: block;
+          border-radius: 8px;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+          transition: width 0.3s ease;
         }
         
-        [contenteditable] .images-grid {
-          min-height: 100px;
-        }
-        
-        [contenteditable] .images-grid img {
-          width: 100%;
-          height: auto;
-          object-fit: cover;
-        }
-        [contenteditable] .image-item-container { position: relative; }
-        [contenteditable] .delete-image-btn { position: absolute; top: 8px; left: 8px; background: rgba(220,38,38,0.9); color: #fff; border: none; border-radius: 6px; padding: 4px 8px; font-size: 12px; opacity: 0; transition: opacity 0.2s ease; cursor: pointer; }
-        [contenteditable] .image-item-container:hover .delete-image-btn { opacity: 1; }
-        
-        [contenteditable] .add-more-images,
-        [contenteditable] .orientation-selector {
+        [contenteditable] .delete-img-btn {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          background: rgba(220, 38, 38, 0.95);
+          color: white;
+          border: none;
+          border-radius: 6px;
+          padding: 6px 12px;
+          font-size: 13px;
+          font-weight: 600;
           cursor: pointer;
+          opacity: 1;
+          z-index: 10;
+        }
+        
+        [contenteditable] .delete-img-btn:hover {
+          background: rgba(185, 28, 28, 0.95);
+        }
+
+        [contenteditable] .image-container[data-orientation="horizontal"] img { 
+          width: 9rem;
+        }
+        
+        [contenteditable] .image-container[data-orientation="vertical"] img { 
+          width: 16rem;
         }
       `}</style>
     </div>

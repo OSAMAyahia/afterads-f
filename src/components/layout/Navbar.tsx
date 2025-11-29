@@ -722,6 +722,9 @@ useEffect(() => {
     setIsMenuOpen(false);
   };
 
+  const isVIP = user?.customerGroup === 'vip';
+  const storeName = (user && (user.storeName || user.name || user.firstName)) || (isRTL ? 'أفتر آدز' : 'AfterAds');
+
   return (
     <>
       {/* Floating Logo - Appears when scrolled and navbar is hidden - Hidden on Mobile */}
@@ -822,21 +825,34 @@ useEffect(() => {
                 </div>
               </div>
 
-              {/* Logo */}
               <div className="flex items-center">
-                <Link to="/" onClick={() => setIsMenuOpen(false)} className="cursor-pointer">
-<img src={logo} alt="Logo" className="h-6 sm:h-8 w-auto" />                </Link>
+                {isMobile ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-full overflow-hidden border border-white/20">
+                      <img
+                        src={(user?.avatar || user?.storeLogo || user?.storeImage) ? buildImageUrl(user?.avatar || user?.storeLogo || user?.storeImage || '') : notfoundImg}
+                        alt={storeName}
+                        className="w-full h-full object-cover"
+                        onError={(e) => { e.currentTarget.src = notfoundImg; }}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <Link to="/" onClick={() => setIsMenuOpen(false)} className="cursor-pointer">
+                    <img src={logo} alt="Logo" className="h-6 sm:h-8 w-auto" />
+                  </Link>
+                )}
               </div>
 
               {/* Desktop Navigation Links */}
               <div className="hidden lg:flex items-center space-x-1">
                 {[
                   { name: t('nav.home'), href: '/' },
-                  { name: t('nav.products'), href: '/products' },
+                  // { name: t('nav.products'), href: '/products' },
                   { name: t('nav.theme_malak'), href: '/theme/55' },
                   { name: t('nav.blog'), href: '/blog' },
                   { name: t('nav.documentation', { defaultValue: 'التوثيق' }), href: '/documentation' },
-                  { name: t('nav.categories'), href: '/categories' },
+                  { name: t('nav.products'), href: '/categories' },
                   { name: t('nav.contact'), href: '/contact' }
                 ].map((link) => (
                   <Link
@@ -921,7 +937,7 @@ useEffect(() => {
       className="flex items-center text-white/90 hover:text-white px-2 md:px-3 py-1.5 md:py-2 rounded-lg md:rounded-xl hover:bg-white/10 transition-all duration-300 gap-2 md:gap-3 group"
     >
       <div className="w-7 h-7 md:w-8 md:h-8 rounded-md md:rounded-lg overflow-hidden border border-white/20">
-        <img src={(user.avatar || user.storeLogo || user.storeImage) ? buildImageUrl(user.avatar || user.storeLogo || user.storeImage || '') : notfoundImg} alt={user.name || user.firstName || 'User'} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = notfoundImg; }} />
+        <img src={(user?.avatar || user?.storeLogo || user?.storeImage) ? buildImageUrl(user?.avatar || user?.storeLogo || user?.storeImage || '') : notfoundImg} alt={user?.name || user?.firstName || 'User'} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = notfoundImg; }} />
       </div>
       <span className="text-xs md:text-sm font-medium hidden md:inline">{user.name?.split(' ')[0] || user.firstName || t('nav.profile')}</span>
       <span className="text-xs md:text-sm font-medium md:hidden">{getInitials(user.name || user.firstName || t('nav.profile'))}</span>
@@ -1001,9 +1017,25 @@ useEffect(() => {
           <div 
             className="relative flex justify-between items-center p-3 border-b border-white/10"
           >
-            <Link to="/" onClick={() => setIsMenuOpen(false)} className="transition-all duration-200">
-              <img src={logo} alt="Logo" className="h-7 w-auto" />
-            </Link>
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full overflow-hidden border border-white/20">
+                <img
+                  src={(user?.avatar || user?.storeLogo || user?.storeImage) ? buildImageUrl(user?.avatar || user?.storeLogo || user?.storeImage || '') : logo}
+                  alt={storeName}
+                  className="w-full h-full object-cover"
+                  onError={(e) => { e.currentTarget.src = logo; }}
+                />
+              </div>
+              {isVIP && (
+                <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-400 text-black font-bold text-xs shadow-md">
+                  <Crown className="w-3 h-3" />
+                  <span>VIP</span>
+                </div>
+              )}
+              <Link to="/" onClick={() => setIsMenuOpen(false)} className="transition-all duration-200">
+                <span className="text-white font-bold text-sm">{storeName}</span>
+              </Link>
+            </div>
             <button 
               onClick={() => setIsMenuOpen(false)} 
               className="text-white p-1.5 rounded-lg hover:bg-white/10 transition-all duration-200"
@@ -1073,6 +1105,7 @@ useEffect(() => {
                       </>
                     )}
                   </div>
+
                   
                   {/* User Details */}
                   <div className="flex-1 relative z-10">

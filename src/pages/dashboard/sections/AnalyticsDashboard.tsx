@@ -109,6 +109,21 @@ const AnalyticsDashboard: React.FC = () => {
   });
   const [dailySalesData, setDailySalesData] = useState<DailySalesData[]>([]);
   const [monthlySalesData, setMonthlySalesData] = useState<{ month: string; sales: number; orders: number }[]>([]);
+  const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth());
+  const availableYears = React.useMemo(() => {
+    const ys = new Set<number>();
+    orders.forEach(o => ys.add(new Date(o.createdAt).getFullYear()));
+    const arr = Array.from(ys).sort((a,b) => b-a);
+    return arr.length > 0 ? arr : [new Date().getFullYear()];
+  }, [orders]);
+  const filteredOrders = React.useMemo(() => {
+    return orders.filter(o => {
+      const d = new Date(o.createdAt);
+      return d.getFullYear() === selectedYear && d.getMonth() === selectedMonth;
+    });
+  }, [orders, selectedYear, selectedMonth]);
   const { data: ordersData, isLoading: ordersLoading } = useApiQuery<any>({ endpoint: API_ENDPOINTS.ORDERS, queryKey: ['orders'] });
   const { data: customersData, isLoading: customersLoading } = useApiQuery<any>({ endpoint: API_ENDPOINTS.CUSTOMERS, queryKey: ['customers'] });
   const { data: couponsData, isLoading: couponsLoading } = useApiQuery<any>({ endpoint: API_ENDPOINTS.COUPONS, queryKey: ['coupons'] });
@@ -157,141 +172,87 @@ const AnalyticsDashboard: React.FC = () => {
     }
   };
 
-  // Generate daily sales data based on orders (last 30 days)
   const generateDailySalesData = () => {
-    if (orders.length === 0) {
-      // If no orders, create empty data for last 30 days
-      const today = new Date();
-      const last30Days = Array.from({ length: 30 }, (_, i) => {
-        const date = new Date(today);
-        date.setDate(today.getDate() - (29 - i));
-        return date.toISOString().split('T')[0];
-      });
-
-      const emptyData = last30Days.map(date => {
-        const dateObj = new Date(date);
-        return {
-          date: `${dateObj.getDate()}/${dateObj.getMonth() + 1}`,
-          sales: 0,
-          orders: 0
-        };
-      });
-
-      setDailySalesData(emptyData);
-      return;
-    }
-
-    // Group orders by date
+    const year = selectedYear;
+    const monthIndex = selectedMonth;
+    const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
     const salesByDate: { [key: string]: { sales: number; orders: number } } = {};
-
-    // Initialize data for last 30 days with 0 values
-    const today = new Date();
-    const last30Days = Array.from({ length: 30 }, (_, i) => {
-      const date = new Date(today);
-      date.setDate(today.getDate() - (29 - i));
-      return date.toISOString().split('T')[0];
-    });
-
-    // Initialize all dates with 0
-    last30Days.forEach(date => {
-      salesByDate[date] = { sales: 0, orders: 0 };
-    });
-
-    // Add real order data
+    for (let d = 1; d <= daysInMonth; d++) {
+      const key = new Date(year, monthIndex, d).toISOString().split('T')[0];
+      salesByDate[key] = { sales: 0, orders: 0 };
+    }
     orders.forEach(order => {
-      if (order.status === 'delivered' || order.status === 'confirmed') {
-        const date = new Date(order.createdAt).toISOString().split('T')[0];
-        if (salesByDate[date]) {
-          salesByDate[date].sales += order.total;
-          salesByDate[date].orders += 1;
+      const od = new Date(order.createdAt);
+      if (od.getFullYear() === year && od.getMonth() === monthIndex && (order.status === 'delivered' || order.status === 'confirmed')) {
+        const key = new Date(od.getFullYear(), od.getMonth(), od.getDate()).toISOString().split('T')[0];
+        if (salesByDate[key]) {
+          salesByDate[key].sales += order.total;
+          salesByDate[key].orders += 1;
         }
       }
     });
-
-    // Convert to array with formatted dates and sort by date
-    const data = last30Days.map(date => {
-      const dateObj = new Date(date);
+    const data = Array.from({ length: daysInMonth }, (_, i) => {
+      const date = new Date(year, monthIndex, i + 1);
+      const key = date.toISOString().split('T')[0];
       return {
-        date: `${dateObj.getDate()}/${dateObj.getMonth() + 1}`,
-        sales: salesByDate[date].sales,
-        orders: salesByDate[date].orders
+        date: `${date.getDate()}/${date.getMonth() + 1}`,
+        sales: salesByDate[key]?.sales || 0,
+        orders: salesByDate[key]?.orders || 0
       };
     });
-
     setDailySalesData(data);
   };
 
 // في دالة generateMonthlySalesData، استبدل الكود الحالي بهذه الدالة الجديدة:
 const generateMonthlySalesData = () => {
-  // استخدم سنة معينة أو السنة الحالية
-  const year = new Date().getFullYear(); // يمكنك تغيير هذه القيمة لتحليل سنة مختلفة
-  const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-
-  // إنشاء مصفوفة لحساب المبيعات والطلبات لكل شهر (من 0 إلى 11)
+  const year = selectedYear;
   const monthly: { sales: number; orders: number }[] = Array.from({ length: 12 }, () => ({ sales: 0, orders: 0 }));
-
-  // تصفية الطلبات حسب السنة وحساب المبيعات والطلبات لكل شهر
   orders.forEach(order => {
     const orderDate = new Date(order.createdAt);
-    if (orderDate.getFullYear() === year) { // تأكد من أن السنة تطابق السنة المطلوبة
-      const monthIndex = orderDate.getMonth(); // 0 لليناير، 1 لفبراير، ... 11 لديسمبر
-      
-      // تأكد من أن الحالة تشير إلى طلب مكتمل أو مؤكد لحسابه في المبيعات
-      if (order.status === 'delivered' || order.status === 'confirmed') {
-        monthly[monthIndex].sales += order.total;
-        monthly[monthIndex].orders += 1;
-      }
+    if (orderDate.getFullYear() === year && (order.status === 'delivered' || order.status === 'confirmed')) {
+      const monthIndex = orderDate.getMonth();
+      monthly[monthIndex].sales += order.total;
+      monthly[monthIndex].orders += 1;
     }
   });
-
-  // تحويل البيانات إلى تنسيق مناسب للرسم البياني مع الأسماء العربية
   const data = monthly.map((value, index) => ({
-    month: months[index], // استخدام اسم الشهر باللغة العربية
+    month: months[index],
     sales: value.sales,
     orders: value.orders
   }));
-
   setMonthlySalesData(data);
 };
 
   // Calculate metrics
-  const calculateMetrics = () => {
+  const calculateMetrics = (source: Order[]) => {
     // Total sales
-    const totalSales = orders.reduce((total, order) => total + order.total, 0);
+    const totalSales = source.reduce((total, order) => total + order.total, 0);
 
     // Products sold
-    const productsSold = orders.reduce((total, order) => 
+    const productsSold = source.reduce((total, order) => 
       total + order.items.reduce((itemTotal, item) => itemTotal + item.quantity, 0), 0
     );
 
     // Average order value
-    const averageOrderValue = orders.length > 0 ? totalSales / orders.length : 0;
+    const averageOrderValue = source.length > 0 ? totalSales / source.length : 0;
 
     // Growth calculations
-    const currentMonth = new Date().getMonth();
-    const currentYear = new Date().getFullYear();
-    const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-    const lastYear = currentMonth === 0 ? currentYear - 1 : currentYear;
-
-    const currentMonthOrders = orders.filter(order => {
-      const orderDate = new Date(order.createdAt);
-      return orderDate.getMonth() === currentMonth && orderDate.getFullYear() === currentYear;
-    });
-
+    const lastMonth = selectedMonth === 0 ? 11 : selectedMonth - 1;
+    const lastYear = selectedMonth === 0 ? selectedYear - 1 : selectedYear;
     const lastMonthOrders = orders.filter(order => {
       const orderDate = new Date(order.createdAt);
       return orderDate.getMonth() === lastMonth && orderDate.getFullYear() === lastYear;
     });
 
-    const currentMonthSales = currentMonthOrders.reduce((total, order) => total + order.total, 0);
+    const currentMonthSales = source.reduce((total, order) => total + order.total, 0);
     const lastMonthSales = lastMonthOrders.reduce((total, order) => total + order.total, 0);
-    const currentMonthItems = currentMonthOrders.reduce((total, order) => 
+    const currentMonthItems = source.reduce((total, order) => 
       total + order.items.reduce((itemTotal, item) => itemTotal + item.quantity, 0), 0
     );
     const lastMonthItems = lastMonthOrders.reduce((total, order) => 
       total + order.items.reduce((itemTotal, item) => itemTotal + item.quantity, 0), 0
     );
-    const currentMonthAvg = currentMonthOrders.length > 0 ? currentMonthSales / currentMonthOrders.length : 0;
+    const currentMonthAvg = source.length > 0 ? currentMonthSales / source.length : 0;
     const lastMonthAvg = lastMonthOrders.length > 0 ? lastMonthSales / lastMonthOrders.length : 0;
 
     const salesGrowth = lastMonthSales === 0 && currentMonthSales > 0 ? 100 : 
@@ -317,11 +278,11 @@ const generateMonthlySalesData = () => {
   };
 
 // Calculate top products
-const getTopProducts = () => {
+const getTopProducts = (source: Order[]) => {
   const productSales: { [key: string]: number } = {};
   
   // ✅ بدون فلترة حالة الطلب - زي الكود القديم بالضبط
-  orders.forEach(order => {
+  source.forEach(order => {
     order.items.forEach(item => {
       if (productSales[item.productName]) {
         productSales[item.productName] += item.quantity;
@@ -342,26 +303,29 @@ const getTopProducts = () => {
 };
 
   // Calculate order status distribution
-  const getOrderStatusDistribution = () => {
+  const getOrderStatusDistribution = (source: Order[]) => {
     return [
-      { status: 'delivered', label: 'مكتملة', count: orders.filter(o => o.status === 'delivered').length, color: '#10B981' },
-      { status: 'confirmed', label: 'مؤكدة', count: orders.filter(o => o.status === 'confirmed').length, color: '#059669' },
-      { status: 'preparing', label: 'قيد التحضير', count: orders.filter(o => o.status === 'preparing').length, color: '#F59E0B' },
-      { status: 'pending', label: 'معلقة', count: orders.filter(o => o.status === 'pending').length, color: '#EAB308' },
-      { status: 'cancelled', label: 'ملغية', count: orders.filter(o => o.status === 'cancelled').length, color: '#EF4444' }
+      { status: 'delivered', label: 'مكتملة', count: source.filter(o => o.status === 'delivered').length, color: '#10B981' },
+      { status: 'confirmed', label: 'مؤكدة', count: source.filter(o => o.status === 'confirmed').length, color: '#059669' },
+      { status: 'preparing', label: 'قيد التحضير', count: source.filter(o => o.status === 'preparing').length, color: '#F59E0B' },
+      { status: 'pending', label: 'معلقة', count: source.filter(o => o.status === 'pending').length, color: '#EAB308' },
+      { status: 'cancelled', label: 'ملغية', count: source.filter(o => o.status === 'cancelled').length, color: '#EF4444' }
     ];
   };
 
 // Calculate customer metrics
-const getCustomerMetrics = () => {
+const getCustomerMetrics = (source: Order[]) => {
   const now = new Date();
   const thirtyDaysAgo = new Date(now.getTime() - 30*24*60*60*1000);
   
-  const newCustomersThisMonth = customers.filter(c => new Date(c.createdAt) > thirtyDaysAgo).length;
+  const newCustomersThisMonth = customers.filter(c => {
+    const d = new Date(c.createdAt);
+    return d.getFullYear() === selectedYear && d.getMonth() === selectedMonth;
+  }).length;
   
   // Calculate customer spending
   const customerSpending: { [key: string]: number } = {};
-  orders.forEach(order => {
+  source.forEach(order => {
     customerSpending[order.customerName] = (customerSpending[order.customerName] || 0) + order.total;
   });
   
@@ -370,7 +334,7 @@ const getCustomerMetrics = () => {
   
   // Calculate returning customers
   const customerOrderCounts: { [key: string]: number } = {};
-  orders.forEach(order => {
+  source.forEach(order => {
     customerOrderCounts[order.customerName] = (customerOrderCounts[order.customerName] || 0) + 1;
   });
   
@@ -418,11 +382,11 @@ const getCustomerMetrics = () => {
 };
 
   // Calculate coupon metrics
-  const getCouponMetrics = () => {
+const getCouponMetrics = (source: Order[]) => {
     const activeCoupons = coupons.filter(c => c.isActive).length;
-    const ordersWithCoupons = orders.filter(o => o.couponDiscount && o.couponDiscount > 0).length;
-    const totalDiscount = orders.reduce((total, order) => total + (order.couponDiscount || 0), 0);
-    const ordersWithCouponsCount = orders.filter(o => o.couponDiscount && o.couponDiscount > 0).length;
+  const ordersWithCoupons = source.filter(o => o.couponDiscount && o.couponDiscount > 0).length;
+  const totalDiscount = source.reduce((total, order) => total + (order.couponDiscount || 0), 0);
+  const ordersWithCouponsCount = source.filter(o => o.couponDiscount && o.couponDiscount > 0).length;
     
     const avgDiscount = ordersWithCouponsCount > 0 
       ? totalDiscount / ordersWithCouponsCount 
@@ -430,7 +394,7 @@ const getCustomerMetrics = () => {
 
     return {
       activeCoupons,
-      usageRate: orders.length > 0 ? (ordersWithCoupons / orders.length) * 100 : 0,
+      usageRate: source.length > 0 ? (ordersWithCoupons / source.length) * 100 : 0,
       totalDiscount,
       avgDiscount
     };
@@ -445,18 +409,18 @@ useEffect(() => {
 useEffect(() => {
   generateDailySalesData();
   generateMonthlySalesData();
-}, [orders]);
+}, [orders, selectedYear, selectedMonth]);
 
   if (loading) {
     return <Spinner overlay />;
   }
 
 // في السطر ~364 تقريباً (قبل return مباشرة)
-const metrics = calculateMetrics();
-const topProducts = getTopProducts(); // ✅ تأكد من استدعائها هنا
-const orderStatusDistribution = getOrderStatusDistribution();
-const customerMetrics = getCustomerMetrics();
-const couponMetrics = getCouponMetrics();
+const metrics = calculateMetrics(filteredOrders);
+const topProducts = getTopProducts(filteredOrders);
+const orderStatusDistribution = getOrderStatusDistribution(filteredOrders);
+const customerMetrics = getCustomerMetrics(filteredOrders);
+const couponMetrics = getCouponMetrics(filteredOrders);
 
  return (
     <div className="p-6 space-y-6">
@@ -469,6 +433,26 @@ const couponMetrics = getCouponMetrics();
               نظام التحليلات والإحصائيات
             </h2>
             <p className="text-gray-200">تحليل شامل ومتقدم لأداء المتجر والمبيعات مع رؤى تفصيلية لاتخاذ قرارات مدروسة</p>
+          </div>
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(Number(e.target.value))}
+              className="px-3 py-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-white min-w-[120px]"
+            >
+              {availableYears.map(y => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(Number(e.target.value))}
+              className="px-3 py-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-white min-w-[140px]"
+            >
+              {months.map((m, i) => (
+                <option key={m} value={i}>{m}</option>
+              ))}
+            </select>
           </div>
         </div>
       </div>

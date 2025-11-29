@@ -279,70 +279,19 @@
   
   const blocksToHtml = (value: any) => {
     if (Array.isArray(value)) {
-      const rows: Array<{ text: string; images: Array<{ url: string; orientation?: 'horizontal' | 'vertical' }> }> = [];
-      const isTyped = value.some((b: any) => b && typeof b === 'object' && 'type' in b);
-      if (isTyped) {
-        let current = { text: '', images: [] as Array<{ url: string; orientation?: 'horizontal' | 'vertical' }> };
-        value.forEach((b: any) => {
-          if (b.type === 'text' && b.text) {
-            if (current.text || (current.images && current.images.length)) {
-              rows.push(current);
-              current = { text: b.text, images: [] };
-            } else {
-              current.text = b.text;
-            }
-            if (Array.isArray(b.images) && b.images.length > 0) {
-              const normalizedFromText = b.images.map((img: any) => {
-                if (typeof img === 'string') return { url: img, orientation: 'horizontal' };
-                return { url: img.url, orientation: img.orientation || 'horizontal' };
-              });
-              current.images = (current.images || []).concat(normalizedFromText);
-            }
-          } else if (b.type === 'images' && Array.isArray(b.images)) {
-            const normalized = b.images.map((img: any) => {
-              if (typeof img === 'string') return { url: img, orientation: 'horizontal' };
-              return { url: img.url, orientation: img.orientation || 'horizontal' };
-            });
-            current.images = (current.images || []).concat(normalized);
-          }
-        });
-        if (current.text || (current.images && current.images.length)) rows.push(current);
-      } else {
-        value.forEach((b: any) => {
-          const normalized = Array.isArray(b.images)
-            ? b.images.map((img: any) => (typeof img === 'string' ? { url: img, orientation: 'horizontal' } : { url: img.url, orientation: img.orientation || 'horizontal' }))
-            : [];
-          rows.push({ text: b.text || '', images: normalized });
-        });
-      }
-      return rows.map((row) => {
-        const orientation = row.images && row.images.length > 0 ? (row.images[0].orientation || 'horizontal') : 'horizontal';
-        const gridCols = orientation === 'vertical' 
-          ? 'repeat(auto-fit, minmax(150px, 200px))' 
-          : 'repeat(auto-fit, minmax(250px, 1fr))';
-        const imagesHtml = (row.images || []).map((img: any) => {
+      return value.map((b: any) => {
+        const text = String(b.text || '');
+        const images = Array.isArray(b.images) ? b.images : [];
+        const imagesHtml = images.map((img: any) => {
+          const ori = (img.orientation as 'horizontal' | 'vertical') || 'horizontal';
           const src = typeof img === 'string' ? buildImageUrl(img) : buildImageUrl(img.url);
-          return `<img src="${src}" alt="صورة" class="w-full h-auto rounded-lg shadow-md" />`;
+          return `
+      <div class="image-container my-4" contenteditable="false" data-orientation="${ori}">
+        <img src="${src}" alt="صورة" class="w-full max-w-lg h-auto rounded-lg shadow-md mx-auto">
+      </div>
+      <p><br></p>`;
         }).join('');
-        return `
-          <div class="row-item my-4 p-4 border-2 border-gray-200 rounded-lg bg-gray-50">
-            <div class="row-grid grid md:grid-cols-2 gap-4">
-              <div class="block-item text-block" contenteditable="true" data-type="text" style="min-height: 3rem; padding: 0.75rem; border: 2px dashed #e5e7eb; border-radius: 0.5rem;">${row.text || ''}</div>
-              <div class="block-item image-block" contenteditable="false" data-type="images">
-                <div class="images-grid grid gap-2" data-orientation="${orientation}" style="grid-template-columns: ${gridCols};">
-                  ${imagesHtml}
-                </div>
-                <div class="mt-3 flex gap-2 flex-wrap">
-                  <button type="button" class="add-more-images px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">+ إضافة صور</button>
-                  <select class="orientation-selector px-2 py-1 border border-gray-300 rounded text-sm">
-                    <option value="horizontal" ${orientation === 'horizontal' ? 'selected' : ''}>أفقي</option>
-                    <option value="vertical" ${orientation === 'vertical' ? 'selected' : ''}>عمودي</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
+        return `${text}${imagesHtml}`;
       }).join('');
     }
     return String(value || '');
@@ -350,51 +299,50 @@
   const htmlToBlocks = (html: string) => {
     const container = document.createElement('div');
     container.innerHTML = html || '';
-    const rowItems = container.querySelectorAll('.row-item');
-    if (rowItems.length > 0) {
-      const rows: Array<{ text: string; images: Array<{ url: string; orientation?: 'horizontal' | 'vertical' }> }> = [];
-      rowItems.forEach((row) => {
-        const textEl = row.querySelector('.text-block') as HTMLElement | null;
-        const textHtml = textEl ? textEl.innerHTML.trim() : '';
-        const plain = textEl ? (textEl.textContent || '').trim() : '';
-        const text = plain.length > 0 && textHtml && textHtml !== '<p><br></p>' && textHtml !== '<br>' ? textHtml : '';
-        const grid = row.querySelector('.images-grid') as HTMLElement | null;
-        const orientation = grid?.getAttribute('data-orientation') as 'horizontal' | 'vertical' || 'horizontal';
-        const images = Array.from(row.querySelectorAll('.images-grid img'))
-          .map((img) => ({ url: img.getAttribute('src') || '', orientation }))
-          .filter((i) => i.url);
-        rows.push({ text, images });
-      });
-      return rows.filter(b => (b.text && b.text.trim()) || (b.images && b.images.length > 0));
-    }
-
-    const rows: any[] = [];
-    const items = Array.from(container.querySelectorAll('.block-item'));
-    let current: { text: string; images: Array<{ url: string; orientation?: 'horizontal' | 'vertical' }> } = { text: '', images: [] };
-    items.forEach((el) => {
-      const type = el.getAttribute('data-type') || 'text';
-      if (type === 'images') {
-        const orientation = el.querySelector('.images-container')?.getAttribute('data-orientation') || 'horizontal';
-        const imgs = Array.from(el.querySelectorAll('img')).map((img) => ({
-          url: img.getAttribute('src') || '',
-          orientation: (img.getAttribute('data-orientation') as 'horizontal' | 'vertical') || (orientation as 'horizontal' | 'vertical'),
-        })).filter((i) => i.url);
-        current.images = current.images.concat(imgs);
-      } else {
-        const text = el.innerHTML.trim();
-        const plain = (el.textContent || '').trim();
-        if (plain.length > 0 && text && text !== '<p><br></p>' && text !== '<br>') {
-          if (current.text || current.images.length) {
-            rows.push(current);
-            current = { text, images: [] };
-          } else {
-            current.text = text;
+    container.querySelectorAll('.delete-img-btn, .delete-image-btn').forEach(el => el.remove());
+    const normalizeSrc = (src: string) => {
+      if (!src) return '';
+      if (src.startsWith('data:')) return '';
+      const m = src.match(/\/images\/(.+)$/);
+      return m ? `/images/${m[1]}` : src;
+    };
+    type Block = { type: 'text' | 'images'; text: string; images: Array<{ url: string; orientation?: 'horizontal' | 'vertical' }> };
+    const blocks: Block[] = [];
+    let currentText = '';
+    let currentImages: Array<{ url: string; orientation?: 'horizontal' | 'vertical' }> = [];
+    const pushBlock = () => {
+      const cleanText = currentText.trim();
+      const hasImages = currentImages.length > 0;
+      if (cleanText || hasImages) blocks.push({ type: cleanText ? 'text' : 'images', text: cleanText, images: currentImages });
+      currentText = '';
+      currentImages = [];
+    };
+    const isSpacerP = (el: HTMLElement) => el.tagName.toLowerCase() === 'p' && (el.innerHTML.trim() === '<br>' || el.innerHTML.trim() === '');
+    Array.from(container.childNodes).forEach((node) => {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const el = node as HTMLElement;
+        if (el.classList.contains('image-container')) {
+          const img = el.querySelector('img');
+          const url = img?.getAttribute('data-src-path') || normalizeSrc(img?.getAttribute('src') || '');
+          const orientation = (el.getAttribute('data-orientation') as 'horizontal' | 'vertical') || 'horizontal';
+          if (url) currentImages.push({ url, orientation });
+        } else if (!isSpacerP(el)) {
+          const plain = (el.textContent || '').trim();
+          if (plain) {
+            if (currentText || currentImages.length) pushBlock();
+            currentText += el.outerHTML;
           }
+        }
+      } else if (node.nodeType === Node.TEXT_NODE) {
+        const txt = (node.textContent || '').trim();
+        if (txt) {
+          if (currentText || currentImages.length) pushBlock();
+          currentText += txt;
         }
       }
     });
-    if (current.text || current.images.length) rows.push(current);
-    return rows;
+    pushBlock();
+    return blocks.filter(b => b.text.trim() || (b.images && b.images.length > 0));
   };
   const openModal = (product?: Product) => {
     if (product) {

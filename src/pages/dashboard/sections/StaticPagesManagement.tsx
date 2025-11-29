@@ -82,22 +82,17 @@ const StaticPagesManagement: React.FC = () => {
 const blocksToHtml = (value: any) => {
   if (Array.isArray(value)) {
     return value.map((b: any) => {
+      const text = String(b.text || '');
       const images = Array.isArray(b.images) ? b.images : [];
-      const text = b.text || '';
-      const orientationForGrid = images[0]?.orientation || 'horizontal';
-      const gridCols = orientationForGrid === 'vertical' ? 'repeat(auto-fit, minmax(150px, 200px))' : 'repeat(auto-fit, minmax(250px, 1fr))';
-      return `
-        <div class="row-item my-4 p-4 border-2 border-gray-200 rounded-lg bg-gray-50">
-          <div class="row-grid grid md:grid-cols-2 gap-4">
-            <div class="block-item text-block" contenteditable="true" data-type="text" style="min-height: 3rem; padding: 0.75rem; border: 2px dashed #e5e7eb; border-radius: 0.5rem;">${text}</div>
-            <div class="block-item image-block" contenteditable="false" data-type="images">
-              <div class="images-grid grid gap-2" data-orientation="${orientationForGrid}" style="grid-template-columns: ${gridCols};">
-                ${images.map((img: any) => `<img src="${buildImageUrl(img.url)}" alt="صورة" class="w-full h-auto rounded-lg shadow-md" />`).join('')}
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
+      const imagesHtml = images.map((img: any) => {
+        const ori = (img.orientation as 'horizontal' | 'vertical') || 'horizontal';
+        return `
+      <div class="image-container my-4" contenteditable="false" data-orientation="${ori}">
+        <img src="${buildImageUrl(img.url)}" alt="صورة" class="w-full max-w-lg h-auto rounded-lg shadow-md mx-auto">
+      </div>
+      <p><br></p>`;
+      }).join('');
+      return `${text}${imagesHtml}`;
     }).join('');
   }
   return String(value || '');
@@ -106,62 +101,47 @@ const blocksToHtml = (value: any) => {
 const htmlToBlocks = (html: string) => {
   const container = document.createElement('div');
   container.innerHTML = html || '';
+  container.querySelectorAll('.delete-img-btn, .delete-image-btn').forEach(el => el.remove());
+  const normalizeSrc = (src: string) => {
+    if (!src) return '';
+    if (src.startsWith('data:')) return '';
+    const m = src.match(/\/images\/(.+)$/);
+    return m ? `/images/${m[1]}` : src;
+  };
   const blocks: Array<{ text: string; images: Array<{ url: string; orientation?: 'horizontal' | 'vertical' }> }> = [];
-  
-  const rowItems = container.querySelectorAll('.row-item');
-  if (rowItems.length > 0) {
-    rowItems.forEach((row) => {
-      const textEl = row.querySelector('.text-block') as HTMLElement | null;
-      const text = textEl ? textEl.innerHTML.trim() : '';
-      const grid = row.querySelector('.images-grid') as HTMLElement | null;
-      const orientation = grid?.getAttribute('data-orientation') as 'horizontal' | 'vertical' || 'horizontal';
-      const imgs = Array.from(row.querySelectorAll('.images-grid img'))
-        .map((img) => ({ url: img.getAttribute('src') || '', orientation }))
-        .filter((i) => i.url);
-      blocks.push({ text, images: imgs });
-    });
-    return blocks.filter(b => b.text.trim() || (b.images && b.images.length > 0));
-  }
-
-  const blockItems = container.querySelectorAll('.block-item');
-  
-  if (blockItems.length > 0) {
-    blockItems.forEach((block) => {
-      const type = block.getAttribute('data-type');
-      
-      if (type === 'text') {
-        const text = (block as HTMLElement).innerText.trim();
-        if (text) {
-          blocks.push({ text, images: [] });
-        }
-      } else if (type === 'image' || type === 'images') {
-        const img = block.querySelector('img');
-        if (img) {
-          const url = img.getAttribute('src') || '';
-          if (url) {
-            const orientation = block.getAttribute('data-orientation') as 'horizontal' | 'vertical' || 'horizontal';
-            blocks.push({ text: '', images: [{ url, orientation }] });
-          }
+  let currentText = '';
+  let currentImages: Array<{ url: string; orientation?: 'horizontal' | 'vertical' }> = [];
+  const pushBlock = () => {
+    const cleanText = currentText.trim();
+    if (cleanText || currentImages.length > 0) blocks.push({ text: cleanText, images: currentImages });
+    currentText = '';
+    currentImages = [];
+  };
+  const isSpacerP = (el: HTMLElement) => el.tagName.toLowerCase() === 'p' && (el.innerHTML.trim() === '<br>' || el.innerHTML.trim() === '');
+  Array.from(container.childNodes).forEach((node) => {
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      const el = node as HTMLElement;
+      if (el.classList.contains('image-container')) {
+        const img = el.querySelector('img');
+        const url = img?.getAttribute('data-src-path') || normalizeSrc(img?.getAttribute('src') || '');
+        const orientation = (el.getAttribute('data-orientation') as 'horizontal' | 'vertical') || 'horizontal';
+        if (url) currentImages.push({ url, orientation });
+      } else if (!isSpacerP(el)) {
+        const plain = (el.textContent || '').trim();
+        if (plain) {
+          if (currentText || currentImages.length) pushBlock();
+          currentText += el.outerHTML;
         }
       }
-    });
-  } else {
-    const imgs: HTMLImageElement[] = Array.from(container.querySelectorAll('img'));
-    imgs.forEach(img => {
-      const url = img.getAttribute('src') || '';
-      if (url) {
-        const parent = img.closest('[data-orientation]');
-        const orientation = parent?.getAttribute('data-orientation') as 'horizontal' | 'vertical' || 'horizontal';
-        blocks.push({ text: '', images: [{ url, orientation }] });
-        img.parentElement?.remove();
+    } else if (node.nodeType === Node.TEXT_NODE) {
+      const txt = (node.textContent || '').trim();
+      if (txt) {
+        if (currentText || currentImages.length) pushBlock();
+        currentText += txt;
       }
-    });
-    const text = container.innerHTML.trim();
-    if (text) {
-      blocks.unshift({ text, images: [] });
     }
-  }
-  
+  });
+  pushBlock();
   return blocks.filter(b => b.text.trim() || (b.images && b.images.length > 0));
 };
 
