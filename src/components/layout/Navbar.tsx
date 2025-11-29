@@ -723,7 +723,7 @@ useEffect(() => {
   };
 
   const isVIP = user?.customerGroup === 'vip';
-  const storeName = (user && (user.storeName || user.name || user.firstName)) || (isRTL ? 'أفتر آدز' : 'AfterAds');
+  const storeName = (user && (user.storeName || user.name || user.firstName))  
 
   return (
     <>
@@ -1043,7 +1043,7 @@ useEffect(() => {
                 </div>
               )}
               <Link to="/" onClick={() => setIsMenuOpen(false)} className="transition-all duration-200">
-                {/* <span className="text-white font-bold text-sm">{storeName}</span> */}
+                <span className="text-white font-bold text-sm">{storeName}</span>
               </Link>
             </div>
             <button 

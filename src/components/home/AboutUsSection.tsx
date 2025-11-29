@@ -223,7 +223,7 @@ const AboutUsSection = () => {
       <style>{styles}</style>
       <div >
         {/* About Us Section */}
-        <section ref={aboutRef} className="py-16 md:py-24 bg-[#292929] relative overflow-hidden">
+        <section ref={aboutRef} className="py-16 md:py-24 bg-[#292929] relative">
           <motion.div
             variants={containerVariants}
             initial="hidden"
@@ -232,9 +232,9 @@ const AboutUsSection = () => {
           >
             {/* العنوان */}
             <motion.div variants={itemVariants} className="text-center mb-12 md:mb-16">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 md:mb-6 leading-tight">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 md:mb-6 leading-[1.15]">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-center lg:gap-4">
-                  <span className="gradient-text">
+                  <span className=" text-[#18b5d5] inline-block pb-[2px]">
                  {t('home.about.AfterAds')}
 
                   </span>
