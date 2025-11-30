@@ -337,7 +337,7 @@ const handleEditStaticPage = (page: StaticPage) => {
   }, [pagesLoading]);
 
   if (isStaticPagesLoading) {
-    return <div className="p-6">جاري التحميل...</div>;
+    return <Spinner overlay />;
   }
 
  return (
