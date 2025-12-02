@@ -7,7 +7,7 @@ const WhatsAppButton: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
    const location = useLocation();
   const phoneNumber = '+201069006131';
-  const message = t('whatsapp_button.message');
+  const message = t('contact.whatsapp_button.message');
 
 useEffect(() => {
   // إخفاء الزر في صفحات الإدارة والتسجيل فقط
@@ -46,7 +46,7 @@ useEffect(() => {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-6 right-4 sm:bottom-8 sm:right-6 z-50 mobile-safe-bottom">
+    <div className="fixed bottom-6 left-4 sm:bottom-8 sm:left-6 z-50 mobile-safe-bottom">
      
       <button
         onClick={handleWhatsAppClick}
@@ -58,7 +58,7 @@ useEffect(() => {
         borderRadius: '50%',
       }}
 
-        aria-label={t('whatsapp_button.contact_us')}
+        aria-label={t('contact.whatsapp_button.contact_us')}
       >
         <div 
           className="absolute inset-0 flex items-center justify-center"
@@ -80,7 +80,7 @@ useEffect(() => {
         
         {/* رسالة التحفيز المحسنة */}
         <div className="hidden sm:block absolute left-full ml-4 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-white to-green-50 text-gray-800 px-4 py-2 rounded-xl shadow-xl border border-green-100 opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none text-sm font-semibold z-20">
-          💬 {t('whatsapp_button.contact_now')}
+          💬 {t('contact.whatsapp_button.contact_now')}
         </div>
       </button>
     </div>

@@ -87,17 +87,11 @@ const Contact: React.FC = () => {
       </div>
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 mt-[70px]">
-        {/* Compact Header */}
-        <div className="text-center mb-8 animate-fadeInUp">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-[#7a7a7a] to-[#4a4a4a] rounded-xl flex items-center justify-center">
-              <Phone className="w-6 h-6 text-white" />
-            </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-white">
-              {t('contact.title')}
-            </h1>
-          </div>
-          <p className="text-gray-300 text-sm max-w-md mx-auto">
+        <div className="text-center mb-10 animate-fadeInUp">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-[#18b5d5] via-[#18b5d5] to-[#18b5d5] bg-clip-text text-[#18b5d5]">
+            {t('contact.title')}
+          </h1>
+          <p className="text-lg sm:text-xl text-white max-w-2xl mx-auto">
             {t('contact.description')}
           </p>
         </div>

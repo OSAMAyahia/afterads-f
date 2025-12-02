@@ -828,14 +828,14 @@ useEffect(() => {
               <div className="flex items-center">
                 {isMobile ? (
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full overflow-hidden border border-white/20">
+                    <Link to="/profile" aria-label={t('nav.profile')} className="w-7 h-7 rounded-full overflow-hidden border border-white/20">
                       <img
                         src={(user?.avatar || user?.storeLogo || user?.storeImage) ? buildImageUrl(user?.avatar || user?.storeLogo || user?.storeImage || '') : notfoundImg}
                         alt={storeName}
                         className="w-full h-full object-cover"
                         onError={(e) => { e.currentTarget.src = notfoundImg; }}
                       />
-                    </div>
+                    </Link>
                   </div>
                 ) : (
                   <Link to="/" onClick={() => setIsMenuOpen(false)} className="cursor-pointer">

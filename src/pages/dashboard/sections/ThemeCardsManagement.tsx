@@ -38,6 +38,7 @@ import {
   BsFillLightningFill, BsFillRocketFill, BsFillStarFill,
   BsFillHeartFill, BsFillTrophyFill, BsFillGiftFill
 } from 'react-icons/bs';
+import ImageUploader from '../components/layout/ImageUploaderProps';
 
 const availableIcons = [
   // أيقونات عامة
@@ -144,6 +145,7 @@ interface ThemeCard {
   displayOrder: number;
   backgroundImage?: string;
   icon?: string;  
+  galleryImages?: string[];
 
 }
 
@@ -159,6 +161,7 @@ interface FormData {
   displayOrder: number;
   backgroundImage: File | null;
   icon: string;
+  galleryImages: string[];
 }
 
 // نوع حالة المودال لحذف الكارد
@@ -192,7 +195,8 @@ const ThemeCardsManagement: React.FC = () => {
     isActive: true,
     displayOrder: 0,
     backgroundImage: null,
-    icon: 'User'
+    icon: 'User',
+    galleryImages: []
   });
 
   const [deleteModal, setDeleteModal] = useState<DeleteModal>({
@@ -292,6 +296,7 @@ const ThemeCardsManagement: React.FC = () => {
     submitData.append('isActive', String(formData.isActive));
     submitData.append('displayOrder', String(formData.displayOrder));
         submitData.append('icon', formData.icon); 
+    submitData.append('galleryImages', JSON.stringify(formData.galleryImages || []));
 
     
     if (formData.backgroundImage && formData.backgroundImage instanceof File) {
@@ -329,7 +334,8 @@ const ThemeCardsManagement: React.FC = () => {
       isActive: card.isActive,
       displayOrder: card.displayOrder || 0,
       backgroundImage: null,
-       icon: card.icon || 'User'
+       icon: card.icon || 'User',
+       galleryImages: card.galleryImages || []
     });
     if (card.backgroundImage) {
       setImagePreview(buildImageUrl(card.backgroundImage));
@@ -374,7 +380,8 @@ const closeModal = () => {
     isActive: true,
     displayOrder: 0,
     backgroundImage: null,
-    icon: 'FaUser'
+    icon: 'FaUser',
+    galleryImages: []
   });
 };
 
@@ -773,6 +780,18 @@ const closeModal = () => {
                     )}
                   </label>
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">صور إضافية</label>
+                <ImageUploader
+                  value={formData.galleryImages}
+                  onChange={(val) => setFormData(prev => ({ ...prev, galleryImages: Array.isArray(val) ? val : [val] }))}
+                  multiple
+                  maxImages={12}
+                  accept="image/*"
+                  label="المعرض"
+                />
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">

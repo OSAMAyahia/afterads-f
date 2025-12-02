@@ -313,41 +313,12 @@ const AllCategories: React.FC = () => {
         `}
       </style>
 
-<div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 mt-[80px]">        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-3 mb-6">
-            <div className="relative w-12 h-12">
-              <div className="absolute -inset-2 bg-gradient-to-br from-[#7a7a7a]/30 to-[#292929]/30 blur-sm transform rotate-0 transition-all duration-500"
-                   style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-br from-[#7a7a7a]/20 to-[#292929]/10 backdrop-blur-md border border-[#7a7a7a]/30 transform rotate-0 transition-all duration-500"
-                   style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
-              </div>
-              <div className="absolute inset-2 bg-gradient-to-br from-[#7a7a7a]/15 to-transparent transform rotate-0 transition-all duration-700"
-                   style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center transform transition-transform duration-500">
-                <FolderOpen className="w-6 h-6 text-[#18b5d8] filter drop-shadow-[0_0_10px_rgba(76,255,238,0.8)]" />
-              </div>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-white">
-              {t('categories.all_categories')} <span className="text-[#7a7a7a]">{t('categories.available')}</span>
-            </h1>
-            <div className="relative w-12 h-12">
-              <div className="absolute -inset-2 bg-gradient-to-br from-[#7a7a7a]/30 to-[#292929]/30 blur-sm transform rotate-0 transition-all duration-500"
-                   style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-br from-[#7a7a7a]/20 to-[#292929]/10 backdrop-blur-md border border-[#7a7a7a]/30 transform rotate-0 transition-all duration-500"
-                   style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
-              </div>
-              <div className="absolute inset-2 bg-gradient-to-br from-[#7a7a7a]/15 to-transparent transform rotate-0 transition-all duration-700"
-                   style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center transform transition-transform duration-500">
-                <FolderOpen className="w-6 h-6 text-[#18b5d8] filter drop-shadow-[0_0_10px_rgba(76,255,238,0.8)]" />
-              </div>
-            </div>
-          </div>
-          <p className="text-xl text-gray-100 max-w-3xl mx-auto px-4">
+<div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 mt-[80px]">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-[#18b5d5] via-[#18b5d5] to-[#18b5d5] bg-clip-text text-[#18b5d5]">
+            {t('categories.all_categories')} {t('categories.available')}
+          </h1>
+          <p className="text-lg sm:text-xl text-white max-w-3xl mx-auto px-4">
             {t('categories.subtitle')}
           </p>
         </div>

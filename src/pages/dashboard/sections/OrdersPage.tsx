@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   ShoppingCart, Search, Filter, 
   Eye, Edit, Trash2, Check, X,
-  TrendingUp, AlertTriangle, Package, Users, DollarSign
+  TrendingUp, AlertTriangle, Package, Users, DollarSign, Plus
 } from 'lucide-react';
 import { apiCall, API_ENDPOINTS } from '../../../config/api';
 import { useApiQuery } from '../../../hooks/useApiQuery';
@@ -10,6 +10,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import ConfirmationModal from '../../../components/modals/ConfirmationModal';
 import Spinner from '../../../components/ui/Spinner';
 import { smartToast } from '../../../utils/toastConfig';
+import ImageUploader from '../components/layout/ImageUploaderProps';
 
 // تعريف الأنواع (Types)
 interface OrderItem {
@@ -34,6 +35,9 @@ interface Order {
   customerEmail: string;
   address: string;
   city: string;
+  customerAddress?: string;
+  customerCity?: string;
+  customerInfo?: { address?: string; city?: string };
   items: OrderItem[];
   total: number;
   subtotal?: number;
@@ -60,6 +64,23 @@ interface OrderFilters {
   status: string;
     hasLoyalty?: boolean;  
 
+}
+
+interface NewOrderForm {
+  customerName: string;
+  customerPhone: string;
+  customerEmail: string;
+  address: string;
+  city: string;
+  serviceId?: number | string;
+  serviceName?: string;
+  price?: number;
+  quantity: number;
+  attachmentsImages: string[];
+  notes?: string;
+  status: Order['status'];
+  paymentMethod?: string;
+  paymentStatus?: string;
 }
 
 // مكون بطاقة الإحصائية
@@ -116,6 +137,25 @@ const OrdersPage: React.FC = () => {
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState<boolean>(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isAddOrderOpen, setIsAddOrderOpen] = useState<boolean>(false);
+  const [newOrder, setNewOrder] = useState<NewOrderForm>({
+    customerName: '',
+    customerPhone: '',
+    customerEmail: '',
+    address: '',
+    city: '',
+    quantity: 1,
+    attachmentsImages: [],
+    status: 'pending'
+  });
+  const [orderItems, setOrderItems] = useState<Array<{ productId: any; price?: number; quantity: number }>>([
+    { productId: '', price: undefined, quantity: 1 }
+  ]);
+  const [applyLoyaltyAdmin, setApplyLoyaltyAdmin] = useState<boolean>(false);
+  const [loyaltyToRedeem, setLoyaltyToRedeem] = useState<number>(0);
+  const { data: usersResp } = useApiQuery<any>({ endpoint: API_ENDPOINTS.USERS, queryKey: ['users'] });
+  const { data: customersResp } = useApiQuery<any>({ endpoint: API_ENDPOINTS.CUSTOMERS, queryKey: ['customers'] });
+  const { data: productsResp } = useApiQuery<any>({ endpoint: API_ENDPOINTS.PRODUCTS, queryKey: ['products'] });
 
   const queryClient = useQueryClient();
   const { data: ordersResp, isLoading: ordersLoading } = useApiQuery<any>({ endpoint: API_ENDPOINTS.ORDERS, queryKey: ['orders'] });
@@ -126,6 +166,198 @@ const OrdersPage: React.FC = () => {
     setFilteredOrders(ordersData);
     setLoading(false);
   }, [ordersResp]);
+
+  const customersList = Array.isArray(customersResp) ? customersResp : customersResp?.customers || customersResp?.data || [];
+  const productsList = Array.isArray(productsResp) ? productsResp : productsResp?.products || productsResp?.data || [];
+  const [userSearchTerm, setUserSearchTerm] = useState<string>('');
+  const [usersList, setUsersList] = useState<any[]>([]);
+  const [filteredUsersList, setFilteredUsersList] = useState<any[]>([]);
+  const [selectedUser, setSelectedUser] = useState<any | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<any | null>(null);
+
+  useEffect(() => {
+    if (!usersResp) return;
+    const response: any = usersResp;
+    let usersArray: any[];
+    if (response.success && Array.isArray(response.data)) {
+      usersArray = response.data;
+    } else if (response.success && response.data && Array.isArray(response.data.users)) {
+      usersArray = response.data.users;
+    } else if (Array.isArray(response)) {
+      usersArray = response;
+    } else {
+      usersArray = response?.users || response?.data || [];
+    }
+    const normalized = (usersArray || []).map((user: any) => ({
+      id: user._id || user.id || '',
+      name: user.name || user.fullName || user.firstName || 'غير معروف',
+      email: user.email || '',
+      phone: user.phone || '',
+      username: user.username || user.email || ''
+    }));
+    setUsersList(normalized);
+    setFilteredUsersList(normalized);
+  }, [usersResp]);
+
+  const handleUserSearchChange = (term: string) => {
+    setUserSearchTerm(term);
+    const t = term.toLowerCase();
+    const filtered = usersList.filter(u =>
+      (u.name || '').toLowerCase().includes(t) ||
+      (u.email || '').toLowerCase().includes(t) ||
+      (u.phone || '').toLowerCase().includes(t) ||
+      (u.username || '').toLowerCase().includes(t)
+    );
+    setFilteredUsersList(filtered);
+  };
+
+  const applySelectedUser = (u: any) => {
+    setSelectedUser(u);
+    setUserSearchTerm(u.name || u.email || u.username || '');
+    setNewOrder(prev => ({
+      ...prev,
+      customerName: u.name || prev.customerName,
+      customerEmail: u.email || prev.customerEmail,
+      customerPhone: u.phone || prev.customerPhone,
+    }));
+  };
+
+  const normalizedCustomers = (customersList || []).map((c: any) => ({
+    id: c?._id || c?.id || '',
+    name: c?.name || 'غير معروف',
+    email: c?.email || '',
+    phone: c?.phone || '',
+    loyaltyPoints: typeof c?.loyaltyPoints === 'number' ? c.loyaltyPoints : 0
+  }));
+
+  const applySelectedCustomer = (id: string) => {
+    const c = normalizedCustomers.find((x: any) => String(x.id) === String(id));
+    if (!c) {
+      setSelectedCustomer(null);
+      return;
+    }
+    setSelectedCustomer(c);
+    setNewOrder(prev => ({
+      ...prev,
+      customerName: c.name || prev.customerName,
+      customerEmail: c.email || prev.customerEmail,
+      customerPhone: c.phone || prev.customerPhone,
+    }));
+  };
+
+  const subtotal = orderItems.reduce((sum, it) => {
+    const prod = productsList.find((p: any) => String(p.id || p._id) === String(it.productId));
+    const price = typeof it.price === 'number' ? it.price : (prod?.price ?? 0);
+    const qty = typeof it.quantity === 'number' ? it.quantity : 0;
+    return sum + (price * qty);
+  }, 0);
+
+  useEffect(() => {
+    if (!applyLoyaltyAdmin || !selectedCustomer) {
+      setLoyaltyToRedeem(0);
+      return;
+    }
+    const available = Number(selectedCustomer?.loyaltyPoints ?? 0) || 0;
+    const maxRedeemable = Math.max(0, Math.min(available, subtotal));
+    setLoyaltyToRedeem(prev => {
+      const val = typeof prev === 'number' ? prev : 0;
+      if (val === 0 && maxRedeemable > 0) return maxRedeemable;
+      if (val > maxRedeemable) return maxRedeemable;
+      return val;
+    });
+  }, [applyLoyaltyAdmin, selectedCustomer, subtotal]);
+
+  const openAddOrder = () => setIsAddOrderOpen(true);
+  const closeAddOrder = () => {
+    setIsAddOrderOpen(false);
+    setNewOrder({
+      customerName: '',
+      customerPhone: '',
+      customerEmail: '',
+      address: '',
+      city: '',
+      quantity: 1,
+      attachmentsImages: [],
+      status: 'pending'
+    });
+  };
+
+  const handleCreateOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const itemsToSend: OrderItem[] = (() => {
+        const valid = orderItems.filter(x => x.productId);
+        if (valid.length === 0) {
+          smartToast.dashboard.error('اختر منتجاً واحداً على الأقل');
+          return [];
+        }
+        return valid.map(it => {
+          const prod = productsList.find((p: any) => String(p.id || p._id) === String(it.productId));
+          const p = typeof it.price === 'number' ? it.price : (prod?.price ?? 0);
+          const q = typeof it.quantity === 'number' ? it.quantity : 0;
+          return {
+            productId: prod?.id ?? prod?._id ?? it.productId ?? 0,
+            productName: prod?.name ?? 'منتج',
+            price: p,
+            quantity: q,
+            totalPrice: p * q,
+            attachments: { images: [] }
+          };
+        });
+      })();
+
+      if (itemsToSend.length === 0) {
+        return;
+      }
+
+      const calculatedSubtotal = itemsToSend.reduce((sum, it) => sum + (it.totalPrice || 0), 0);
+      const loyaltyDiscount = applyLoyaltyAdmin ? (Number(loyaltyToRedeem) || 0) : 0;
+      const finalTotal = Math.max(0, calculatedSubtotal - loyaltyDiscount);
+
+      const orderPayload = {
+        items: itemsToSend.map(it => ({
+          productId: it.productId,
+          productName: it.productName,
+          price: it.price,
+          quantity: it.quantity,
+          totalPrice: it.totalPrice,
+          attachments: it.attachments || {},
+          addOns: [],
+          applyLoyalty: applyLoyaltyAdmin,
+          loyaltyPointsToRedeem: applyLoyaltyAdmin ? loyaltyToRedeem : 0,
+          basePrice: it.price,
+          addOnsPrice: 0,
+          productType: ''
+        })),
+        customerInfo: {
+          name: newOrder.customerName,
+          email: newOrder.customerEmail,
+          phone: newOrder.customerPhone,
+          notes: newOrder.notes || '',
+          address: newOrder.address
+        },
+        paymentMethod: newOrder.paymentMethod || 'cod',
+        total: finalTotal,
+        subtotal: calculatedSubtotal,
+        couponDiscount: 0,
+        loyaltyDiscount,
+        loyaltyAvailable: Number(selectedCustomer?.loyaltyPoints || 0),
+        appliedCoupon: null,
+        userId: selectedUser?.id || null,
+        isGuestOrder: !selectedUser?.id,
+        paymentStatus: newOrder.paymentStatus || 'pending'
+      };
+
+      const resp = await apiCall(API_ENDPOINTS.CHECKOUT, { method: 'POST', body: JSON.stringify(orderPayload) });
+      if (resp && (resp.orderId || resp.success !== false)) {
+        smartToast.dashboard.success('تم إنشاء الطلب بنجاح');
+        queryClient.invalidateQueries({ queryKey: ['orders'] });
+        closeAddOrder();
+      }
+    } catch (err) {
+      smartToast.dashboard.error('فشل إنشاء الطلب');
+    }
+  };
 
   // دالة حساب الإحصائيات
   const calculateOrderStats = (): OrderStats => {
@@ -459,6 +691,15 @@ const handleDeleteOrder = async (orderId: number) => {
             <option value="cancelled">ملغي</option>
           </select>
 
+          <button
+            onClick={openAddOrder}
+            className="px-4 py-3 bg-gradient-to-r from-[#203f61] to-[#2a537e] text-white rounded-lg hover:shadow-lg transition-all text-sm flex items-center gap-2"
+            aria-label="إضافة طلب جديد"
+          >
+            <Plus className="w-4 h-4" />
+            إضافة طلب جديد
+          </button>
+
           <div className="bg-gradient-to-r from-[#203f61] to-[#2a537e] rounded-lg p-4 text-white">
             <div className="flex items-center justify-between">
               <div>
@@ -731,6 +972,121 @@ const handleDeleteOrder = async (orderId: number) => {
 
       )}
 
+      {isAddOrderOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 bg-gradient-to-r from-[#203f61] to-[#2a537e] text-white p-6 rounded-t-2xl flex items-center justify-between">
+              <h3 className="text-xl font-bold">إضافة طلب جديد</h3>
+              <button onClick={closeAddOrder} className="p-2 rounded-lg hover:bg-white/20">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <form onSubmit={handleCreateOrder} className="p-6 space-y-4">
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700">اختيار العميل</label>
+                <select
+                  value={selectedCustomer?.id || ''}
+                  onChange={(e) => applySelectedCustomer(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61] bg-white"
+                >
+                  <option value="">اختر العميل</option>
+                  {normalizedCustomers.map((c) => (
+                    <option key={c.id} value={c.id}>{c.name} {c.email ? `- ${c.email}` : c.phone ? `- ${c.phone}` : ''}</option>
+                  ))}
+                </select>
+                {selectedCustomer && (
+                  <div className="text-xs text-gray-600">العميل المحدد: {selectedCustomer.name} ({selectedCustomer.email || selectedCustomer.phone})</div>
+                )}
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="text" placeholder="اسم العميل" value={newOrder.customerName} onChange={(e) => setNewOrder(prev => ({ ...prev, customerName: e.target.value }))} className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61]" />
+                <input type="text" placeholder="رقم الهاتف" value={newOrder.customerPhone} onChange={(e) => setNewOrder(prev => ({ ...prev, customerPhone: e.target.value }))} className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61]" />
+                <input type="email" placeholder="البريد الإلكتروني" value={newOrder.customerEmail} onChange={(e) => setNewOrder(prev => ({ ...prev, customerEmail: e.target.value }))} className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61]" />
+                <input type="text" placeholder="المدينة" value={newOrder.city} onChange={(e) => setNewOrder(prev => ({ ...prev, city: e.target.value }))} className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61]" />
+                <input type="text" placeholder="العنوان" value={newOrder.address} onChange={(e) => setNewOrder(prev => ({ ...prev, address: e.target.value }))} className="md:col-span-2 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61]" />
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-gray-700">عناصر الطلب</span>
+                  <button type="button" onClick={() => setOrderItems(prev => ([...prev, { productId: '', price: undefined, quantity: 1 }]))} className="px-3 py-2 bg-gradient-to-r from-[#203f61] to-[#2a537e] text-white rounded-lg text-sm">
+                    <Plus className="w-4 h-4 inline" /> إضافة منتج
+                  </button>
+                </div>
+                {orderItems.map((it, idx) => (
+                  <div key={idx} className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <select value={String(it.productId || '')} onChange={(e) => setOrderItems(prev => prev.map((x, i) => i === idx ? { ...x, productId: e.target.value } : x))} className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61] bg-white">
+                      <option value="">اختر المنتج</option>
+                      {productsList.map((p: any) => (
+                        <option key={p.id || p._id} value={p.id || p._id}>{p.name}</option>
+                      ))}
+                    </select>
+                    <input type="number" placeholder="السعر" value={typeof it.price === 'number' ? it.price : ''} onChange={(e) => setOrderItems(prev => prev.map((x, i) => i === idx ? { ...x, price: Number(e.target.value) } : x))} className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61]" />
+                    <input type="number" placeholder="الكمية" value={it.quantity} min={1} onChange={(e) => setOrderItems(prev => prev.map((x, i) => i === idx ? { ...x, quantity: Number(e.target.value) } : x))} className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61]" />
+                    <button type="button" onClick={() => setOrderItems(prev => prev.filter((_, i) => i !== idx))} className="px-4 py-3 bg-red-50 text-red-600 rounded-lg border border-red-200">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <span className="text-gray-600 text-sm block mb-1">المجموع الفرعي</span>
+                    <div className="font-bold text-lg text-[#203f61]">{subtotal.toFixed(2)} ر.س</div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                      <input type="checkbox" checked={applyLoyaltyAdmin} onChange={(e) => setApplyLoyaltyAdmin(e.target.checked)} />
+                      استخدام نقاط الولاء
+                    </label>
+                    {applyLoyaltyAdmin && (
+                      <div className="mt-2">
+                        <div className="text-xs text-gray-600">المتاح: {Number(selectedCustomer?.loyaltyPoints || 0)} نقطة</div>
+                        <input type="number" min={0} max={Math.max(0, Math.min(Number(selectedCustomer?.loyaltyPoints || 0), subtotal))} value={loyaltyToRedeem} onChange={(e) => setLoyaltyToRedeem(Number(e.target.value || 0))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61] text-sm" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <span className="text-gray-600 text-sm block mb-1">الإجمالي</span>
+                    <div className="font-bold text-lg text-[#203f61]">{Math.max(0, subtotal - (applyLoyaltyAdmin ? (Number(loyaltyToRedeem) || 0) : 0)).toFixed(2)} ر.س</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <ImageUploader value={newOrder.attachmentsImages} onChange={(val) => setNewOrder(prev => ({ ...prev, attachmentsImages: Array.isArray(val) ? val : [val] }))} multiple maxImages={10} label="صور مرفقة" />
+              </div>
+
+              <textarea placeholder="ملاحظات" value={newOrder.notes || ''} onChange={(e) => setNewOrder(prev => ({ ...prev, notes: e.target.value }))} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61]" rows={3} />
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <select value={newOrder.status} onChange={(e) => setNewOrder(prev => ({ ...prev, status: e.target.value as Order['status'] }))} className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61] bg-white">
+                  <option value="pending">قيد المراجعة</option>
+                  <option value="confirmed">مؤكد</option>
+                  <option value="preparing">قيد التحضير</option>
+                  <option value="delivered">تم التسليم</option>
+                  <option value="cancelled">ملغي</option>
+                </select>
+                <select value={newOrder.paymentMethod || 'cod'} onChange={(e) => setNewOrder(prev => ({ ...prev, paymentMethod: e.target.value }))} className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61] bg-white">
+                  <option value="cod">الدفع عند الاستلام</option>
+                  <option value="card">بطاقة بنكية</option>
+                  <option value="wallet">محفظة إلكترونية</option>
+                </select>
+                <select value={newOrder.paymentStatus || 'pending'} onChange={(e) => setNewOrder(prev => ({ ...prev, paymentStatus: e.target.value }))} className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61] bg-white">
+                  <option value="pending">معلق</option>
+                  <option value="paid">مدفوع</option>
+                  <option value="failed">فشل</option>
+                </select>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2">
+                <button type="button" onClick={closeAddOrder} className="px-6 py-3 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all font-medium">إلغاء</button>
+                <button type="submit" className="px-6 py-3 bg-gradient-to-r from-[#203f61] to-[#2a537e] text-white rounded-lg hover:shadow-lg transition-all font-medium">حفظ الطلب</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
   <ConfirmationModal
     isOpen={isConfirmOpen}
         title="تأكيد حذف الطلب"
@@ -764,8 +1120,8 @@ const handleDeleteOrder = async (orderId: number) => {
                   </div>
                   <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                     <p className="text_sm text-gray-600">العنوان</p>
-                    <p className="font-semibold text-gray-900">{selectedOrder.address}</p>
-                    <p className="text-sm text-gray-600">{selectedOrder.city}</p>
+                    <p className="font-semibold text-gray-900">{selectedOrder.customerAddress || selectedOrder.address || selectedOrder.customerInfo?.address || ''}</p>
+                    <p className="text-sm text-gray-600">{selectedOrder.customerCity || selectedOrder.city || selectedOrder.customerInfo?.city || ''}</p>
                     <p className="text-sm text-gray-600">التاريخ: {new Date(selectedOrder.createdAt).toLocaleString('ar-SA')}</p>
                   </div>
                 </div>

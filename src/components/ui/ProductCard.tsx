@@ -161,12 +161,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid', v
   if (variant === 'blog' && viewMode === 'list') {
     return (
       <div className="relative w-full mb-6">
-        <Link
-          to={`/product/${createProductSlug(product.id, getLocalizedContent('name'))}`}
-          className="block bg-[#333333]/60 backdrop-blur border border-[#444444] rounded-2xl overflow-hidden hover:border-[#18b5d5] transition-all duration-300 hover:shadow-2xl hover:shadow-[#18b5d5]/25 group"
-          onClick={handleProductClick}
-          aria-label={t('product:view_product_details', { name: getLocalizedContent('name') })}
-        >
+        <div className="bg-[#333333]/60 backdrop-blur border border-[#444444] rounded-2xl overflow-hidden">
+          <Link
+            to={`/product/${createProductSlug(product.id, getLocalizedContent('name'))}`}
+            className="block hover:border-[#18b5d5] transition-all duration-300 hover:shadow-2xl hover:shadow-[#18b5d5]/25 group"
+            onClick={handleProductClick}
+            aria-label={t('product:view_product_details', { name: getLocalizedContent('name') })}
+          >
           <div className="flex items-center p-6 gap-6">
             <div className="relative w-24 h-24 flex-shrink-0">
               <div className="relative w-full h-full rounded-xl overflow-hidden border border-[#444444] bg-[#3a3a3a]">
@@ -215,6 +216,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid', v
             </div>
           </div>
         </Link>
+        </div>
       </div>
     );
   }
@@ -259,43 +261,41 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid', v
               <p className="text-[#CCCCCC] text-sm leading-relaxed line-clamp-2">
                 {truncateDescription(getLocalizedContent('description'))}
               </p>
-              <div className="flex items-center justify-between text-xs text-[#BBBBBB] border-t border-[#444444] pt-3 mt-3">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-[#18b5d5]" />
-                  <PriceDisplay 
-                    price={product.price}
-                    originalPrice={product.originalPrice}
-                    size="md"
-                    variant="card"
-                    className="min-h-[28px]"
-                  />
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={toggleWishlist}
-                    className={`w-8 h-8 rounded-full border border-[#18b5d5]/40 flex items-center justify-center transition-all duration-200 ${
-                      isInWishlist ? 'text-red-500 bg-red-500/10' : 'text-white hover:bg-[#18b5d5]/10'
-                    }`}
-                    type="button"
-                    aria-label={isInWishlist ? t('product_card:remove_from_wishlist') : t('product_card:add_to_wishlist')}
-                  >
-                    <Heart className={`w-4 h-4 ${isInWishlist ? 'fill-red-500' : ''}`} />
-                  </button>
-                  {product.isAvailable && (
-                    <button
-                      onClick={addToCart}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#18b5d5]/40 text-white hover:bg-[#18b5d5]/20 transition-all"
-                    >
-                      <ShoppingCart className="w-4 h-4" />
-                      <span className="font-medium text-sm">{t('addToCart')}</span>
-                    </button>
-                  )}
-                </div>
+              <div className="flex items-center gap-2 text-xs text-[#BBBBBB] border-t border-[#444444] pt-3 mt-3">
+                <CheckCircle className="w-4 h-4 text-[#18b5d5]" />
+                <PriceDisplay 
+                  price={product.price}
+                  originalPrice={product.originalPrice}
+                  size="md"
+                  variant="card"
+                  className="min-h-[28px]"
+                />
               </div>
             </div>
           </div>
-        </Link>
-      </div>
+          </Link>
+          <div className="flex items-center justify-end gap-2 px-6 pb-6 pt-2">
+            <button
+              onClick={toggleWishlist}
+              className={`w-9 h-9 rounded-full border border-[#18b5d5]/40 flex items-center justify-center transition-all duration-200 ${
+                isInWishlist ? 'text-red-500 bg-red-500/10' : 'text-white hover:bg-[#18b5d5]/10'
+              }`}
+              type="button"
+              aria-label={isInWishlist ? t('product_card:remove_from_wishlist') : t('product_card:add_to_wishlist')}
+            >
+              <Heart className={`w-4 h-4 ${isInWishlist ? 'fill-red-500' : ''}`} />
+            </button>
+            {product.isAvailable && (
+              <button
+                onClick={addToCart}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-[#18b5d5]/40 text-white hover:bg-[#18b5d5]/20 transition-all"
+              >
+                <ShoppingCart className="w-4 h-4" />
+                <span className="font-medium text-sm">{t('addToCart')}</span>
+              </button>
+            )}
+          </div>
+        </div>
     );
   }
 
@@ -368,12 +368,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid', v
         </div>
       }
 
-      <Link
-        to={`/product/${createProductSlug(product.id, getLocalizedContent('name'))}`}
-        className="block bg-[#333333]/60 backdrop-blur border border-[#444444] rounded-2xl overflow-hidden hover:border-[#18b5d5] transition-all duration-300 hover:shadow-2xl hover:shadow-[#18b5d5]/25 h-full flex flex-col group"
-        onClick={handleProductClick}
-        aria-label={t('product:view_product_details', { name: getLocalizedContent('name') })}
-      >
+      <div className="bg-[#333333]/60 backdrop-blur border border-[#444444] rounded-2xl overflow-hidden">
+        <Link
+          to={`/product/${createProductSlug(product.id, getLocalizedContent('name'))}`}
+          className="block hover:border-[#18b5d5] transition-all duration-300 hover:shadow-2xl hover:shadow-[#18b5d5]/25"
+          onClick={handleProductClick}
+          aria-label={t('product:view_product_details', { name: getLocalizedContent('name') })}
+        >
         <div className="relative h-48 overflow-hidden bg-[#3a3a3a]">
           <img
             src={product.mainImage ? buildImageUrl(product.mainImage) : fallbackImg}
@@ -383,7 +384,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid', v
           />
         </div>
 
-        <div className="p-6 flex flex-col flex-grow">
+          <div className="p-6 flex flex-col">
           <div className="flex flex-wrap gap-2 mb-3">
             <span className="text-xs bg-[#18b5d5]/30 text-white px-3 py-1 rounded-full">
               {product.isAvailable ? t('available') : t('unavailable')}
@@ -398,40 +399,39 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid', v
             {truncateDescription(getLocalizedContent('description'))}
           </p>
 
-          <div className="flex items-center justify-between text-xs text-[#BBBBBB] border-t border-[#444444] pt-4 mt-auto">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-[#18b5d5]" />
-              <PriceDisplay 
-                price={product.price}
-                originalPrice={product.originalPrice}
-                size="md"
-                variant="card"
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={toggleWishlist}
-                className={`w-8 h-8 rounded-full border border-[#18b5d5]/40 flex items-center justify-center transition-all duration-200 ${
-                  isInWishlist ? 'text-red-500 bg-red-500/10' : 'text-white hover:bg-[#18b5d5]/10'
-                }`}
-                type="button"
-                aria-label={isInWishlist ? t('product_card:remove_from_wishlist') : t('product_card:add_to_wishlist')}
-              >
-                <Heart className={`w-4 h-4 ${isInWishlist ? 'fill-red-500' : ''}`} />
-              </button>
-              {product.isAvailable && (
-                <button
-                  onClick={addToCart}
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#18b5d5]/40 text-white hover:bg-[#18b5d5]/20 transition-all"
-                >
-                  <ShoppingCart className="w-4 h-4" />
-                  <span className="font-medium text-sm">{t('addToCart')}</span>
-                </button>
-              )}
-            </div>
+          <div className="flex items-center gap-2 text-xs text-[#BBBBBB] border-t border-[#444444] pt-4">
+            <CheckCircle className="w-4 h-4 text-[#18b5d5]" />
+            <PriceDisplay 
+              price={product.price}
+              originalPrice={product.originalPrice}
+              size="md"
+              variant="card"
+            />
           </div>
         </div>
-      </Link>
+        </Link>
+        <div className="flex items-center justify-end gap-2 px-6 pb-6 pt-2">
+          <button
+            onClick={toggleWishlist}
+            className={`w-9 h-9 rounded-full border border-[#18b5d5]/40 flex items-center justify-center transition-all duration-200 ${
+              isInWishlist ? 'text-red-500 bg-red-500/10' : 'text-white hover:bg-[#18b5d5]/10'
+            }`}
+            type="button"
+            aria-label={isInWishlist ? t('product_card:remove_from_wishlist') : t('product_card:add_to_wishlist')}
+          >
+            <Heart className={`w-4 h-4 ${isInWishlist ? 'fill-red-500' : ''}`} />
+          </button>
+          {product.isAvailable && (
+            <button
+              onClick={addToCart}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-[#18b5d5]/40 text-white hover:bg-[#18b5d5]/20 transition-all"
+            >
+              <ShoppingCart className="w-4 h-4" />
+              <span className="font-medium text-sm">{t('addToCart')}</span>
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

@@ -20,6 +20,7 @@ interface Product {
   mainImage: string;
   detailedImages?: string[];
   createdAt?: string;
+  productType?: string;
 }
 
 interface Category {
@@ -105,7 +106,17 @@ const CategoryPage: React.FC = () => {
   useEffect(() => {
     if (!productsResp) return;
     const arr = productsResp?.products || productsResp || [];
-    setProducts(arr);
+    const filtered = Array.isArray(arr)
+      ? arr.filter((p: any) => {
+          const type = (p.productType || '').toLowerCase();
+          const name = (p.name || '').toLowerCase();
+          const nameAr = (p.name_ar || '').toLowerCase();
+          const nameEn = (p.name_en || '').toLowerCase();
+          const isTheme = type === 'theme' || name.includes('ثيم') || nameAr.includes('ثيم') || nameEn.includes('theme');
+          return !isTheme; // عرض المنتجات من نوع product فقط
+        })
+      : arr;
+    setProducts(filtered);
   }, [productsResp]);
 
   const sortedProducts = useMemo(() => {
@@ -155,16 +166,10 @@ const CategoryPage: React.FC = () => {
 
         {/* Category Header */}
         <div className="text-center mb-12 sm:mb-16">
-          <div className="inline-flex items-center justify-center gap-4 mb-6">
-            <div className="w-16 h-[2px] bg-gradient-to-r from-transparent via-[#7a7a7a] to-[#7a7a7a]" />
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold">
-              <span className="bg-gradient-to-r from-white via-[#e0e0e0] to-white bg-clip-text text-transparent">
-                {getLocalizedContent(category, 'name')}
-              </span>
-            </h1>
-            <div className="w-16 h-[2px] bg-gradient-to-l from-transparent via-[#7a7a7a] to-[#7a7a7a]" />
-          </div>
-          <p className="text-base sm:text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-[#18b5d5] via-[#18b5d5] to-[#18b5d5] bg-clip-text text-[#18b5d5]">
+            {getLocalizedContent(category, 'name')}
+          </h1>
+          <p className="text-base sm:text-lg text-white max-w-2xl mx-auto leading-relaxed">
             {getLocalizedContent(category, 'description')}
           </p>
         </div>

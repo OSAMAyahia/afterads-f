@@ -8,6 +8,7 @@ import {
   RefreshCcw, Gift, Plus, Minus, ChevronDown, ChevronUp, FileText,
   Tablet,
   Monitor,
+  X,
 } from 'lucide-react';
 
 // ✅ أضف React Icons
@@ -147,6 +148,9 @@ const ThemeDetail: React.FC = () => {
   const [dynamicComponents, setDynamicComponents] = useState<any[]>([]);
 const [componentsLoading, setComponentsLoading] = useState(false)
 const [mainPreviewDevice, setMainPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
+  const [imagesModalOpen, setImagesModalOpen] = useState(false);
+  const [imagesModalList, setImagesModalList] = useState<string[]>([]);
+  const [imagesModalTitle, setImagesModalTitle] = useState('');
   // ---------- FAQ Card ----------
   const FAQCard: React.FC<{ faq: { question: string; answer: string }; index: number }> = ({ faq, index }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -186,7 +190,9 @@ const [mainPreviewDevice, setMainPreviewDevice] = useState<'desktop' | 'tablet' 
     );
   };
 
-const DynamicComponentCard: React.FC<{ component: any; index: number }> = ({ component, index }) => {
+// استبدل DynamicComponentCard بالكود التالي:
+
+const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImages: (comp: any) => void }> = ({ component, index, onShowImages }) => {
   const [currentDevice, setCurrentDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   
   const deviceStyles = {
@@ -199,49 +205,47 @@ const DynamicComponentCard: React.FC<{ component: any; index: number }> = ({ com
     <div className="space-y-4">
      
       {/* الكارت مع التصميم المتجاوب */}
-<div className={`transition-all duration-500 scale-90 sm:scale-95 ${deviceStyles[currentDevice]}`}>        <div className="group relative overflow-hidden">
+      <div className={`transition-all duration-500 scale-90 sm:scale-95 ${deviceStyles[currentDevice]}`}>
+        <div className="group relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-[#18b5d5]/5 via-transparent to-[#18b5d5]/5 rounded-xl sm:rounded-3xl opacity-0 group-hover:opacity-100 transition-all duration-700 blur-xl"></div>
           
           <div className="relative bg-gradient-to-br from-[#292929]/60 via-[#1a1a1a]/80 to-[#292929]/60 rounded-xl sm:rounded-3xl border border-[#18b5d5]/20 group-hover:border-[#18b5d5]/40 transition-all duration-500 overflow-hidden group-hover:shadow-2xl group-hover:shadow-[#18b5d5]/10">
             
             <div className={`flex ${currentDevice === 'mobile' ? 'flex-col' : 'flex-col xl:flex-row'}`}>
-          <div className={`${currentDevice === 'mobile' ? 'w-full' : 'w-full xl:w-40'} flex-shrink-0 relative`}>
-  <div className="relative overflow-hidden rounded-t-xl sm:rounded-t-3xl xl:rounded-l-3xl xl:rounded-tr-none bg-white">
-    <div className="relative h-32 sm:h-40 lg:h-48">
+              <div className={`${currentDevice === 'mobile' ? 'w-full' : 'w-full xl:w-40'} flex-shrink-0 relative`}>
+                <div className="relative overflow-hidden rounded-t-xl sm:rounded-t-3xl xl:rounded-l-3xl xl:rounded-tr-none bg-white">
+                  <div className="relative h-32 sm:h-40 lg:h-48">
                     
                     {/* الشريط الأصفر مع النجمة */}
                     <div className="absolute top-0 left-0 w-16 h-16 bg-[#fec72d] transform -rotate-0 origin-top-left z-10">
                       <div className="absolute inset-0 flex items-center justify-center">
                         <Star className="w-6 h-6 text-gray-600" fill="currentColor" />
                       </div>
-                      {/* حدود الشريط */}
                       <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#d4a828]"></div>
                       <div className="absolute top-0 right-0 h-full w-0.5 bg-[#d4a828]"></div>
                     </div>
                     
-              {/* الصورة أو النص على الخلفية البيضاء */}
-{component.backgroundImage ? (
-  <img
-    src={`http://localhost:5000${component.backgroundImage}`}
-    alt={component.title}
-    className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-700"
-    onError={(e) => {
-      e.currentTarget.style.display = 'none';
-    }}
-  />
-) : (
-  <div className="absolute inset-0 flex flex-col items-center justify-center p-6 gap-4">
-    {/* ✅ الأيقونة */}
-{component.icon && (() => {
-  const IconComponent = getIconComponent(component.icon);
-  return <IconComponent className="w-10 h-10 sm:w-12 sm:h-12 text-gray-600" />;
-})()}
-
-<p className="text-gray-800 text-sm sm:text-base font-semibold text-center">
-      {component.overlayText || component.title}
-    </p>
-  </div>
-)}
+                    {/* الصورة أو النص على الخلفية البيضاء */}
+                    {component.backgroundImage ? (
+                      <img
+                        src={`http://localhost:5000${component.backgroundImage}`}
+                        alt={component.title}
+                        className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-700"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center p-6 gap-4">
+                        {component.icon && (() => {
+                          const IconComponent = getIconComponent(component.icon);
+                          return <IconComponent className="w-10 h-10 sm:w-12 sm:h-12 text-gray-600" />;
+                        })()}
+                        <p className="text-gray-800 text-sm sm:text-base font-semibold text-center">
+                          {component.overlayText || component.title}
+                        </p>
+                      </div>
+                    )}
                     
                     {/* Badge برقم الترتيب */}
                     <div className="absolute top-4 right-4 bg-gradient-to-r from-[#18b5d5]/90 to-[#18b5d5]/70 backdrop-blur-sm rounded-full px-3 py-1.5 border border-[#18b5d5]/30 z-20">
@@ -255,23 +259,26 @@ const DynamicComponentCard: React.FC<{ component: any; index: number }> = ({ com
               </div>
               
               {/* قسم المحتوى */}
-<div className={`flex-1 ${currentDevice === 'mobile' ? 'p-3' : 'p-3 sm:p-4 lg:p-6'} flex flex-col justify-center`}>                <div className="flex items-center gap-3 mb-4">
+              <div className={`flex-1 ${currentDevice === 'mobile' ? 'p-3' : 'p-3 sm:p-4 lg:p-6'} flex flex-col justify-center`}>
+                
+                {/* Badge "عنصر متقدم" */}
+                <div className="flex items-center gap-3 mb-4">
                   <div className="bg-gradient-to-r from-[#18b5d5]/20 to-[#18b5d5]/10 px-4 py-2 rounded-full border border-[#18b5d5]/30">
                     <span className="text-[#18b5d5] text-sm font-semibold">{component.category}</span>
                   </div>
                   <div className="h-px flex-1 bg-gradient-to-r from-[#18b5d5]/30 to-transparent"></div>
                 </div>
                 
-<h3 className={`${currentDevice === 'mobile' ? 'text-sm' : 'text-base sm:text-lg lg:text-xl'} font-black text-white mb-2 leading-tight group-hover:text-[#18b5d5] transition-colors duration-300`}>
+                <h3 className={`${currentDevice === 'mobile' ? 'text-sm' : 'text-base sm:text-lg lg:text-xl'} font-black text-white mb-2 leading-tight group-hover:text-[#18b5d5] transition-colors duration-300`}>
                   {component.title}
                 </h3>
                 
-<p className={`text-[#a1a1a1] ${currentDevice === 'mobile' ? 'text-xs' : 'text-xs sm:text-sm'} leading-relaxed mb-3`}>
+                <p className={`text-[#a1a1a1] ${currentDevice === 'mobile' ? 'text-xs' : 'text-xs sm:text-sm'} leading-relaxed mb-3`}>
                   {component.description}
                 </p>
                 
                 {/* الخصائص */}
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 mb-4">
                   {component.features && component.features.map((feature: string, idx: number) => (
                     <span 
                       key={idx}
@@ -281,6 +288,21 @@ const DynamicComponentCard: React.FC<{ component: any; index: number }> = ({ com
                     </span>
                   ))}
                 </div>
+
+                {/* زر عرض الصور - في الأسفل */}
+                {Array.isArray(component.galleryImages) && component.galleryImages.length > 0 && (
+                  <div className="mt-auto pt-4 border-t border-[#18b5d5]/10">
+                    <button
+                      onClick={() => onShowImages(component)}
+                      className="group/btn w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#18b5d5]/10 to-[#16a8cc]/10 border border-[#18b5d5]/40 text-white hover:from-[#18b5d5]/20 hover:to-[#16a8cc]/20 hover:border-[#18b5d5]/60 hover:shadow-lg hover:shadow-[#18b5d5]/20 transition-all duration-300 text-sm font-medium"
+                      type="button"
+                    >
+                      <FaImage className="w-4 h-4 text-[#18b5d5] group-hover/btn:scale-110 transition-transform" />
+                      <span>عرض الصور ({component.galleryImages.length})</span>
+                      <div className="w-2 h-2 bg-[#18b5d5] rounded-full animate-pulse"></div>
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
             
@@ -920,7 +942,16 @@ const DynamicComponentCard: React.FC<{ component: any; index: number }> = ({ com
                 </div>
               ) : dynamicComponents.length > 0 ? (
                 dynamicComponents.map((component, index) => (
-                  <DynamicComponentCard key={component._id || index} component={component} index={index} />
+                  <DynamicComponentCard
+                    key={component._id || index}
+                    component={component}
+                    index={index}
+                    onShowImages={(comp) => {
+                      setImagesModalTitle(comp.title || 'صور');
+                      setImagesModalList(comp.galleryImages || []);
+                      setImagesModalOpen(true);
+                    }}
+                  />
                 ))
               ) : (
                 <div className="text-center py-20">
@@ -939,6 +970,93 @@ const DynamicComponentCard: React.FC<{ component: any; index: number }> = ({ com
               </div>
             </div>
           </div>
+ 
+{imagesModalOpen && (
+  <div 
+    className="fixed inset-0 bg-black/90 backdrop-blur-md z-[9999] flex items-center justify-center p-2 sm:p-4"
+    onClick={() => setImagesModalOpen(false)}
+  >
+    <div 
+      className="relative w-full max-w-7xl max-h-[95vh] overflow-hidden"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-gradient-to-r from-[#1a1a1a]/95 to-[#292929]/95 backdrop-blur-xl border-b border-[#18b5d8]/30 px-4 sm:px-6 py-3 sm:py-4 rounded-t-2xl flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-r from-[#18b5d8] to-[#16a8cc] rounded-lg flex items-center justify-center">
+            <FaImage className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h3 className="text-lg sm:text-xl font-bold text-white">{imagesModalTitle}</h3>
+             
+          </div>
+        </div>
+        <button 
+          onClick={() => setImagesModalOpen(false)}
+          className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#18b5d8]/40 transition-all group"
+        >
+          <X className="w-5 h-5 text-white group-hover:text-[#18b5d8]" />
+        </button>
+      </div>
+
+      {/* Images Grid */}
+      <div className="bg-gradient-to-br from-[#1a1a1a]/98 to-[#292929]/98 backdrop-blur-xl rounded-b-2xl overflow-y-auto max-h-[calc(95vh-80px)] custom-scrollbar">
+        <div className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {imagesModalList.map((img, idx) => (
+            <div 
+              key={idx} 
+              className="group relative overflow-hidden rounded-xl bg-[#292929]/50 border border-[#18b5d8]/20 hover:border-[#18b5d8]/50 transition-all duration-300 hover:shadow-2xl hover:shadow-[#18b5d8]/20"
+            >
+              <div className="aspect-[4/3] relative overflow-hidden flex items-center justify-center bg-[#1a1a1a]">
+                <img 
+                  src={buildImageUrl(img)} 
+                  alt={`${imagesModalTitle} - ${idx + 1}`}
+                  className="max-w-full max-h-full w-auto h-auto object-contain group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.src = '/assets/placeholder-image.jpg';
+                  }}
+                />
+                
+              
+
+              
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Empty State */}
+        {imagesModalList.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-20 px-4">
+            <FaImage className="w-16 h-16 text-[#18b5d8]/30 mb-4" />
+            <p className="text-[#a1a1a1] text-lg text-center">
+              {t('home.themes.no_images') || 'لا توجد صور متاحة'}
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+)}
+
+{/* Custom Scrollbar Styles */}
+<style>{`
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(41, 41, 41, 0.5);
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #18b5d8, #16a8cc);
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #16a8cc, #18b5d8);
+  }
+`}</style>
         </div>
       </div>
 

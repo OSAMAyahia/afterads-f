@@ -159,44 +159,13 @@ const StaticPageView: React.FC = () => {
         {/* Header */}
         <div className="text-center mb-12 sm:mb-16 md:mb-20 animate-fadeInUp">
           <div className="inline-flex items-center gap-2 sm:gap-3 md:gap-4 mb-6 sm:mb-8 flex-wrap justify-center">
-            <div className="relative w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 group">
-              <div className="absolute -inset-1 sm:-inset-2 bg-gradient-to-br from-[#7a7a7a]/40 to-[#292929]/40 blur-sm transform rotate-0 transition-all duration-500 group-hover:scale-110"
-                   style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-br from-[#7a7a7a]/30 to-[#292929]/20 backdrop-blur-md border border-[#7a7a7a]/40 transform rotate-0 transition-all duration-500 group-hover:scale-110"
-                   style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <FileText className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-[#7a7a7a] filter drop-shadow-[0_0_12px_rgba(122,122,122,0.9)]" />
-              </div>
-            </div>
+          
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white text-center leading-tight">
               {page.title}
             </h1>
-            <div className="relative w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 group hidden sm:block">
-              <div className="absolute -inset-1 sm:-inset-2 bg-gradient-to-br from-[#7a7a7a]/40 to-[#292929]/40 blur-sm transform rotate-0 transition-all duration-500 group-hover:scale-110"
-                   style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-br from-[#7a7a7a]/30 to-[#292929]/20 backdrop-blur-md border border-[#7a7a7a]/40 transform rotate-0 transition-all duration-500 group-hover:scale-110"
-                   style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <FileText className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-[#7a7a7a] filter drop-shadow-[0_0_12px_rgba(122,122,122,0.9)]" />
-              </div>
-            </div>
+       
           </div>
-          <div className="bg-gradient-to-br from-[#292929]/95 via-[#7a7a7a]/30 to-[#292929]/90 rounded-xl sm:rounded-2xl backdrop-blur-xl border border-white/15 p-3 sm:p-4 max-w-xs sm:max-w-sm md:max-w-2xl mx-auto animate-fadeInUp">
-            <div className="flex items-center gap-2 justify-center flex-wrap">
-              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-[#7a7a7a]" />
-              <span className="text-sm sm:text-base text-white font-bold">{t('static_page.last_update')}: {formatDate(page.updatedAt)}</span>
-            </div>
-            {page.updatedAt !== page.createdAt && (
-              <div className="flex items-center gap-2 justify-center mt-2 flex-wrap">
-                <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-[#7a7a7a]" />
-                <span className="text-sm sm:text-base text-white font-bold">{t('static_page.created_on')}: {formatDate(page.createdAt)}</span>
-              </div>
-            )}
-          </div>
+       
         </div>
 
         {/* Content */}
@@ -219,49 +188,75 @@ const StaticPageView: React.FC = () => {
               </div>
             )}
 
-            {/* Page Content */}
-            <div className="mb-8 sm:mb-10 md:mb-12 animate-fadeInUp">
-              {page.metaDescription && (
-                <div className="bg-[#7a7a7a]/15 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 mb-6 sm:mb-7 md:mb-8 border border-white/10">
-                  <p className="text-base sm:text-lg leading-relaxed text-[#18b5d5]">{page.metaDescription}</p>
-                </div>
-              )}
-              {Array.isArray(page.content) ? (
-                <div className="space-y-8">
-                  {(page.content as any[]).map((block: any, idx: number) => {
-                    const hasImages = Array.isArray(block.images) && block.images.length > 0;
-                    const isHorizontal = hasImages && block.images.every((img: any) => img.orientation === 'horizontal');
-                    return (
-                      <div key={idx} className="space-y-4">
-                        {block.text && <div className='text-white' dangerouslySetInnerHTML={{ __html: block.text }} />}
-                        {hasImages && (
-                          isHorizontal ? (
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-                              {block.images.map((img: any, i: number) => (
-                                <div key={i} className="rounded-lg overflow-hidden border border-white/10 bg-white/5 h-32 sm:h-40 lg:h-48">
-                                  <img src={buildImageUrl(img.url)} alt="" className="w-full h-full object-cover" loading="lazy" />
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="flex flex-col items-center gap-1 sm:gap-2">
-                              {block.images.map((img: any, i: number) => (
-                                <img key={i} src={buildImageUrl(img.url)} alt="" className="rounded-lg w-full sm:w-2/3 lg:w-1/2 max-h-[550px] object-contain" loading="lazy" style={{ margin: 0 }} />
-                              ))}
-                            </div>
-                          )
-                        )}
-                      </div>
-                    );
-                  })}
+           {/* Page Content */}
+{/* Page Content */}
+<div className="mb-8 sm:mb-10 md:mb-12 animate-fadeInUp">
+  {page.metaDescription && (
+    <div className="bg-[#7a7a7a]/15 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 mb-6 sm:mb-7 md:mb-8 border border-white/10">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        {/* Meta Description */}
+        <p className="text-base sm:text-lg leading-relaxed text-[#18b5d5] flex-1">{page.metaDescription}</p>
+        
+        {/* Date Info - على نفس السطر */}
+        <div className="flex items-center gap-4 sm:gap-6 flex-wrap">
+          {/* Last Update */}
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-[#7a7a7a]" />
+            <span className="text-sm sm:text-base text-white font-bold whitespace-nowrap">
+              {t('static_page.last_update')}: {formatDate(page.updatedAt)}
+            </span>
+          </div>
+          
+          {/* Created On */}
+          {page.updatedAt !== page.createdAt && (
+            <div className="flex items-center gap-2">
+              <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-[#7a7a7a]" />
+              <span className="text-sm sm:text-base text-white font-bold whitespace-nowrap">
+                {t('static_page.created_on')}: {formatDate(page.createdAt)}
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )}
+  
+  {Array.isArray(page.content) ? (
+    <div className="space-y-8">
+      {(page.content as any[]).map((block: any, idx: number) => {
+        const hasImages = Array.isArray(block.images) && block.images.length > 0;
+        const isHorizontal = hasImages && block.images.every((img: any) => img.orientation === 'horizontal');
+        return (
+          <div key={idx} className="space-y-4">
+            {block.text && <div className='text-white' dangerouslySetInnerHTML={{ __html: block.text }} />}
+            {hasImages && (
+              isHorizontal ? (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+                  {block.images.map((img: any, i: number) => (
+                    <div key={i} className="rounded-lg overflow-hidden border border-white/10 bg-white/5 h-32 sm:h-40 lg:h-48">
+                      <img src={buildImageUrl(img.url)} alt="" className="w-full h-full object-cover" loading="lazy" />
+                    </div>
+                  ))}
                 </div>
               ) : (
-                <RichTextDisplay
-                  content={page.content}
-                  className="prose prose-sm sm:prose-base md:prose-lg max-w-none prose-content prose-headings:text-white prose-p:text-white prose-li:text-white prose-strong:text-white prose-a:text-[#7a7a7a] prose-blockquote:text-white prose-code:text-white prose-pre:text-white"
-                />
-              )}
-            </div>
+                <div className="flex flex-col items-center gap-1 sm:gap-2">
+                  {block.images.map((img: any, i: number) => (
+                    <img key={i} src={buildImageUrl(img.url)} alt="" className="rounded-lg w-full sm:w-2/3 lg:w-1/2 max-h-[550px] object-contain" loading="lazy" style={{ margin: 0 }} />
+                  ))}
+                </div>
+              )
+            )}
+          </div>
+        );
+      })}
+    </div>
+  ) : (
+    <RichTextDisplay
+      content={page.content}
+      className="prose prose-sm sm:prose-base md:prose-lg max-w-none prose-content prose-headings:text-white prose-p:text-white prose-li:text-white prose-strong:text-white prose-a:text-[#7a7a7a] prose-blockquote:text-white prose-code:text-white prose-pre:text-white"
+    />
+  )}
+</div>
 
             {/* Back Button */}
             <div className="text-center animate-fadeInUp">
