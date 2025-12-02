@@ -70,8 +70,11 @@ const LiveSearch: React.FC<LiveSearchProps> = ({ onClose, className = '' }) => {
   useEffect(() => {
     if (!productsResp) return;
     const productsData = productsResp?.products || productsResp || [];
-    const availableProducts = productsData.filter((product: Product) => product.isAvailable && product.name && product.name.trim() !== '');
-    setAllProducts(availableProducts);
+    const availableProducts = (productsData as any[])
+      .filter((product: Product & { productType?: 'product' | 'theme' }) => 
+        product.isAvailable && product.name && product.name.trim() !== '' && (product.productType || 'product') !== 'theme'
+      );
+    setAllProducts(availableProducts as Product[]);
     localStorage.setItem('searchProducts', JSON.stringify(availableProducts));
     setIsLoading(false);
   }, [productsResp]);

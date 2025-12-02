@@ -21,6 +21,7 @@ interface Product {
   isAvailable: boolean;
   categoryId: number | null;
   subcategoryId?: number | null;
+  productType?: 'product' | 'theme';
   mainImage: string;
   detailedImages?: string[];
   createdAt?: string;
@@ -88,18 +89,13 @@ const AllProducts: React.FC = () => {
   };
 
   const baseProducts: Product[] = useMemo(() => {
-    if (!productsResponse || !categoriesData) return [];
+    if (!productsResponse) return [];
     const productsData = productsResponse.products || productsResponse;
-    const themesCategory = categoriesData.find((category: Category) => {
-      const categoryName = getCategoryLocalizedContent(category, 'name').toLowerCase();
-      return categoryName === 'ثيمات' || categoryName === 'themes';
-    });
-    const themesCategoryId = themesCategory ? themesCategory.id : null;
-    const filtered = (productsData as Product[]).filter((product: Product) => 
-      product.categoryId !== themesCategoryId && product.id !== 55
+    const filtered = (productsData as Product[]).filter((product: any) => 
+      (product?.productType || 'product') !== 'theme'
     );
-    return filtered;
-  }, [productsResponse, categoriesData]);
+    return filtered as Product[];
+  }, [productsResponse]);
 
   useEffect(() => {
     if (baseProducts.length === 0 || !categoriesData) return;

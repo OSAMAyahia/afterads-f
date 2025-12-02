@@ -78,6 +78,32 @@ const { data: pagesResp } = useApiQuery<any>({
 
   return (
     <>
+      <div className="bg-[#0f1012] border-b border-gray-800">
+  <div className="w-full bg-[#0f1113] py-6">
+  <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+    <div className="flex flex-col md:flex-row items-center gap-4 justify-center">
+      <p className="text-[#18b5d5] text-sm font-medium text-center w-full md:w-auto mb-2 md:mb-0">
+        {t('footer.stay_connected')}
+      </p>
+
+      <div className="flex w-full max-w-md gap-1">
+        <input
+          type="email"
+          placeholder={t('footer.email_placeholder')}
+          className="flex-1 px-3 py-2 rounded bg-[#1a1c1e]/80 border border-[#18b5d5]/20 text-white placeholder-gray-500 focus:outline-none focus:border-[#18b5d5] transition-all text-sm"
+        />
+        <button
+          onClick={() => {}}
+          className="px-4 py-2 bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white font-medium rounded hover:shadow-lg hover:shadow-[#18b5d5]/25 transition-all text-sm whitespace-nowrap"
+        >
+          {t('footer.subscribe_now')}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
       {/* Main Footer */}
       <footer className="relative bg-[#121315] overflow-hidden">
         {/* Decorative dots */}
@@ -118,25 +144,7 @@ const { data: pagesResp } = useApiQuery<any>({
                   <span className="px-2 py-1 text-xs bg-white/5 text-[#18b5d5] rounded">التصميم Design</span>
                 </div>
 
-                {/* Newsletter - Compact Version */}
-                <div className="mb-4 bg-white/5 backdrop-blur-sm rounded-lg p-3 max-w-xs mx-auto lg:mx-0">
-                  <p className="text-[#18b5d5] text-xs font-medium mb-2">
-                    {t('footer.stay_connected')}
-                  </p>
-                  <div className="flex gap-1">
-                    <input
-                      type="email"
-                      placeholder={t('footer.email_placeholder')}
-                      className="flex-1 px-2 py-1.5 rounded bg-[#1a1c1e]/80 border border-[#18b5d5]/20 text-white placeholder-gray-500 focus:outline-none focus:border-[#18b5d5] transition-all text-xs"
-                    />
-                    <button 
-                      onClick={() => {}}
-                      className="px-3 py-1.5 bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white font-medium rounded hover:shadow-lg hover:shadow-[#18b5d5]/25 transition-all text-xs"
-                    >
-                      {t('footer.subscribe_now')}
-                    </button>
-                  </div>
-                </div>
+                
 
                 {/* Social Media */}
                 <div className="flex justify-center lg:justify-start gap-2 text-2xl mb-4">

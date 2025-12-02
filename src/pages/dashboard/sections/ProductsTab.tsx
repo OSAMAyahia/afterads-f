@@ -829,6 +829,21 @@
       ))}
     </select>
   </div>
+  <div>
+    <label className="block text-sm font-semibold text-gray-700 mb-2">
+      نوع المنتج *
+    </label>
+    <select
+      name="productType"
+      required
+      value={formData.productType || 'product'}
+      onChange={(e) => setFormData({ ...formData, productType: (e.target.value as 'product' | 'theme') })}
+      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61] transition-all bg-white"
+    >
+      <option value="product">منتج</option>
+      <option value="theme">ثيم</option>
+    </select>
+  </div>
                       </div>
 
                     <ImageUploader

@@ -261,6 +261,7 @@ const NewOverviewPage: React.FC = () => {
   const { data: blogPostsData, isLoading: blogPostsLoading } = useApiQuery<any>({ endpoint: API_ENDPOINTS.BLOG_POSTS, queryKey: ['blog-posts'] });
   const { data: commentsData, isLoading: commentsLoading } = useApiQuery<any>({ endpoint: API_ENDPOINTS.COMMENTS, queryKey: ['comments'] });
   const { data: visitsData, isLoading: visitsLoading } = useApiQuery<any>({ endpoint: API_ENDPOINTS.VISITS_COUNTER, queryKey: ['visits-counter'] });
+  const { data: targetData } = useApiQuery<any>({ endpoint: API_ENDPOINTS.VISITS_TARGET, queryKey: ['visits-target'] });
 
   useEffect(() => {
     const loadData = async () => {
@@ -410,6 +411,18 @@ const NewOverviewPage: React.FC = () => {
       setVisitTotal(total);
     }
   }, [visitsData]);
+
+  useEffect(() => {
+    if (targetData) {
+      const raw = (targetData.data || targetData);
+      const v = Number(raw.dashboardMonthlyTarget ?? raw.target ?? raw.monthlyTarget ?? monthlyTarget);
+      if (Number.isFinite(v) && v > 0) {
+        setMonthlyTarget(v);
+        setMonthlyTargetInput(v);
+        localStorage.setItem('dashboardMonthlyTarget', String(v));
+      }
+    }
+  }, [targetData]);
 
   useEffect(() => {
     const calculated = calculateStats(
@@ -568,10 +581,25 @@ const NewOverviewPage: React.FC = () => {
               className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61]"
             />
             <button
-              onClick={() => {
+              onClick={async () => {
                 const value = Number.isFinite(monthlyTargetInput) && monthlyTargetInput > 0 ? monthlyTargetInput : 50000;
-                setMonthlyTarget(value);
-                localStorage.setItem('dashboardMonthlyTarget', String(value));
+                try {
+                  await apiCall(API_ENDPOINTS.VISITS_TARGET, { method: 'PUT', body: JSON.stringify({ dashboardMonthlyTarget: value }) });
+                  setMonthlyTarget(value);
+                  localStorage.setItem('dashboardMonthlyTarget', String(value));
+                  smartToast.dashboard.success('تم تحديث الهدف الشهري');
+                } catch (err: any) {
+                  try {
+                    await apiCall(API_ENDPOINTS.VISITS_TARGET, { method: 'POST', body: JSON.stringify({ dashboardMonthlyTarget: value }) });
+                    setMonthlyTarget(value);
+                    localStorage.setItem('dashboardMonthlyTarget', String(value));
+                    smartToast.dashboard.success('تم تحديث الهدف الشهري');
+                  } catch {
+                    setMonthlyTarget(value);
+                    localStorage.setItem('dashboardMonthlyTarget', String(value));
+                    smartToast.dashboard.error('تعذر تحديث الهدف عبر API، تم حفظه محلياً');
+                  }
+                }
               }}
               className="px-4 py-2 bg-[#203f61] text-white rounded-lg hover:bg-[#2a537e]"
             >

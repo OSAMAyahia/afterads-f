@@ -14,6 +14,7 @@ interface Product {
   price: number;
   isAvailable: boolean;
   categoryId: number | null;
+  productType?: 'product' | 'theme';
   mainImage: string;
   detailedImages?: string[];
   createdAt?: string;
@@ -66,7 +67,8 @@ const ProductsByCategory: React.FC = () => {
   useEffect(() => {
     if (!productsResp) return;
     const arr = productsResp?.products || productsResp || [];
-    setProducts(arr);
+    const filtered = (arr as Product[]).filter((p: any) => (p?.productType || 'product') !== 'theme');
+    setProducts(filtered);
   }, [productsResp]);
 
   // تحسين عرض Loading

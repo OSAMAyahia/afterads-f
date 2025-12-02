@@ -718,6 +718,11 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, onSuccess,
         formDataToSend.append('productOptions', JSON.stringify(convertedProductOptions));
       }
 
+      // Product Type
+      if (formData.productType) {
+        formDataToSend.append('productType', formData.productType);
+      }
+
       if (mainImageFile) {
         formDataToSend.append('mainImage', mainImageFile);
       }
@@ -849,6 +854,23 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, onSuccess,
                   {errors.name && (
                     <p className="text-red-500 text-sm mt-1">{errors.name}</p>
                   )}
+                </div>
+
+                {/* Product Type */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    {selectedLanguage === 'ar' ? 'نوع المنتج *' : 'Product Type *'}
+                  </label>
+                  <select
+                    name="productType"
+                    value={formData.productType}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-black focus:border-black transition-colors"
+                    required
+                  >
+                    <option value="product">{selectedLanguage === 'ar' ? 'منتج' : 'Product'}</option>
+                    <option value="theme">{selectedLanguage === 'ar' ? 'ثيم' : 'Theme'}</option>
+                  </select>
                 </div>
 
                 {/* Short Description */}

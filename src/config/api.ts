@@ -169,6 +169,7 @@ export const API_ENDPOINTS = {
   // Visits Counter
   VISITS_COUNTER: 'visits/counter',
   VISITS_COUNTER_BY_PATH: (path: string) => `visits/counter?path=${encodeURIComponent(path)}`,
+  VISITS_TARGET: 'visits/target',
   
   // Services (if needed)
   SERVICES: 'services',

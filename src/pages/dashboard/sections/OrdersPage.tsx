@@ -71,7 +71,6 @@ interface NewOrderForm {
   customerPhone: string;
   customerEmail: string;
   address: string;
-  city: string;
   serviceId?: number | string;
   serviceName?: string;
   price?: number;
@@ -143,7 +142,6 @@ const OrdersPage: React.FC = () => {
     customerPhone: '',
     customerEmail: '',
     address: '',
-    city: '',
     quantity: 1,
     attachmentsImages: [],
     status: 'pending'
@@ -1002,7 +1000,6 @@ const handleDeleteOrder = async (orderId: number) => {
                 <input type="text" placeholder="اسم العميل" value={newOrder.customerName} onChange={(e) => setNewOrder(prev => ({ ...prev, customerName: e.target.value }))} className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61]" />
                 <input type="text" placeholder="رقم الهاتف" value={newOrder.customerPhone} onChange={(e) => setNewOrder(prev => ({ ...prev, customerPhone: e.target.value }))} className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61]" />
                 <input type="email" placeholder="البريد الإلكتروني" value={newOrder.customerEmail} onChange={(e) => setNewOrder(prev => ({ ...prev, customerEmail: e.target.value }))} className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61]" />
-                <input type="text" placeholder="المدينة" value={newOrder.city} onChange={(e) => setNewOrder(prev => ({ ...prev, city: e.target.value }))} className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61]" />
                 <input type="text" placeholder="العنوان" value={newOrder.address} onChange={(e) => setNewOrder(prev => ({ ...prev, address: e.target.value }))} className="md:col-span-2 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61]" />
               </div>
 
