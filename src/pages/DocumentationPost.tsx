@@ -5,6 +5,7 @@ import { FileText, ArrowLeft, Menu, X, ChevronDown, Search, Filter, BookOpen, La
 import { apiCall, API_ENDPOINTS, buildImageUrl } from '../config/api';
 import { useApiQuery } from '../hooks/useApiQuery';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
+import RichTextDisplay from '../components/ui/RichTextDisplay';
 
 interface Documentation {
   id: string;
@@ -645,20 +646,9 @@ const DocumentationPost: React.FC = () => {
                       return (
                         <div key={idx} className="space-y-6">
                           {block.text && (
-                            <div 
-                              className="prose prose-invert max-w-none
-                                prose-headings:text-white prose-headings:font-bold prose-headings:mb-4 prose-headings:mt-8
-                                prose-h1:text-xl sm:prose-h1:text-2xl prose-h2:text-lg sm:prose-h2:text-xl prose-h3:text-base sm:prose-h3:text-lg
-                                prose-p:text-white/90 prose-p:leading-relaxed prose-p:mb-4
-                                prose-a:text-[#18b5d8] prose-a:no-underline hover:prose-a:underline
-                                prose-strong:text-white
-                                prose-code:text-[#18b5d8] prose-code:bg-white/5 prose-code:px-2 prose-code:py-1 prose-code:rounded
-                                prose-pre:bg-black/40 prose-pre:border prose-pre:border-white/10 prose-pre:rounded-lg prose-pre:p-3 sm:prose-pre:p-4
-                                prose-ul:text-white/90 prose-ol:text-white/90
-                                prose-li:mb-2
-                                prose-blockquote:border-r-4 prose-blockquote:border-[#18b5d8] prose-blockquote:pr-4 prose-blockquote:text-white/70
-                                prose-img:rounded-lg text-white"
-                              dangerouslySetInnerHTML={{ __html: block.text }} 
+                            <RichTextDisplay
+                              content={block.text}
+                              className="prose prose-invert max-w-none prose-headings:text-white prose-headings:font-bold prose-headings:mb-4 prose-headings:mt-8 prose-h1:text-xl sm:prose-h1:text-2xl prose-h2:text-lg sm:prose-h2:text-xl prose-h3:text-base sm:prose-h3:text-lg prose-p:text-white/90 prose-p:leading-relaxed prose-p:mb-4 prose-a:text-[#18b5d8] prose-a:no-underline hover:prose-a:underline prose-strong:text-white prose-code:text-[#18b5d8] prose-pre:bg-black/40 prose-pre:border prose-pre:border-white/10 prose-pre:rounded-lg prose-pre:p-3 sm:prose-pre:p-4 prose-ul:text-white/90 prose-ol:text-white/90 prose-li:mb-2 prose-blockquote:border-r-4 prose-blockquote:border-[#18b5d8] prose-blockquote:pr-4 prose-blockquote:text-white/70 prose-img:rounded-lg text-white"
                             />
                           )}
                           

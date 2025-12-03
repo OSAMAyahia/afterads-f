@@ -136,7 +136,7 @@ const AnnouncementBar: React.FC = () => {
           {/* زر الإغلاق - على حسب اتجاه الصفحة */}
           <button
             onClick={handleClose}
-            className={`absolute p-1.5 sm:p-2 rounded-lg transition-all hover:bg-white/10 active:scale-95 flex-shrink-0 ${
+            className={`absolute p-1.5 sm:p-2 rounded-lg transition-all bg-transparent hover:bg-white/10 active:scale-95 flex-shrink-0 ${
               isRTL ? 'left-0' : 'right-0'
             }`}
             style={{ color: textColor }}

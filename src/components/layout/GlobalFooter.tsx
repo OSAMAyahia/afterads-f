@@ -58,6 +58,35 @@ const { data: pagesResp } = useApiQuery<any>({
   console.log("✅ [Footer] Active pages:", activePages);
   setStaticPages(activePages);
 }, [pagesResp]);
+  const { data: navVisibilityResp } = useApiQuery<any>({ endpoint: API_ENDPOINTS.NAVIGATION_VISIBILITY, queryKey: ['navigation-visibility'], staleTime: Infinity });
+  const navVisibility = React.useMemo(() => {
+    const obj = Array.isArray(navVisibilityResp) ? navVisibilityResp[0] : (navVisibilityResp?.data ?? navVisibilityResp);
+    const normalize = (m?: Record<string, boolean>) => {
+      const r: Record<string, boolean> = {};
+      if (!m) return r;
+      Object.keys(m).forEach(k => { r[k] = (m as any)[k]; });
+      return r;
+    };
+    return {
+      navbar: normalize(obj?.navbar),
+      footerImportant: normalize(obj?.footerImportant),
+      footerQuick: normalize(obj?.footerQuick),
+      footerStaticPages: normalize(obj?.footerStaticPages)
+    };
+  }, [navVisibilityResp]);
+  const shouldShowLink = (section: keyof typeof navVisibility, key: string) => {
+    const s = (navVisibility as any)[section] as Record<string, boolean>;
+    if (s && Object.prototype.hasOwnProperty.call(s, key)) {
+      return s[key] !== false;
+    }
+    try {
+      const raw = localStorage.getItem('ui_navigation_visibility');
+      const parsed = raw ? JSON.parse(raw) : {};
+      const map = parsed[section] || {};
+      if (Object.prototype.hasOwnProperty.call(map, key)) return map[key] !== false;
+    } catch {}
+    return true;
+  };
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -139,10 +168,7 @@ const { data: pagesResp } = useApiQuery<any>({
                 <p className="text-gray-400 text-sm leading-relaxed mb-2 max-w-xs mx-auto lg:mx-0">
                   {t('footer.company_description')}
                 </p>
-                <div className="flex justify-center lg:justify-start gap-2 mb-4">
-                  <span className="px-2 py-1 text-xs bg-white/5 text-[#18b5d5] rounded">التسويق Marketing</span>
-                  <span className="px-2 py-1 text-xs bg-white/5 text-[#18b5d5] rounded">التصميم Design</span>
-                </div>
+                <div className="mb-4"></div>
 
                 
 
@@ -181,7 +207,7 @@ const { data: pagesResp } = useApiQuery<any>({
                   {t('footer.important_links')}
                 </h3>
                 <ul className="space-y-2">
-                  {importantLinks.map((link, index) => (
+                  {importantLinks.filter(link => shouldShowLink('footerImportant', link.to)).map((link, index) => (
                     <li key={index}>
                       <Link
                         to={link.to}
@@ -191,7 +217,11 @@ const { data: pagesResp } = useApiQuery<any>({
                       </Link>
                     </li>
                   ))}
-   {staticPages.map((page) => (
+   {staticPages.filter((page) => {
+     const bySetting = shouldShowLink('footerStaticPages', page.slug);
+     const byFlag = page.showInFooter !== false;
+     return bySetting && byFlag;
+   }).map((page) => (
   <li key={page.id}>
     <Link
       to={`/page/${page.slug}`}  // ✅ تصحيح الـ syntax
@@ -210,7 +240,7 @@ const { data: pagesResp } = useApiQuery<any>({
                   {t('footer.quick_links')}
                 </h3>
                 <ul className="space-y-2">
-                  {quickLinks.map((link, index) => (
+                  {quickLinks.filter(link => shouldShowLink('footerQuick', link.to)).map((link, index) => (
                     <li key={index}>
                       <Link
                         to={link.to}
@@ -310,7 +340,7 @@ const { data: pagesResp } = useApiQuery<any>({
       {showScrollTop && !location.pathname.includes('/theme/') && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-4 sm:bottom-6 md:bottom-8 left-4 sm:left-6 md:left-8 w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white rounded-full shadow-2xl hover:shadow-[#18b5d5]/25 transition-all duration-300 transform hover:scale-110 z-50 flex items-center justify-center group lg:hidden"
+          className="fixed bottom-4 sm:bottom-6 md:bottom-8 right-4 sm:right-6 md:right-8 w-12 h-12 sm:w-14 sm:h-14 bg-white/10 border border-white/20 text-[#18b5d5] rounded-full shadow-xl hover:shadow-[#18b5d5]/25 transition-all duration-300 transform hover:scale-110 z-50 flex items-center justify-center group lg:hidden"
           aria-label={t('footer.scroll_to_top')}
         >
           <ArrowUp className="w-5 h-5 sm:w-6 sm:h-6 group-hover:animate-bounce" />

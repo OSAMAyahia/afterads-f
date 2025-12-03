@@ -16,7 +16,8 @@ import {
   PenSquare,
   Star,
   Briefcase,
-  Megaphone
+  Megaphone,
+  Settings
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import UserSection from './sections/UserSection';
@@ -242,6 +243,12 @@ const Sidebar: React.FC<SidebarProps> = ({
           path: 'announcement-bar',
           name: 'شريط الإعلانات',
           icon: <Megaphone className="w-5 h-5" />,
+          role: 'admin'
+        },
+        {
+          path: 'navigation-visibility',
+          name: 'إعدادات ظهور الصفحات',
+          icon: <Settings className="w-5 h-5" />,
           role: 'admin'
         },
         {

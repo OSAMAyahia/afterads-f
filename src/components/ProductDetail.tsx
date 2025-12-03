@@ -1037,7 +1037,7 @@ const ProductDetail: React.FC = () => {
         {/* Product Details Section */}
         <div className="mt-6 sm:mt-8 lg:mt-12 space-y-4 sm:space-y-6 lg:space-y-8">
           {(Array.isArray(getLocalizedRich('description')) ? (getLocalizedRich('description') as any[]).length > 0 : !!getLocalizedContent('description')) && (
-            <div className="bg-gradient-to-br from-[#292929]/95 via-[#7a7a7a]/30 to-[#292929]/90 rounded-2xl sm:rounded-3xl backdrop-blur-xl border border-white/10 shadow-2xl p-4 sm:p-6 lg:p-8">
+            <div className="rounded-2xl sm:rounded-3xl border border-white/10 p-4 sm:p-6 lg:p-8">
               <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-white mb-3 sm:mb-4 flex items-center gap-2 sm:gap-3">
                 <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-[#18b5d8]" />
                 {t('product_details')}
@@ -1050,12 +1050,9 @@ const ProductDetail: React.FC = () => {
                     const isHorizontal = hasImages && block.images.every((img: any) => img.orientation === 'horizontal');
                     return (
                       <div key={idx} className="space-y-3 font-white">
-{block.text && (
-  <div
-    className="text-white"
-    dangerouslySetInnerHTML={{ __html: block.text }}
-  />
-)}
+                      {block.text && (
+                        <RichTextDisplay content={block.text} className="text-white" />
+                      )}
                         {hasImages && (
                           isHorizontal ? (
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">

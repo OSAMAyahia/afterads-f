@@ -75,9 +75,8 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
       headers['Content-Type'] = 'application/json';
     }
     
-    // إضافة JWT token للطلبات المحمية (admin endpoints)
     const adminToken = localStorage.getItem('adminToken');
-    if (adminToken && (endpoint.includes('auth/') || endpoint.includes('users') || endpoint.includes('activity-logs') || endpoint.includes('logs/') || endpoint.includes('orders/') || endpoint.includes('customers') || endpoint.includes('admin-pin'))) {
+    if (adminToken && (endpoint.includes('auth/') || endpoint.includes('users') || endpoint.includes('activity-logs') || endpoint.includes('logs/') || endpoint.includes('orders/') || endpoint.includes('customers') || endpoint.includes('admin-pin') || endpoint.includes('navigation-visibility'))) {
       headers['Authorization'] = `Bearer ${adminToken}`;
     }
     
@@ -232,6 +231,8 @@ export const API_ENDPOINTS = {
   // Announcement Bar
   ANNOUNCEMENT_BAR: 'announcement-bar',
   ANNOUNCEMENT_BAR_ACTIVE: 'announcement-bar/active',
+  NAVIGATION_VISIBILITY: 'navigation-visibility',
+  NAVIGATION_VISIBILITY_ENTRY: 'navigation-visibility/entry',
 
   // Testimonials endpoints
   TESTIMONIALS: 'testimonials',

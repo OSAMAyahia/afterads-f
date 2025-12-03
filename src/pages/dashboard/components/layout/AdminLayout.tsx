@@ -19,6 +19,7 @@ import ThemeCardsManagement from "../../sections/ThemeCardsManagement";
 import ThemeWorksManagement from "../../sections/ThemeWorksManagement";
 import DocumentationManagement from "../../sections/DocumentationManagement";
 import AnnouncementBarManagement from '../../sections/AnnouncementBarManagement';
+import NavigationVisibilitySettings from "../../sections/NavigationVisibilitySettings";
 
 const AdminLayout: React.FC = () => {
 
@@ -51,6 +52,7 @@ const AdminLayout: React.FC = () => {
           <Route path="theme-cards" element={<ThemeCardsManagement />} />
           <Route path="theme-works" element={<ThemeWorksManagement />} />
           <Route path="announcement-bar" element={<AnnouncementBarManagement />} />
+          <Route path="navigation-visibility" element={<NavigationVisibilitySettings />} />
         </Routes>
       </div>
     </div>

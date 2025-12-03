@@ -45,6 +45,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   const [linkText, setLinkText] = useState('');
   const [textDirection, setTextDirection] = useState<'rtl' | 'ltr'>('rtl');
   const [imageOrientation, setImageOrientation] = useState<'horizontal' | 'vertical'>('horizontal');
+  const [isHtmlMode, setIsHtmlMode] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
   const toggleDirection = () => {
@@ -185,9 +186,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       : 'w-36 h-auto';
     
     const html = `
-      <div class="image-container my-4" contenteditable="false" data-orientation="${orientation}">
-        <img src="${url}" alt="صورة" ${rawPath ? `data-src-path="${rawPath}"` : ''} class="${imageClass} rounded-lg shadow-md mx-auto" />
-        <button type="button" class="delete-img-btn" onclick="this.parentElement.remove(); document.dispatchEvent(new Event('contentChanged'));">×</button>
+      <div class="image-container" contenteditable="false" data-orientation="${orientation}">
+        <img src="${url}" alt="صورة" ${rawPath ? `data-src-path="${rawPath}"` : ''} />
+        <button type="button" class="delete-img-btn" onclick="this.parentElement.remove(); document.dispatchEvent(new Event('contentChanged'));"></button>
       </div>
       <p><br></p>
     `;
@@ -220,11 +221,10 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       }
 
       if (urls.length > 0) {
-        const imgSizeClass = imageOrientation === 'horizontal' ? 'w-36 h-auto' : 'w-64 h-auto';
         const html = urls.map(u => `
-          <div class="image-container my-3" contenteditable="false" data-orientation="${imageOrientation}">
-            <img src="${u}" alt="صورة" class="${imgSizeClass} rounded-lg shadow-md mx-auto" />
-            <button type="button" class="delete-img-btn" onclick="this.parentElement.remove(); document.dispatchEvent(new Event('contentChanged'));">×</button>
+          <div class="image-container" contenteditable="false" data-orientation="${imageOrientation}">
+            <img src="${u}" alt="صورة" />
+            <button type="button" class="delete-img-btn" onclick="this.parentElement.remove(); document.dispatchEvent(new Event('contentChanged'));"></button>
           </div>
         `).join('') + '<p><br></p>';
 
@@ -342,29 +342,20 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   };
 
   const insertCodeBlock = () => {
-    const html = `
-      <pre class="my-4 p-4 bg-gray-900 text-gray-100 rounded-lg overflow-x-auto" contenteditable="true"><code>// اكتب الكود هنا
-function example() {
-  return "Hello World";
-}</code></pre>
-    `;
+    const html = `<pre contenteditable="true"><code>// اكتب الكود هنا\nfunction example() {\n  return "Hello World";\n}</code></pre>`;
 
     insertHtmlAtCursor(html);
   };
 
   const insertQuote = () => {
-    const html = `
-      <blockquote class="my-4 pl-4 pr-4 py-2 border-r-4 border-[#203f61] bg-gray-50 italic text-gray-700" contenteditable="true">
-        اكتب الاقتباس هنا...
-      </blockquote>
-    `;
+    const html = `<blockquote contenteditable="true">اكتب الاقتباس هنا...</blockquote>`;
 
     insertHtmlAtCursor(html);
   };
 
   const handleInsertLink = () => {
     if (linkUrl && linkText) {
-      const html = `<a href="${linkUrl}" class="text-[#203f61] underline hover:text-[#2a537e]" target="_blank" rel="noopener noreferrer">${linkText}</a>`;
+      const html = `<a href="${linkUrl}" target="_blank" rel="noopener noreferrer">${linkText}</a>`;
       insertHtmlAtCursor(html);
       setLinkUrl('');
       setLinkText('');
@@ -594,6 +585,19 @@ function example() {
             {textDirection === 'rtl' ? 'ع' : 'EN'}
           </button>
         </div>
+
+        <div className="flex gap-1 border-l border-gray-300 pl-2">
+          <button
+            type="button"
+            onClick={() => setIsHtmlMode(!isHtmlMode)}
+            title={isHtmlMode ? 'وضع مرئي' : 'وضع HTML'}
+            className={`p-2 rounded-lg transition-all font-bold ${
+              isHtmlMode ? 'bg-purple-100 text-purple-700 hover:bg-purple-200' : 'bg-white'
+            }`}
+          >
+            HTML
+          </button>
+        </div>
       </div>
 
       <input
@@ -678,20 +682,31 @@ function example() {
         </div>
       </div>
 
-      <div
-        ref={editorRef}
-        contentEditable
-        onInput={handleContentChange}
-        onPaste={handlePaste}
-        onDrop={handleDrop}
-        onDragOver={(e) => e.preventDefault()}
-        onKeyUp={saveSelection}
-        onMouseUp={saveSelection}
-        onFocus={saveSelection}
-        className="w-full px-4 py-3 border border-gray-300 rounded-b-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61] transition-all overflow-y-auto prose prose-sm max-w-none"
-        style={{ minHeight, direction: textDirection }}
-        data-placeholder={placeholder}
-      />
+      {!isHtmlMode && (
+        <div
+          ref={editorRef}
+          contentEditable
+          onInput={handleContentChange}
+          onPaste={handlePaste}
+          onDrop={handleDrop}
+          onDragOver={(e) => e.preventDefault()}
+          onKeyUp={saveSelection}
+          onMouseUp={saveSelection}
+          onFocus={saveSelection}
+          className="w-full px-4 py-3 border border-gray-300 rounded-b-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61] transition-all overflow-y-auto prose prose-sm max-w-none  bg-slate-700 "
+          style={{ minHeight, direction: textDirection }}
+          data-placeholder={placeholder}
+        />
+      )}
+      {isHtmlMode && (
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full px-4 py-3 border border-gray-300 rounded-b-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61] transition-all overflow-y-auto bg-transparent   font-mono"
+          style={{ minHeight, direction: textDirection as any }}
+          placeholder={placeholder}
+        />
+      )}
 
       <style>{`
         [contenteditable] {
@@ -753,8 +768,6 @@ function example() {
         
         [contenteditable] .image-container img {
           display: block;
-          border-radius: 8px;
-          box-shadow: 0 4px 6px rgba(0,0,0,0.1);
           transition: width 0.3s ease;
         }
         

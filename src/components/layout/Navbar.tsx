@@ -64,6 +64,36 @@ function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const { data: navVisibilityResp } = useApiQuery<any>({ endpoint: API_ENDPOINTS.NAVIGATION_VISIBILITY, queryKey: ['navigation-visibility'], staleTime: Infinity });
+  const navVisibility = React.useMemo(() => {
+    const obj = Array.isArray(navVisibilityResp) ? navVisibilityResp[0] : (navVisibilityResp?.data ?? navVisibilityResp);
+    const normalize = (m?: Record<string, boolean>) => {
+      const r: Record<string, boolean> = {};
+      if (!m) return r;
+      Object.keys(m).forEach(k => { r[k] = (m as any)[k]; });
+      return r;
+    };
+    return {
+      navbar: normalize(obj?.navbar),
+      footerImportant: normalize(obj?.footerImportant),
+      footerQuick: normalize(obj?.footerQuick),
+      footerStaticPages: normalize(obj?.footerStaticPages)
+    };
+  }, [navVisibilityResp]);
+  const shouldShowLink = (section: keyof typeof navVisibility, key: string) => {
+    const s = (navVisibility as any)[section] as Record<string, boolean>;
+    if (s && Object.prototype.hasOwnProperty.call(s, key)) {
+      return s[key] !== false;
+    }
+    try {
+      const raw = localStorage.getItem('ui_navigation_visibility');
+      const parsed = raw ? JSON.parse(raw) : {};
+      const map = parsed[section] || {};
+      if (Object.prototype.hasOwnProperty.call(map, key)) return map[key] !== false;
+    } catch {}
+    return true;
+  };
+
 
   // Function to get first letter of each name for mobile display
   const getInitials = (name: string): string => {
@@ -854,7 +884,7 @@ useEffect(() => {
                   { name: t('nav.documentation', { defaultValue: 'التوثيق' }), href: '/documentation' },
                   { name: t('nav.products'), href: '/categories' },
                   { name: t('nav.contact'), href: '/contact' }
-                ].map((link) => (
+                ].filter(link => shouldShowLink('navbar', link.href)).map((link) => (
                   <Link
                     key={link.name}
                     to={link.href}
@@ -1264,7 +1294,7 @@ useEffect(() => {
                   { name: t('nav.documentation', { defaultValue: 'التوثيق' }), href: '/documentation', icon: FileText, color: '#60a5fa' },
                   { name: t('nav.products'), href: '/categories', icon: Package, color: '#f97316' },
                   { name: t('nav.contact'), href: '/contact', icon: Phone, color: '#ef4444' }
-                ].map((link, index) => (
+                ].filter(link => shouldShowLink('navbar', link.href)).map((link, index) => (
                   <Link
                     key={link.name}
                     to={link.href}

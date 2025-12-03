@@ -170,7 +170,7 @@ const StaticPageView: React.FC = () => {
 
         {/* Content */}
         <div className="max-w-4xl mx-auto">
-          <div className="bg-gradient-to-br from-[#292929]/95 via-[#7a7a7a]/30 to-[#292929]/90 rounded-2xl sm:rounded-3xl backdrop-blur-xl border border-white/15 shadow-2xl p-4 sm:p-6 md:p-8 lg:p-12">
+          <div className="rounded-2xl sm:rounded-3xl border border-white/15 p-4 sm:p-6 md:p-8 lg:p-12">
             {/* Featured Image */}
             {page.imageUrl && (
               <div className="mb-6 sm:mb-8 md:mb-10 animate-fadeInUp">
@@ -228,7 +228,7 @@ const StaticPageView: React.FC = () => {
         const isHorizontal = hasImages && block.images.every((img: any) => img.orientation === 'horizontal');
         return (
           <div key={idx} className="space-y-4">
-            {block.text && <div className='text-white' dangerouslySetInnerHTML={{ __html: block.text }} />}
+            {block.text && <RichTextDisplay content={block.text} className='text-white' />}
             {hasImages && (
               isHorizontal ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">

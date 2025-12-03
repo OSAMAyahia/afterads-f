@@ -146,11 +146,113 @@ const ThemeDetail: React.FC = () => {
   const [isAddOnsExpanded, setIsAddOnsExpanded] = useState(false);
   const [featuresInView, setFeaturesInView] = useState(false);
   const [dynamicComponents, setDynamicComponents] = useState<any[]>([]);
-const [componentsLoading, setComponentsLoading] = useState(false)
-const [mainPreviewDevice, setMainPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
+  const [componentsLoading, setComponentsLoading] = useState(false)
+  const [mainPreviewDevice, setMainPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [imagesModalOpen, setImagesModalOpen] = useState(false);
   const [imagesModalList, setImagesModalList] = useState<string[]>([]);
   const [imagesModalTitle, setImagesModalTitle] = useState('');
+  const [scrollOverlayActive, setScrollOverlayActive] = useState(false);
+  const [scrollOverlayDevice, setScrollOverlayDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
+  const [overlayRect, setOverlayRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
+  const previewContainerRef = useRef<HTMLDivElement | null>(null);
+  const holdTimerRef = useRef<number | null>(null);
+  const scrollRafRef = useRef<number | null>(null);
+  const contentCloneRef = useRef<HTMLDivElement | null>(null);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [scrollOffset, setScrollOffset] = useState(0);
+
+  const startContentScroll = () => {
+    if (!contentCloneRef.current) return;
+    
+    const speed = 4;
+    let currentOffset = 0;
+    
+    const step = () => {
+      const maxOffset = contentHeight - (overlayRect?.height || 0);
+      currentOffset += speed;
+      
+      if (currentOffset >= maxOffset) {
+        scrollRafRef.current = null;
+        return;
+      }
+      
+      setScrollOffset(currentOffset);
+      scrollRafRef.current = requestAnimationFrame(step);
+    };
+    
+    scrollRafRef.current = requestAnimationFrame(step);
+  };
+
+  const stopScrollAnimation = () => {
+    if (scrollRafRef.current) {
+      cancelAnimationFrame(scrollRafRef.current);
+      scrollRafRef.current = null;
+    }
+  };
+
+ const handlePressStart = (device: 'desktop' | 'tablet' | 'mobile') => {
+  if (holdTimerRef.current) {
+    window.clearTimeout(holdTimerRef.current);
+  }
+  holdTimerRef.current = window.setTimeout(() => {
+    const el = previewContainerRef.current;
+    if (!el) return;
+    // استخدم الصورة الفعلية بدلاً من الكونتينر
+    const img = el.querySelector('img');
+    if (!img) return;
+    const rect = img.getBoundingClientRect();
+    setOverlayRect({ 
+      top: rect.top, 
+      left: rect.left, 
+      width: rect.width, 
+      height: rect.height 
+    });
+    setScrollOverlayDevice(device);
+    setScrollOverlayActive(true);
+    
+    // Clone content and calculate height
+    const bodyClone = document.body.cloneNode(true) as HTMLElement;
+    
+    // Store the cloned content in the ref
+    if (contentCloneRef.current) {
+      contentCloneRef.current.innerHTML = '';
+      contentCloneRef.current.appendChild(bodyClone);
+    }
+    
+    // Calculate height using a temporary container
+    const tempDiv = document.createElement('div');
+    tempDiv.style.position = 'absolute';
+    tempDiv.style.top = '-9999px';
+    tempDiv.style.left = '-9999px';
+    tempDiv.style.width = `${rect.width}px`;
+    tempDiv.appendChild(bodyClone.cloneNode(true));
+    document.body.appendChild(tempDiv);
+    
+    setContentHeight(tempDiv.scrollHeight);
+    setScrollOffset(0);
+    
+    // Start internal scroll after a small delay to ensure DOM is ready
+    setTimeout(() => {
+      startContentScroll();
+    }, 50);
+    
+    // Cleanup after animation
+    setTimeout(() => {
+      document.body.removeChild(tempDiv);
+    }, 100);
+  }, 500);
+};
+
+  const handlePressEnd = () => {
+    if (holdTimerRef.current) {
+      window.clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+    stopScrollAnimation();
+    setScrollOverlayActive(false);
+    setScrollOffset(0);
+    setContentHeight(0);
+  };
   // ---------- FAQ Card ----------
   const FAQCard: React.FC<{ faq: { question: string; answer: string }; index: number }> = ({ faq, index }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -228,7 +330,7 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
                     {/* الصورة أو النص على الخلفية البيضاء */}
                     {component.backgroundImage ? (
                       <img
-                        src={`http://localhost:5000${component.backgroundImage}`}
+                        src={buildImageUrl(component.backgroundImage)}
                         alt={component.title}
                         className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-700"
                         onError={(e) => {
@@ -647,6 +749,12 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
           transform: scale(1.05) rotate(2deg);
           transition: transform 0.3s ease-in-out;
         }
+
+        .iframe-overlay {
+  pointer-events: none;
+  will-change: transform;
+  backface-visibility: hidden;
+}
       `}
     </style>
 
@@ -829,8 +937,14 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
                 : mainPreviewDevice === 'tablet' 
                   ? 'w-full max-w-[90vw] sm:max-w-[420px] aspect-[3/4]' 
                   : 'w-full max-w-[280px] aspect-[9/20]'
-            } flex items-center justify-center mx-auto`}
-          >
+            } flex items-center justify-center mx-auto cursor-pointer`}
+          ref={previewContainerRef}
+          onMouseDown={() => handlePressStart(mainPreviewDevice)}
+          onMouseUp={handlePressEnd}
+          onMouseLeave={handlePressEnd}
+          onTouchStart={() => handlePressStart(mainPreviewDevice)}
+          onTouchEnd={handlePressEnd}
+        >
             <img 
               src={
                 mainPreviewDevice === 'desktop' ? theme5 :
@@ -838,7 +952,7 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
                 theme7
               }
               alt={`${mainPreviewDevice} Preview`}
-              className="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-700"
+              className={`w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-700 ${scrollOverlayActive && scrollOverlayDevice === mainPreviewDevice ? 'opacity-0' : ''}`}
             />
           </div>
         </div>
@@ -1138,6 +1252,53 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
     </div>
   </div>
 </div>
+
+ {scrollOverlayActive && overlayRect && (
+   <div className="fixed z-[10001] pointer-events-none">
+     {/* Covers outside the hole */}
+     <div
+       className="fixed bg-black/40"
+       style={{ top: 0, left: 0, width: '100vw', height: `${overlayRect.top}px` }}
+     />
+     <div
+       className="fixed bg-black/40"
+       style={{ top: `${overlayRect.top + overlayRect.height}px`, left: 0, width: '100vw', height: `calc(100vh - ${overlayRect.top + overlayRect.height}px)` }}
+     />
+     <div
+       className="fixed bg-black/40"
+       style={{ top: `${overlayRect.top}px`, left: 0, width: `${overlayRect.left}px`, height: `${overlayRect.height}px` }}
+     />
+     <div
+       className="fixed bg-black/40"
+       style={{ top: `${overlayRect.top}px`, left: `${overlayRect.left + overlayRect.width}px`, width: `calc(100vw - ${overlayRect.left + overlayRect.width}px)`, height: `${overlayRect.height}px` }}
+     />
+
+     {/* Content container with cloned content */}
+     <div
+       className="fixed overflow-hidden scroll-overlay-container"
+       style={{ 
+         top: `${overlayRect.top}px`, 
+         left: `${overlayRect.left}px`, 
+         width: `${overlayRect.width}px`, 
+         height: `${overlayRect.height}px`,
+         borderRadius: '0.75rem',
+         border: '4px solid rgba(255,255,255,0.3)',
+         boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)'
+       }}
+     >
+       <div
+         ref={contentCloneRef}
+         style={{
+           transform: `translateY(-${scrollOffset}px)`,
+           width: '100%',
+           height: `${contentHeight}px`,
+           scrollbarWidth: 'none',
+           msOverflowStyle: 'none'
+         }}
+       />
+     </div>
+   </div>
+ )}
 
 <div className="scale-90 sm:scale-95 lg:scale-100">
   <ThemeWorks />

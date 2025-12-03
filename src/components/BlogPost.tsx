@@ -245,7 +245,7 @@ const BlogPost: React.FC = () => {
                 </div>
 
                 {/* Article Content */}
-                <div className="bg-[#1f1f1f] border border-[#18b5d5]/20 rounded-2xl shadow-xl p-8 md:p-12">
+                <div className="border border-[#18b5d5]/20 rounded-2xl p-8 md:p-12">
                   
                   {/* Excerpt */}
                   {post.excerpt && (
@@ -264,9 +264,9 @@ const BlogPost: React.FC = () => {
                           return (
                             <div key={idx} className="space-y-6">
                               {block.text && (
-                                <div 
+                                <RichTextDisplay
+                                  content={block.text}
                                   className="text-white/90 leading-relaxed text-base md:text-lg"
-                                  dangerouslySetInnerHTML={{ __html: block.text }} 
                                 />
                               )}
                               {hasImages && (

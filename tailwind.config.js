@@ -6,6 +6,10 @@ export default {
   ],
   theme: {
     extend: {
+      fontWeight: {
+        normal: 400,
+        bold: 700,
+      },
       fontFamily: {
         'sans': ['PingARLT', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'sans-serif'],
         'pingarlt': ['PingARLT', 'sans-serif'],

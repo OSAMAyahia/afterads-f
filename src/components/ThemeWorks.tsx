@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Monitor, Tablet, Smartphone, Eye, X, ExternalLink, MessageSquare, Calendar, User } from 'lucide-react';
-import { apiCall, API_ENDPOINTS, buildImageUrl } from '../config/api';
+import { apiCall, API_ENDPOINTS, buildImageUrl, getApiBaseUrl } from '../config/api';
 import { useApiQuery } from '../hooks/useApiQuery';
 import fallbackImg from '../assets/search_not_found.png';
 import { useTranslation } from 'react-i18next';
@@ -158,7 +158,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ work, isOpen, onClose }) =>
       </div>
     </div>
   );
-};
+};;;;
 
 const ThemeWorks: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -168,6 +168,14 @@ const ThemeWorks: React.FC = () => {
   const [error, setError] = useState('');
   const [selectedWork, setSelectedWork] = useState<ThemeWork | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [maskActive, setMaskActive] = useState(false);
+  const [overlayRect, setOverlayRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
+  const holdTimerRef = useRef<number | null>(null);
+  const scrollRafRef = useRef<number | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const [iframeReady, setIframeReady] = useState(false);
+  
+  const embedMode = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('embed') === 'true';
 
   useEffect(() => {
     if (!worksResp) return;
@@ -183,6 +191,121 @@ const ThemeWorks: React.FC = () => {
   };
 
   const getImageUrl = (path: string) => buildImageUrl(path);
+
+  const contentCloneRef = useRef<HTMLDivElement | null>(null);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [scrollOffset, setScrollOffset] = useState(0);
+
+  // Start scroll animation after content height is set
+  useEffect(() => {
+    if (maskActive && contentHeight > 0 && overlayRect) {
+      startContentScroll();
+    }
+  }, [contentHeight, maskActive, overlayRect]);
+
+  const startContentScroll = () => {
+    if (!contentCloneRef.current || contentHeight === 0 || !overlayRect) return;
+    
+    const speed = 4;
+    let currentOffset = 0;
+    
+    const step = () => {
+      const maxOffset = Math.max(0, contentHeight - overlayRect.height);
+      currentOffset += speed;
+      
+      if (currentOffset >= maxOffset) {
+        // Stop animation when reaching the bottom
+        scrollRafRef.current = null;
+        setScrollOffset(maxOffset);
+        return;
+      }
+      
+      setScrollOffset(currentOffset);
+      scrollRafRef.current = requestAnimationFrame(step);
+    };
+    
+    scrollRafRef.current = requestAnimationFrame(step);
+  };
+
+  const stopScrollAnimation = () => {
+    if (scrollRafRef.current) {
+      cancelAnimationFrame(scrollRafRef.current);
+      scrollRafRef.current = null;
+    }
+  };
+const handlePressStart = (rect: DOMRect, imageElement: HTMLElement) => {
+  if (holdTimerRef.current) {
+    window.clearTimeout(holdTimerRef.current);
+  }
+  holdTimerRef.current = window.setTimeout(() => {
+    // استخدم موقع وحجم الصورة الفعلي بدلاً من الكونتينر
+    const imgRect = imageElement.getBoundingClientRect();
+    setOverlayRect({ 
+      top: imgRect.top, 
+      left: imgRect.left, 
+      width: imgRect.width, 
+      height: imgRect.height 
+    });
+    setMaskActive(true);
+    
+    // Clone content and calculate height
+    const bodyClone = document.body.cloneNode(true) as HTMLElement;
+    
+    // Fix image URLs in cloned content to prevent 404 errors
+    const images = bodyClone.querySelectorAll('img');
+    images.forEach(img => {
+      if (img.src && !img.src.startsWith('http') && !img.src.startsWith('data:')) {
+        // Convert relative URLs to absolute
+        const baseUrl = getApiBaseUrl();
+        if (img.src.startsWith('/')) {
+          img.src = baseUrl + img.src;
+        } else {
+          img.src = baseUrl + '/' + img.src;
+        }
+      }
+    });
+    
+    // Store the cloned content in the ref
+    if (contentCloneRef.current) {
+      contentCloneRef.current.innerHTML = '';
+      contentCloneRef.current.appendChild(bodyClone);
+      
+      // Debug: Check if content was added
+      console.log('Content cloned successfully, children count:', bodyClone.children.length);
+      console.log('Content height set to:', tempDiv.scrollHeight);
+    }
+    
+    // Calculate height using a temporary container
+    const tempDiv = document.createElement('div');
+    tempDiv.style.position = 'absolute';
+    tempDiv.style.top = '-9999px';
+    tempDiv.style.left = '-9999px';
+    tempDiv.style.width = `${imgRect.width}px`;
+    tempDiv.appendChild(bodyClone.cloneNode(true));
+    document.body.appendChild(tempDiv);
+    
+    setContentHeight(tempDiv.scrollHeight);
+    setScrollOffset(0);
+    
+    // Cleanup after animation
+    setTimeout(() => {
+      document.body.removeChild(tempDiv);
+    }, 100);
+  }, 500);
+};
+
+  const handlePressEnd = () => {
+    if (holdTimerRef.current) {
+      window.clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+    stopScrollAnimation();
+    setMaskActive(false);
+    setScrollOffset(0);
+    setContentHeight(0);
+    setOverlayRect(null);
+  }; 
+  
 
   if (loading) {
     return (
@@ -242,14 +365,34 @@ const ThemeWorks: React.FC = () => {
   className="bg-[#1e1e1e]/95 backdrop-blur-lg border border-gray-700/20 rounded-xl sm:rounded-2xl overflow-hidden hover:border-[#18b5d8]/30 transition-all duration-300 group h-full flex flex-col scale-95 sm:scale-100"
 >
                 {/* Image Container */}
-<div className="relative aspect-[16/9] sm:aspect-[16/10] lg:aspect-[4/3] overflow-hidden bg-white/5">                  <img 
-                    src={getImageUrl(work.imageDesktop)}
-                    alt="Work Preview"
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    onError={(e) => {
-                      e.currentTarget.src = fallbackImg;
-                    }}
-                  />
+<div
+  className="relative aspect-[16/9] sm:aspect-[16/10] lg:aspect-[4/3] overflow-hidden bg-white/5 cursor-pointer"
+  onMouseDown={(e) => {
+    const container = e.currentTarget;
+    const img = container.querySelector('img');
+    if (img) {
+      handlePressStart(container.getBoundingClientRect(), img);
+    }
+  }}
+  onMouseUp={handlePressEnd}
+  onMouseLeave={handlePressEnd}
+  onTouchStart={(e) => {
+    const container = e.currentTarget;
+    const img = container.querySelector('img');
+    if (img) {
+      handlePressStart(container.getBoundingClientRect(), img);
+    }
+  }}
+  onTouchEnd={handlePressEnd}
+>
+  <img 
+    src={getImageUrl(work.imageDesktop)}
+    alt="Work Preview"
+    className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ${maskActive ? 'opacity-0' : ''}`}
+    onError={(e) => {
+      e.currentTarget.src = fallbackImg;
+    }}
+  />
                   
                   {/* Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-3">
@@ -330,7 +473,58 @@ const ThemeWorks: React.FC = () => {
           onClose={() => setIsModalOpen(false)}
         />
       )}
-    </div>
+
+      {maskActive && overlayRect && (
+        <div className="fixed z-[10001] pointer-events-none">
+          {/* Covers outside the hole */}
+          <div
+            className="fixed bg-black/40"
+            style={{ top: 0, left: 0, width: '100vw', height: `${overlayRect.top}px` }}
+          />
+          <div
+            className="fixed bg-black/40"
+            style={{ top: `${overlayRect.top + overlayRect.height}px`, left: 0, width: '100vw', height: `calc(100vh - ${overlayRect.top + overlayRect.height}px)` }}
+          />
+          <div
+            className="fixed bg-black/40"
+            style={{ top: `${overlayRect.top}px`, left: 0, width: `${overlayRect.left}px`, height: `${overlayRect.height}px` }}
+          />
+          <div
+            className="fixed bg-black/40"
+            style={{ top: `${overlayRect.top}px`, left: `${overlayRect.left + overlayRect.width}px`, width: `calc(100vw - ${overlayRect.left + overlayRect.width}px)`, height: `${overlayRect.height}px` }}
+          />
+
+          {/* Content container with cloned content */}
+           <div
+             className="fixed overflow-hidden"
+             style={{ 
+               top: `${overlayRect.top}px`, 
+               left: `${overlayRect.left}px`, 
+               width: `${overlayRect.width}px`, 
+               height: `${overlayRect.height}px`,
+               borderRadius: '0.75rem',
+               border: '4px solid rgba(255,255,255,0.3)',
+               boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+               backgroundColor: 'transparent'
+             }}
+           >
+             <div
+             ref={contentCloneRef}
+             className="overlay-content-container"
+             style={{
+               transform: `translateY(-${scrollOffset}px)`,
+               width: '100%',
+               height: `${contentHeight}px`,
+               scrollbarWidth: 'none',
+               msOverflowStyle: 'none',
+               overflow: 'hidden',
+               minHeight: '100px'
+             }}
+           />
+         </div>
+       </div>
+     )}
+   </div>
   );
 };
 
