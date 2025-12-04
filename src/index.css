@@ -19,21 +19,34 @@
   background-color: transparent;
 }
 
-/* Hide scrollbar for scroll overlay containers */
+/* Custom scrollbar for scroll overlay containers */
 .scroll-overlay-container::-webkit-scrollbar {
-  display: none;
-}
-.scroll-overlay-container {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  width: 6px;
+  height: 6px;
 }
 
-.scroll-overlay-container *::-webkit-scrollbar {
-  display: none;
+.scroll-overlay-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
 }
+
+.scroll-overlay-container::-webkit-scrollbar-thumb {
+  background: rgba(24, 181, 216, 0.6);
+  border-radius: 3px;
+}
+
+.scroll-overlay-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(24, 181, 216, 0.8);
+}
+
+.scroll-overlay-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(24, 181, 216, 0.6) rgba(255, 255, 255, 0.1);
+}
+
 .scroll-overlay-container * {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(24, 181, 216, 0.6) rgba(255, 255, 255, 0.1);
 }
 
 
@@ -43,7 +56,10 @@
 
 @layer base {
   html, body, button, input, textarea, select { font-family: PingARLT, sans-serif; }
-  html, body { font-weight: 400; }
+  html, body { font-weight: 400; cursor: url('/cursor (4).cur'), url('/cursor.cur'), url('/cursor (5).cur'), auto; }
+  a, button { cursor: url('/cursor (5).cur'), pointer; }
+  label, .cursor-pointer, [role="button"] { cursor: url('/cursor (5).cur'), pointer !important; }
+  input, textarea { cursor: text; }
   h1, h2, h3, h4, h5, h6 { font-weight: 700; }
   
 }

@@ -302,6 +302,7 @@
     container.querySelectorAll('.delete-img-btn, .delete-image-btn').forEach(el => el.remove());
     const normalizeSrc = (src: string) => {
       if (!src) return '';
+      src = src.trim().replace(/^`|`$/g, '').replace(/^"|"$/g, '').trim();
       if (src.startsWith('data:')) return '';
       const m = src.match(/\/images\/(.+)$/);
       return m ? `/images/${m[1]}` : src;
@@ -318,6 +319,16 @@
       currentImages = [];
     };
     const isSpacerP = (el: HTMLElement) => el.tagName.toLowerCase() === 'p' && (el.innerHTML.trim() === '<br>' || el.innerHTML.trim() === '');
+    const extractImagesDeep = (el: HTMLElement) => {
+      const found: Array<{ url: string; orientation?: 'horizontal' | 'vertical' }> = [];
+      const imgs = el.querySelectorAll('img');
+      imgs.forEach((img) => {
+        const url = normalizeSrc(img.getAttribute('data-src-path') || img.getAttribute('src') || '');
+        if (url) found.push({ url, orientation: 'horizontal' });
+      });
+      return found;
+    };
+
     Array.from(container.childNodes).forEach((node) => {
       if (node.nodeType === Node.ELEMENT_NODE) {
         const el = node as HTMLElement;
@@ -326,11 +337,16 @@
           const url = img?.getAttribute('data-src-path') || normalizeSrc(img?.getAttribute('src') || '');
           const orientation = (el.getAttribute('data-orientation') as 'horizontal' | 'vertical') || 'horizontal';
           if (url) currentImages.push({ url, orientation });
-        } else if (!isSpacerP(el)) {
-          const plain = (el.textContent || '').trim();
-          if (plain) {
-            if (currentText || currentImages.length) pushBlock();
-            currentText += el.outerHTML;
+        } else {
+          const deepImgs = extractImagesDeep(el);
+          if (deepImgs.length) {
+            currentImages.push(...deepImgs);
+          } else if (!isSpacerP(el)) {
+            const plain = (el.textContent || '').trim();
+            if (plain) {
+              if (currentText || currentImages.length) pushBlock();
+              currentText += el.outerHTML;
+            }
           }
         }
       } else if (node.nodeType === Node.TEXT_NODE) {

@@ -46,7 +46,7 @@ useEffect(() => {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-6 left-4 sm:bottom-8 sm:left-6 z-50 mobile-safe-bottom">
+    <div className="fixed bottom-24 sm:bottom-8 left-4 sm:left-6 z-[10000] mobile-safe-bottom">
      
       <button
         onClick={handleWhatsAppClick}

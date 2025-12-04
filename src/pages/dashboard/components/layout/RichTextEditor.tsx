@@ -47,6 +47,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   const [imageOrientation, setImageOrientation] = useState<'horizontal' | 'vertical'>('horizontal');
   const [isHtmlMode, setIsHtmlMode] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const htmlTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   const toggleDirection = () => {
     setTextDirection(prev => prev === 'rtl' ? 'ltr' : 'rtl');
@@ -221,6 +222,20 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       }
 
       if (urls.length > 0) {
+        if (isHtmlMode) {
+          const imgsHtml = urls.map(u => `<img src="${u}" alt="" />`).join('\n') + '\n<p><br></p>';
+          if (htmlTextareaRef.current) {
+            const ta = htmlTextareaRef.current;
+            const start = ta.selectionStart ?? value.length;
+            const end = ta.selectionEnd ?? start;
+            const newVal = (value || '').slice(0, start) + imgsHtml + (value || '').slice(end);
+            onChange(newVal);
+          } else {
+            onChange(((value || '') + '\n' + imgsHtml));
+          }
+          return;
+        }
+
         const html = urls.map(u => `
           <div class="image-container" contenteditable="false" data-orientation="${imageOrientation}">
             <img src="${u}" alt="صورة" />
@@ -282,6 +297,19 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       uploadedUrl = resp.url;
     }
     const finalUrl = buildImageUrl(uploadedUrl);
+    if (isHtmlMode) {
+      const imgHtml = `<img src="${finalUrl}" alt="" />\n<p><br></p>`;
+      if (htmlTextareaRef.current) {
+        const ta = htmlTextareaRef.current;
+        const start = ta.selectionStart ?? value.length;
+        const end = ta.selectionEnd ?? start;
+        const newVal = (value || '').slice(0, start) + imgHtml + (value || '').slice(end);
+        onChange(newVal);
+      } else {
+        onChange(((value || '') + '\n' + imgHtml));
+      }
+      return;
+    }
     insertImageAtCursor(finalUrl, imageOrientation, uploadedUrl);
   };
 
@@ -693,7 +721,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           onKeyUp={saveSelection}
           onMouseUp={saveSelection}
           onFocus={saveSelection}
-          className="w-full px-4 py-3 border border-gray-300 rounded-b-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61] transition-all overflow-y-auto prose prose-sm max-w-none  bg-slate-700 "
+          className="w-full px-4 py-3 border border-gray-300 rounded-b-lg   transition-all overflow-y-auto prose prose-sm max-w-none   "
           style={{ minHeight, direction: textDirection }}
           data-placeholder={placeholder}
         />
@@ -702,7 +730,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         <textarea
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full px-4 py-3 border border-gray-300 rounded-b-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61] transition-all overflow-y-auto bg-transparent   font-mono"
+          ref={htmlTextareaRef}
+          className="w-full px-4 py-3 border border-gray-300 rounded-b-lg   transition-all overflow-y-auto bg-transparent   font-mono"
           style={{ minHeight, direction: textDirection as any }}
           placeholder={placeholder}
         />

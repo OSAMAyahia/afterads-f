@@ -209,13 +209,11 @@ const navigate = useNavigate();
 
               <button
                 onClick={() => navigate(`/theme/${theme.id}`)}
-                className="group bg-gradient-to-r from-[#18b5d5] to-[#292929] text-[#ffffff] px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-3 md:py-4 rounded-lg sm:rounded-xl md:rounded-2xl hover:from-[#292929] hover:to-[#18b5d5] disabled:opacity-50 transition-transform transition-shadow transition-border duration-300 font-semibold shadow-lg hover:shadow-md transform hover:scale-105 active:scale-95 will-change-transform text-xs sm:text-sm md:text-base"
-              >
+                className="group bg-gradient-to-r from-[#18b5d5] to-[#292929] text-[#ffffff] px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-3 md:py-4 rounded-lg sm:rounded-xl md:rounded-2xl hover:from-[#292929] hover:to-[#18b5d5] disabled:opacity-50 transition-transform transition-shadow transition-border duration-300 font-semibold shadow-lg hover:shadow-md transform hover:scale-105 active:scale-95 will-change-transform text-xs sm:text-sm md:text-base"              >
                 <div className="flex items-center justify-center gap-2 sm:gap-3">
                   <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
                   {t('home.themes.live_preview')}
-                  <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform duration-300 will-change-transform" />
-                </div>
+                  <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform duration-300 will-change-transform" />                </div>
               </button>
             </div>
           </div>

@@ -8,6 +8,7 @@ import {
   MoveVertical,
   Grid
 } from 'lucide-react';
+import { buildImageUrl } from '../../../../config/api';
 
 interface ImageUploaderProps {
   value: string | string[];
@@ -192,7 +193,7 @@ const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
             >
               <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-gray-200 hover:border-[#203f61] transition-all">
                 <img
-                  src={img}
+                  src={buildImageUrl(img)}
                   alt={`صورة ${index + 1}`}
                   className="w-full h-full object-cover"
                 />

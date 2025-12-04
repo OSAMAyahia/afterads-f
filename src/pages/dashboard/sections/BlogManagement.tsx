@@ -7,6 +7,7 @@ import ConfirmationModal from '../../../components/modals/ConfirmationModal';
 import { Plus, Edit2, Trash2, AlertCircle, X, FileText, Calendar, User } from 'lucide-react';
 import Spinner from '../../../components/ui/Spinner';
 import RichTextEditor from '../components/layout/RichTextEditor';
+import ImageUploader from '../components/layout/ImageUploaderProps';
 
 interface BlogPost {
   _id: string;
@@ -88,20 +89,21 @@ const blocksToHtml = (value: any) => {
   return String(value || '');
 };
 
-const htmlToBlocks = (html: string) => {
-  const container = document.createElement('div');
-  container.innerHTML = html || '';
-  container.querySelectorAll('.delete-img-btn, .delete-image-btn').forEach(el => el.remove());
-  const normalizeSrc = (src: string) => {
-    if (!src) return '';
-    if (src.startsWith('data:')) return '';
-    const m = src.match(/\/images\/(.+)$/);
-    return m ? `/images/${m[1]}` : src;
-  };
+  const htmlToBlocks = (html: string) => {
+    const container = document.createElement('div');
+    container.innerHTML = html || '';
+    container.querySelectorAll('.delete-img-btn, .delete-image-btn').forEach(el => el.remove());
+    const normalizeSrc = (src: string) => {
+      if (!src) return '';
+      src = src.trim().replace(/^`|`$/g, '').replace(/^"|"$/g, '').trim();
+      if (src.startsWith('data:')) return '';
+      const m = src.match(/\/images\/(.+)$/);
+      return m ? `/images/${m[1]}` : src;
+    };
 
-  const blocks: Array<{ text: string; images: Array<{ url: string; orientation?: 'horizontal' | 'vertical' }> }> = [];
-  let currentText = '';
-  let currentImages: Array<{ url: string; orientation?: 'horizontal' | 'vertical' }> = [];
+    const blocks: Array<{ text: string; images: Array<{ url: string; orientation?: 'horizontal' | 'vertical' }> }> = [];
+    let currentText = '';
+    let currentImages: Array<{ url: string; orientation?: 'horizontal' | 'vertical' }> = [];
 
   const pushBlock = () => {
     const cleanText = currentText.trim();
@@ -114,29 +116,44 @@ const htmlToBlocks = (html: string) => {
 
   const isSpacerP = (el: HTMLElement) => el.tagName.toLowerCase() === 'p' && (el.innerHTML.trim() === '<br>' || el.innerHTML.trim() === '');
 
-  Array.from(container.childNodes).forEach((node) => {
-    if (node.nodeType === Node.ELEMENT_NODE) {
-      const el = node as HTMLElement;
-      if (el.classList.contains('image-container')) {
-        const img = el.querySelector('img');
-        const url = img?.getAttribute('data-src-path') || normalizeSrc(img?.getAttribute('src') || '');
-        const orientation = (el.getAttribute('data-orientation') as 'horizontal' | 'vertical') || 'horizontal';
-        if (url) currentImages.push({ url, orientation });
-      } else if (!isSpacerP(el)) {
-        const plain = (el.textContent || '').trim();
-        if (plain) {
+    const extractImagesDeep = (el: HTMLElement) => {
+      const found: Array<{ url: string; orientation?: 'horizontal' | 'vertical' }> = [];
+      const imgs = el.querySelectorAll('img');
+      imgs.forEach((img) => {
+        const url = normalizeSrc(img.getAttribute('data-src-path') || img.getAttribute('src') || '');
+        if (url) found.push({ url, orientation: 'horizontal' });
+      });
+      return found;
+    };
+
+    Array.from(container.childNodes).forEach((node) => {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const el = node as HTMLElement;
+        if (el.classList.contains('image-container')) {
+          const img = el.querySelector('img');
+          const url = img?.getAttribute('data-src-path') || normalizeSrc(img?.getAttribute('src') || '');
+          const orientation = (el.getAttribute('data-orientation') as 'horizontal' | 'vertical') || 'horizontal';
+          if (url) currentImages.push({ url, orientation });
+        } else {
+          const deepImgs = extractImagesDeep(el);
+          if (deepImgs.length) {
+            currentImages.push(...deepImgs);
+          } else if (!isSpacerP(el)) {
+            const plain = (el.textContent || '').trim();
+            if (plain) {
+              if (currentText || currentImages.length) pushBlock();
+              currentText += el.outerHTML;
+            }
+          }
+        }
+      } else if (node.nodeType === Node.TEXT_NODE) {
+        const txt = (node.textContent || '').trim();
+        if (txt) {
           if (currentText || currentImages.length) pushBlock();
-          currentText += el.outerHTML;
+          currentText += txt;
         }
       }
-    } else if (node.nodeType === Node.TEXT_NODE) {
-      const txt = (node.textContent || '').trim();
-      if (txt) {
-        if (currentText || currentImages.length) pushBlock();
-        currentText += txt;
-      }
-    }
-  });
+    });
 
   pushBlock();
   return blocks.filter(b => b.text.trim() || (b.images && b.images.length > 0));
@@ -149,7 +166,7 @@ const openModal = (post?: BlogPost) => {
       slug: post.slug || '',
       excerpt: post.excerpt || '',
       content: Array.isArray((post as any).content) ? blocksToHtml((post as any).content) : (post.content || ''),
-      featuredImage: post.featuredImage || '',
+      featuredImage: post.featuredImage || (post as any)?.featuredImageFile?.filename || '',
       author: post.author || '',
       categories: post.categories || [],
       metaTitle: post.metaTitle || '',
@@ -378,18 +395,9 @@ return (
                         <div className="text-sm font-semibold text-gray-900">{post.id}</div>
                       </td>
                       <td className="py-4 px-6">
-                        <div className="flex items-center gap-3">
-                          {post.featuredImage && (
-                            <img 
-                              src={post.featuredImage} 
-                              alt={post.title}
-                              className="w-12 h-12 rounded object-cover"
-                            />
-                          )}
-                          <div>
-                            <div className="text-sm font-semibold text-gray-900">{post.title}</div>
-                            <div className="text-xs text-[#203f61] font-medium mt-1">{post.slug}</div>
-                          </div>
+                        <div>
+                          <div className="text-sm font-semibold text-gray-900">{post.title}</div>
+                          <div className="text-xs text-[#203f61] font-medium mt-1">{post.slug}</div>
                         </div>
                       </td>
                       <td className="py-4 px-6">
@@ -561,16 +569,11 @@ return (
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        رابط الصورة البارزة
-                      </label>
-                      <input
-                        type="text"
-                        name="featuredImage"
-                        value={formData.featuredImage}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61] transition-all"
-                        placeholder="أدخل رابط الصورة"
+                      <ImageUploader
+                        value={formData.featuredImage || ''}
+                        onChange={(val) => setFormData(prev => ({ ...prev, featuredImage: Array.isArray(val) ? val[0] : val }))}
+                        label="الصورة البارزة"
+                        multiple={false}
                       />
                     </div>
                   </div>

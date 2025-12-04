@@ -889,12 +889,12 @@ useEffect(() => {
                     key={link.name}
                     to={link.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`relative px-4 py-2 text-white/90 hover:text-white rounded-xl hover:bg-white/10 transition-all duration-300 text-sm font-medium group ${
+                    className={`relative px-4 py-2 text-white/90 hover:text-white transition-colors duration-300 text-sm font-medium group ${
                       isActive(link.href) ? 'text-[#18b5d8]' : ''
                     }`}
                   >
                     {link.name}
-                    <div className="absolute inset-x-0 -bottom-1 h-0.5 bg-gradient-to-r from-[#18b5d8] to-[#0891b2] rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
+                    <div className="absolute inset-x-0 -bottom-1 h-0.5 bg-gradient-to-r from-[#18b5d8] to-[#0891b2] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
                   </Link>
                 ))}
               </div>

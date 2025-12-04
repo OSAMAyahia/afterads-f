@@ -11,7 +11,6 @@ const CustomCursor = () => {
   const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
   const [isClicking, setIsClicking] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [ripples, setRipples] = useState<Array<{ id: number; x: number; y: number }>>([]);
   
   // Hide custom cursor in dashboard pages
   const hideCursorPaths = ['/admin', '/login'];
@@ -48,47 +47,18 @@ const CustomCursor = () => {
 
     const handleMouseMove = (e: MouseEvent) => {
       setPosition({ x: e.clientX, y: e.clientY });
-      setIsVisible(true);
+      const target = e.target as HTMLElement | null;
+      const hideForText = !!target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
+      setIsVisible(!hideForText);
     };
 
-    const handleClick = (e: MouseEvent) => {
+    const handleClick = () => {
       setIsClicking(true);
-      
-      // Create ripple effect
-      const newRipple = {
-        id: Date.now(),
-        x: e.clientX,
-        y: e.clientY
-      };
-      setRipples(prev => [...prev, newRipple]);
-      
-      // Remove ripple after animation
-      setTimeout(() => {
-        setRipples(prev => prev.filter(ripple => ripple.id !== newRipple.id));
-      }, 300);
-      
       setTimeout(() => setIsClicking(false), 100);
     };
 
-    const handleTouchStart = (e: TouchEvent) => {
+    const handleTouchStart = () => {
       setIsClicking(true);
-      
-      const touch = e.touches[0];
-      if (touch) {
-        // Create ripple effect
-        const newRipple = {
-          id: Date.now(),
-          x: touch.clientX,
-          y: touch.clientY
-        };
-        setRipples(prev => [...prev, newRipple]);
-        
-        // Remove ripple after animation
-        setTimeout(() => {
-          setRipples(prev => prev.filter(ripple => ripple.id !== newRipple.id));
-        }, 300);
-      }
-      
       setTimeout(() => setIsClicking(false), 100);
     };
 
@@ -126,88 +96,7 @@ const CustomCursor = () => {
     };
   }, [shouldHideCursor, location.pathname]);
 
-  // Return null after all hooks have been called
-  if (shouldHideCursor || isMobile) {
-    return null;
-  }
-
-  return (
-    <>
-      {isVisible && (
-        <>
-          {/* Main cursor */}
-          <div
-            className={`fixed pointer-events-none z-[9999] ${
-                 isClicking ? 'animate-professionalPulse' : ''
-               }`}
-            style={{
-              left: position.x - 20,
-              top: position.y - 20,
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #18b5d5, #0ea5e9, #06b6d4)',
-              boxShadow: '0 0 20px rgba(24, 181, 213, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.2)',
-              transform: isClicking ? 'scale(1.5)' : 'scale(1)',
-               opacity: isClicking ? '0.9' : '0.7',
-            }}
-          >
-            {/* Inner glow */}
-            <div
-              className="absolute inset-2 rounded-full"
-              style={{
-                background: 'radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, transparent 70%)',
-              }}
-            />
-            
-            {/* Center dot */}
-            <div
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-              style={{
-                width: '6px',
-                height: '6px',
-                borderRadius: '50%',
-                backgroundColor: '#ffffff',
-                boxShadow: '0 0 10px rgba(255, 255, 255, 0.8)',
-              }}
-            />
-          </div>
-          
-          {/* Outer ring */}
-          <div
-            className="fixed pointer-events-none z-[9998]"
-            style={{
-              left: position.x - 30,
-              top: position.y - 30,
-              width: '60px',
-              height: '60px',
-              borderRadius: '50%',
-              border: '1px solid rgba(24, 181, 213, 0.3)',
-              transform: isClicking ? 'scale(2)' : 'scale(1)',
-               opacity: isClicking ? '0.3' : '0.6',
-            }}
-          />
-        </>
-      )}
-      
-      {/* Ripple effects */}
-      {ripples.map((ripple) => (
-        <div
-          key={ripple.id}
-          className="fixed pointer-events-none z-[9997] animate-ripple"
-          style={{
-            left: ripple.x - 25,
-            top: ripple.y - 25,
-            width: '50px',
-            height: '50px',
-            borderRadius: '50%',
-            border: '2px solid #18b5d5',
-            opacity: '0.6',
-          }}
-        />
-      ))}
-    </>
-  );
+  return null;
 };
 
 export default CustomCursor;

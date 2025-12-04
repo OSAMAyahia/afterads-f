@@ -20,7 +20,7 @@ const sanitizeHtml = (html: string): string => {
   const container = document.createElement('div');
   container.innerHTML = html || '';
   container.querySelectorAll('script,style,iframe,link').forEach(n => n.remove());
-  const allowed = new Set(['p','h1','h2','h3','ul','ol','li','blockquote','pre','code','a','img','div','span','br','strong','em','u']);
+  const allowed = new Set(['p','h1','h2','h3','ul','ol','li','blockquote','pre','code','a','img','div','span','br','strong','em','u','table','thead','tbody','tr','td','th']);
   const walk = (node: Node) => {
     if (node.nodeType === 1) {
       const el = node as HTMLElement;
@@ -88,6 +88,12 @@ const RichTextDisplay: React.FC<RichTextDisplayProps> = ({ content, className = 
           )}
         </div>
       ))}
+      <style>{`
+        .rich-text-content img { max-width: 100%; height: auto; display: block; border-radius: 0.5rem; }
+        .rich-text-content table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+        .rich-text-content td, .rich-text-content th { padding: 0.25rem; vertical-align: top; }
+        .rich-text-content td img { width: 100%; height: auto; display: block; }
+      `}</style>
     </div>
   );
 };

@@ -120,12 +120,7 @@ const HeroSection: React.FC = () => {
           <div className="absolute inset-0 bg-[#18b5d5]/20 blur-3xl -z-10 animate-pulse"></div>
         </div>
 
-        {/* الجملة العربية مع تأثير الشفافية */}
-        <div className="relative">
-          <p className="text-xl sm:text-2xl lg:text-3xl font-bold leading-relaxed max-w-md drop-shadow-lg opacity-90 relative text-white">
-            {t('home.hero.subtitle')}
-          </p>
-        </div>
+     
 
         <div className="relative group flex gap-2">
          <button
@@ -155,7 +150,7 @@ const HeroSection: React.FC = () => {
 </button>
 
           {/* الهالة الخارجية */}
-          <div className="absolute inset-0 rounded-2xl bg-[#18b5d5] opacity-0 group-hover:opacity-30 blur-xl scale-75 group-hover:scale-125 transition-all duration-700 -z-30"></div>
+          {/* <div className="absolute inset-0 rounded-2xl bg-[#18b5d5] opacity-0 group-hover:opacity-30 blur-xl scale-75 group-hover:scale-125 transition-all duration-700 -z-30"></div> */}
         </div>
 
         {/* نقاط ديكور */}

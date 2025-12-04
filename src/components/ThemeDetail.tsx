@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { smartToast } from '../utils/toastConfig';
@@ -115,6 +116,41 @@ interface Category {
   description: string;
 }
 
+// Cache للصور الفاشلة لمنع إعادة المحاولة
+const failedImagesCache = new Set<string>();
+
+const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+  const target = e.currentTarget;
+  const src = target.src;
+  
+  // إضافة الصورة للـ cache
+  failedImagesCache.add(src);
+  
+  // منع إعادة المحاولة
+  target.onerror = null;
+  
+  // وضع placeholder بدلاً من الصورة
+  target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23292929" width="200" height="200"/%3E%3Ctext fill="%2318b5d8" font-size="14" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3E%E2%9C%96%3C/text%3E%3C/svg%3E';
+  
+  // إخفاء الصورة (اختياري)
+  target.style.opacity = '0.3';
+};
+
+const getSafeImageUrl = (imageUrl: string | undefined | null): string => {
+  if (!imageUrl || imageUrl.trim() === '') {
+    return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23292929" width="200" height="200"/%3E%3C/svg%3E';
+  }
+  
+  const fullUrl = buildImageUrl(imageUrl);
+  
+  // إذا كانت الصورة في الـ cache، نرجع placeholder
+  if (failedImagesCache.has(fullUrl)) {
+    return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23292929" width="200" height="200"/%3E%3C/svg%3E';
+  }
+  
+  return fullUrl;
+};
+
 const ThemeDetail: React.FC = () => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
@@ -160,26 +196,29 @@ const ThemeDetail: React.FC = () => {
   const contentCloneRef = useRef<HTMLDivElement | null>(null);
   const [contentHeight, setContentHeight] = useState(0);
   const [scrollOffset, setScrollOffset] = useState(0);
+  const [overlayBorderRadius, setOverlayBorderRadius] = useState<string>('0.5rem');
 
-  const startContentScroll = () => {
+  const startContentScroll = (initialHeight?: number) => {
     if (!contentCloneRef.current) return;
     
     const speed = 4;
     let currentOffset = 0;
+    const totalHeight = initialHeight || contentHeight;
     
     const step = () => {
-      const maxOffset = contentHeight - (overlayRect?.height || 0);
+      const maxOffset = totalHeight - (overlayRect?.height || 0);
       currentOffset += speed;
       
       if (currentOffset >= maxOffset) {
-        scrollRafRef.current = null;
-        return;
+        // Reset to beginning for continuous scroll
+        currentOffset = 0;
       }
       
       setScrollOffset(currentOffset);
       scrollRafRef.current = requestAnimationFrame(step);
     };
     
+    stopScrollAnimation(); // Stop any existing animation
     scrollRafRef.current = requestAnimationFrame(step);
   };
 
@@ -190,57 +229,143 @@ const ThemeDetail: React.FC = () => {
     }
   };
 
- const handlePressStart = (device: 'desktop' | 'tablet' | 'mobile') => {
+const handlePressStart = (device: 'desktop' | 'tablet' | 'mobile') => {
   if (holdTimerRef.current) {
     window.clearTimeout(holdTimerRef.current);
   }
-  holdTimerRef.current = window.setTimeout(() => {
-    const el = previewContainerRef.current;
-    if (!el) return;
-    // استخدم الصورة الفعلية بدلاً من الكونتينر
-    const img = el.querySelector('img');
-    if (!img) return;
-    const rect = img.getBoundingClientRect();
-    setOverlayRect({ 
-      top: rect.top, 
-      left: rect.left, 
-      width: rect.width, 
-      height: rect.height 
+  
+  const el = previewContainerRef.current;
+  if (!el) return;
+  
+  // استخدم حاوية المعاينة نفسها لضمان التطابق التام مع الحواف والحدود
+  const rect = el.getBoundingClientRect();
+  try {
+    const computed = window.getComputedStyle(el);
+    // التقط قيمة نصف القطر الفعلية للحواف لاستخدامها في طبقة المعاينة
+    const br = computed.borderRadius || computed.borderTopLeftRadius;
+    setOverlayBorderRadius(br && br.trim() !== '' ? br : '0.5rem');
+  } catch {}
+  setOverlayRect({ 
+    top: rect.top, 
+    left: rect.left, 
+    width: rect.width, 
+    height: rect.height 
+  });
+  setScrollOverlayDevice(device);
+  setScrollOverlayActive(true);
+  
+  setTimeout(() => {
+    if (!contentCloneRef.current) return;
+    
+    // نسخ محتوى الصفحة
+    const mainContent = document.querySelector('main') || document.body;
+    const clonedContent = mainContent.cloneNode(true) as HTMLElement;
+    
+    // تنظيف العناصر غير المرغوبة
+    const toRemove = clonedContent.querySelectorAll('.scroll-overlay-container, [class*="fixed"]');
+    toRemove.forEach(el => el.remove());
+    
+    // معالجة جميع العناصر
+    const allElements = clonedContent.querySelectorAll('*');
+    allElements.forEach((el: any) => {
+      const computed = window.getComputedStyle(el);
+      if (computed.position === 'fixed' || computed.position === 'sticky') {
+        el.style.position = 'relative';
+      }
     });
-    setScrollOverlayDevice(device);
-    setScrollOverlayActive(true);
     
-    // Clone content and calculate height
-    const bodyClone = document.body.cloneNode(true) as HTMLElement;
+    // معالجة الصور
+    const images = clonedContent.querySelectorAll('img');
+    images.forEach((img) => {
+      const originalImg = img as HTMLImageElement;
+      originalImg.style.cssText = `
+        max-width: 100%;
+        height: auto;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      `;
+      const src = originalImg.src;
+      if (src) {
+        originalImg.loading = 'eager';
+      }
+    });
+
+    // معالجة الفيديوهات
+    const videos = clonedContent.querySelectorAll('video, iframe');
+    videos.forEach(video => {
+      const placeholder = document.createElement('div');
+      placeholder.style.cssText = `
+        background-color: #2a2a2a;
+        min-height: 200px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #18b5d8;
+        font-size: 20px;
+        margin: 10px 0;
+        border-radius: 8px;
+      `;
+      placeholder.textContent = '🎬';
+      video.parentNode?.replaceChild(placeholder, video);
+    });
+
+    // حساب العرض الأساسي حسب الجهاز
+    let baseWidth = 1200;
+    if (device === 'mobile') baseWidth = 375;
+    else if (device === 'tablet') baseWidth = 768;
     
-    // Store the cloned content in the ref
-    if (contentCloneRef.current) {
-      contentCloneRef.current.innerHTML = '';
-      contentCloneRef.current.appendChild(bodyClone);
-    }
+    // حساب scale factor
+    const scaleFactor = rect.width / baseWidth;
     
-    // Calculate height using a temporary container
-    const tempDiv = document.createElement('div');
-    tempDiv.style.position = 'absolute';
-    tempDiv.style.top = '-9999px';
-    tempDiv.style.left = '-9999px';
-    tempDiv.style.width = `${rect.width}px`;
-    tempDiv.appendChild(bodyClone.cloneNode(true));
-    document.body.appendChild(tempDiv);
+    // wrapper داخلي للمحتوى
+    const innerWrapper = document.createElement('div');
+    innerWrapper.style.cssText = `
+      width: ${baseWidth}px;
+      background-color: #292929;
+      padding: 15px;
+      box-sizing: border-box;
+      min-height: 100vh;
+    `;
+    innerWrapper.appendChild(clonedContent);
     
-    setContentHeight(tempDiv.scrollHeight);
-    setScrollOffset(0);
+    // wrapper خارجي مع scale ومحاذاة مركزية
+    const scaledWrapper = document.createElement('div');
+    scaledWrapper.style.cssText = `
+      transform: scale(${scaleFactor});
+      transform-origin: top center;
+      width: ${baseWidth}px;
+      background-color: #292929;
+      margin: 0 auto;
+    `;
+    scaledWrapper.appendChild(innerWrapper);
     
-    // Start internal scroll after a small delay to ensure DOM is ready
+    // container رئيسي مع محاذاة مركزية
+    const mainContainer = document.createElement('div');
+    mainContainer.style.cssText = `
+      width: 100%;
+      overflow: hidden;
+      background-color: #292929;
+      min-height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    `;
+    mainContainer.appendChild(scaledWrapper);
+    
+    // مسح وإضافة المحتوى
+    contentCloneRef.current.innerHTML = '';
+    contentCloneRef.current.appendChild(mainContainer);
+    
+    // حساب الارتفاع وبدء التمرير
     setTimeout(() => {
-      startContentScroll();
-    }, 50);
-    
-    // Cleanup after animation
-    setTimeout(() => {
-      document.body.removeChild(tempDiv);
-    }, 100);
-  }, 500);
+      const realHeight = scaledWrapper.scrollHeight * scaleFactor;
+      setContentHeight(realHeight);
+      setScrollOffset(0);
+      startContentScroll(realHeight);
+    }, 150);
+  }, 50);
 };
 
   const handlePressEnd = () => {
@@ -328,26 +453,25 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
                     </div>
                     
                     {/* الصورة أو النص على الخلفية البيضاء */}
-                    {component.backgroundImage ? (
-                      <img
-                        src={buildImageUrl(component.backgroundImage)}
-                        alt={component.title}
-                        className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-700"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center p-6 gap-4">
-                        {component.icon && (() => {
-                          const IconComponent = getIconComponent(component.icon);
-                          return <IconComponent className="w-10 h-10 sm:w-12 sm:h-12 text-gray-600" />;
-                        })()}
-                        <p className="text-gray-800 text-sm sm:text-base font-semibold text-center">
-                          {component.overlayText || component.title}
-                        </p>
-                      </div>
-                    )}
+                {component.backgroundImage ? (
+  <img
+    src={getSafeImageUrl(component.backgroundImage)}
+    alt={component.title}
+    className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-700"
+    onError={handleImageError}
+    loading="lazy"
+  />
+) : (
+  <div className="absolute inset-0 flex flex-col items-center justify-center p-6 gap-4">
+    {component.icon && (() => {
+      const IconComponent = getIconComponent(component.icon);
+      return <IconComponent className="w-10 h-10 sm:w-12 sm:h-12 text-gray-600" />;
+    })()}
+    <p className="text-gray-800 text-sm sm:text-base font-semibold text-center">
+      {component.overlayText || component.title}
+    </p>
+  </div>
+)}
                     
                     {/* Badge برقم الترتيب */}
                     <div className="absolute top-4 right-4 bg-gradient-to-r from-[#18b5d5]/90 to-[#18b5d5]/70 backdrop-blur-sm rounded-full px-3 py-1.5 border border-[#18b5d5]/30 z-20">
@@ -363,12 +487,22 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
               {/* قسم المحتوى */}
               <div className={`flex-1 ${currentDevice === 'mobile' ? 'p-3' : 'p-3 sm:p-4 lg:p-6'} flex flex-col justify-center`}>
                 
-                {/* Badge "عنصر متقدم" */}
+                {/* Badge "عنصر متقدم" + زر عرض الصور */}
                 <div className="flex items-center gap-3 mb-4">
                   <div className="bg-gradient-to-r from-[#18b5d5]/20 to-[#18b5d5]/10 px-4 py-2 rounded-full border border-[#18b5d5]/30">
                     <span className="text-[#18b5d5] text-sm font-semibold">{component.category}</span>
                   </div>
                   <div className="h-px flex-1 bg-gradient-to-r from-[#18b5d5]/30 to-transparent"></div>
+                  {Array.isArray(component.galleryImages) && component.galleryImages.length > 0 && (
+                    <button
+                      onClick={() => onShowImages(component)}
+                      type="button"
+                      className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#18b5d5]/20 to-[#18b5d5]/10 border border-[#18b5d5]/30 text-[#18b5d5] text-sm font-semibold"
+                    >
+                      <FaImage className="w-4 h-4" />
+                      <span>عرض الصور ({component.galleryImages.length})</span>
+                    </button>
+                  )}
                 </div>
                 
                 <h3 className={`${currentDevice === 'mobile' ? 'text-sm' : 'text-base sm:text-lg lg:text-xl'} font-black text-white mb-2 leading-tight group-hover:text-[#18b5d5] transition-colors duration-300`}>
@@ -391,20 +525,7 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
                   ))}
                 </div>
 
-                {/* زر عرض الصور - في الأسفل */}
-                {Array.isArray(component.galleryImages) && component.galleryImages.length > 0 && (
-                  <div className="mt-auto pt-4 border-t border-[#18b5d5]/10">
-                    <button
-                      onClick={() => onShowImages(component)}
-                      className="group/btn w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#18b5d5]/10 to-[#16a8cc]/10 border border-[#18b5d5]/40 text-white hover:from-[#18b5d5]/20 hover:to-[#16a8cc]/20 hover:border-[#18b5d5]/60 hover:shadow-lg hover:shadow-[#18b5d5]/20 transition-all duration-300 text-sm font-medium"
-                      type="button"
-                    >
-                      <FaImage className="w-4 h-4 text-[#18b5d5] group-hover/btn:scale-110 transition-transform" />
-                      <span>عرض الصور ({component.galleryImages.length})</span>
-                      <div className="w-2 h-2 bg-[#18b5d5] rounded-full animate-pulse"></div>
-                    </button>
-                  </div>
-                )}
+                {/* زر عرض الصور نقل للأعلى - إزالة القسم السفلي */}
               </div>
             </div>
             
@@ -417,6 +538,8 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
   );
 };
   const images = [theme1, theme2, theme3, theme4];
+  const validCarouselImages = images.filter(img => !failedImagesCache.has(img));
+
 
   // ---------- Fixed buttons on scroll ----------
   useEffect(() => {
@@ -429,10 +552,10 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
   useEffect(() => {
     if (!isAutoPlaying) return;
     const id = setInterval(() => {
-      setCurrentImageIndex(prev => (prev + 1) % images.length);
+      setCurrentImageIndex(prev => (prev + 1) % validCarouselImages.length );
     }, 4000);
     return () => clearInterval(id);
-  }, [isAutoPlaying, images.length]);
+  }, [isAutoPlaying, validCarouselImages.length ]);
 
   const { data: activeCardsResp, isLoading: cardsLoading } = useApiQuery<any>({ endpoint: 'theme-card?isActive=true', queryKey: ['theme-cards-active'] });
   useEffect(() => {
@@ -442,12 +565,12 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
     setComponentsLoading(false);
   }, [activeCardsResp]);
   const nextImage = () => {
-    setCurrentImageIndex(prev => (prev + 1) % images.length);
+    setCurrentImageIndex(prev => (prev + 1) % validCarouselImages.length );
     setIsAutoPlaying(false);
     setTimeout(() => setIsAutoPlaying(true), 10000);
   };
   const prevImage = () => {
-    setCurrentImageIndex(prev => (prev - 1 + images.length) % images.length);
+    setCurrentImageIndex(prev => (prev - 1 + validCarouselImages.length ) % validCarouselImages.length );
     setIsAutoPlaying(false);
     setTimeout(() => setIsAutoPlaying(true), 10000);
   };
@@ -518,40 +641,38 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
 
   
 
-  // ---------- Handlers ----------
-  const handleAddToCart = async () => {
-    if (!theme) return;
-    setAddingToCart(true);
-    try {
-      const addOns = getSelectedAddOnsData();
-      const total = calculateTotalPrice();
-      await addToCartUnified(
-        theme.id,
-        theme.name,
-        quantity,
-        { addOns, totalPrice: total, basePrice: theme.price, addOnsPrice: addOns.reduce((s, a) => s + a.price, 0) },
-        total,
-        theme.mainImage
-      );
-      smartToast.frontend.success(
-        `تم إضافة الثيم إلى السلة!${addOns.length ? ` مع ${addOns.length} خدمة إضافية` : ''}`
-      );
-    } catch {
-      smartToast.frontend.error('فشل إضافة الثيم إلى السلة');
-    } finally {
-      setAddingToCart(false);
-    }
-  };
+ 
 
-  const handleAddToWishlist = async () => {
-    if (!theme) return;
-    try {
-      await addToWishlistUnified(theme.id, theme.name);
-      smartToast.frontend.success('تمت الإضافة إلى قائمة الأمنيات');
-    } catch {
-      smartToast.frontend.error('فشل إضافة الثيم إلى قائمة الأمنيات');
-    }
-  };
+useEffect(() => {
+  if (!activeCardsResp) return;
+  const list = Array.isArray(activeCardsResp) ? activeCardsResp : (activeCardsResp?.data || []);
+  
+  // فلترة وتنظيف الصور
+  const validatedList = list.map((component: any) => {
+    const validGalleryImages = Array.isArray(component.galleryImages) 
+      ? component.galleryImages.filter((img: string) => {
+          if (!img || img.trim() === '') return false;
+          
+          // التحقق من وجود الصورة في الـ cache
+          const fullUrl = buildImageUrl(img);
+          if (failedImagesCache.has(fullUrl)) return false;
+          
+          return true;
+        })
+      : [];
+    
+    return {
+      ...component,
+      galleryImages: validGalleryImages,
+      backgroundImage: component.backgroundImage && component.backgroundImage.trim() !== '' 
+        ? component.backgroundImage 
+        : null
+    };
+  });
+  
+  setDynamicComponents(validatedList);
+  setComponentsLoading(false);
+}, [activeCardsResp]);
 
   const handleLoginSuccess = (u: any) => {
     setUser(u);
@@ -772,7 +893,7 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
           <div className="w-full mb-6 sm:mb-12 relative group">
             <div className="relative overflow-hidden rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-2xl bg-gradient-to-br from-gray-800 via-gray-900 to-black border border-gray-700/50">
               <div className="relative h-[250px] sm:h-[400px] lg:h-[700px]">
-                {images.map((image, index) => (
+                {validCarouselImages.map((image, index) => (
                   <div
                     key={index}
                     className={`absolute inset-0 transition-all duration-1000 ease-out transform ${index === currentImageIndex
@@ -810,7 +931,7 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
                 </svg>
               </button>
               <div className="absolute top-2 sm:top-6 right-2 sm:right-6 bg-black/70 backdrop-blur-sm text-white px-2 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-semibold border border-white/20">
-                <span className="text-[#18b5d8]">{currentImageIndex + 1}</span> / {images.length}
+                <span className="text-[#18b5d8]">{currentImageIndex + 1}</span> / {validCarouselImages.length }
               </div>
               {isAutoPlaying && (
                 <div className="absolute top-2 sm:top-6 left-2 sm:left-6 bg-gradient-to-r from-green-500/90 to-emerald-500/90 backdrop-blur-sm text-white px-2 sm:px-3 py-1 sm:py-2 rounded-full text-xs font-semibold flex items-center gap-1 sm:gap-2 border border-white/20">
@@ -822,12 +943,12 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
               <div className="absolute bottom-0 left-0 w-full h-1 bg-black/30">
                 <div
                   className="h-full bg-gradient-to-r from-[#18b5d8] to-purple-500 transition-all duration-300"
-                  style={{ width: `${((currentImageIndex + 1) / images.length) * 100}%` }}
+                  style={{ width: `${((currentImageIndex + 1) / validCarouselImages.length ) * 100}%` }}
                 ></div>
               </div>
             </div>
             <div className="flex justify-center mt-4 sm:mt-8 gap-2 sm:gap-3">
-              {images.map((_, index) => (
+              {validCarouselImages.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => goToImage(index)}
@@ -881,8 +1002,8 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
       </div>
 
 {/* Device Preview Section */}
-<div className="mt-6 mb-6 animate-section flex justify-center px-2 sm:px-0">
-  <div className="shadow-2xl p-2 sm:p-3 w-full sm:w-fit max-w-full">
+<div className="mt-6 mb-6 animate-section flex justify-center px-2 sm:px-0 w-full">
+  <div className="shadow-2xl p-2 sm:p-3 w-full max-w-full">
     
     {/* شريط الأزرار */}
     <div className="flex justify-center items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3 bg-gradient-to-r from-[#18b5d8]/10 to-transparent px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-[#18b5d8]/20 w-fit mx-auto">
@@ -939,10 +1060,9 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
                   : 'w-full max-w-[280px] aspect-[9/20]'
             } flex items-center justify-center mx-auto cursor-pointer`}
           ref={previewContainerRef}
-          onMouseDown={() => handlePressStart(mainPreviewDevice)}
+          onClick={() => handlePressStart(mainPreviewDevice)}
           onMouseUp={handlePressEnd}
           onMouseLeave={handlePressEnd}
-          onTouchStart={() => handlePressStart(mainPreviewDevice)}
           onTouchEnd={handlePressEnd}
         >
             <img 
@@ -1087,7 +1207,7 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
  
 {imagesModalOpen && (
   <div 
-    className="fixed inset-0 bg-black/90 backdrop-blur-md z-[9999] flex items-center justify-center p-2 sm:p-4"
+    className="fixed inset-0 bg-black/90 backdrop-blur-md z-[10001] flex items-center justify-center p-2 sm:p-4"
     onClick={() => setImagesModalOpen(false)}
   >
     <div 
@@ -1122,15 +1242,13 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
               className="group relative overflow-hidden rounded-xl bg-[#292929]/50 border border-[#18b5d8]/20 hover:border-[#18b5d8]/50 transition-all duration-300 hover:shadow-2xl hover:shadow-[#18b5d8]/20"
             >
               <div className="aspect-[4/3] relative overflow-hidden flex items-center justify-center bg-[#1a1a1a]">
-                <img 
-                  src={buildImageUrl(img)} 
-                  alt={`${imagesModalTitle} - ${idx + 1}`}
-                  className="max-w-full max-h-full w-auto h-auto object-contain group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
-                  onError={(e) => {
-                    e.currentTarget.src = '/assets/placeholder-image.jpg';
-                  }}
-                />
+    <img 
+  src={getSafeImageUrl(img)}
+  alt={`${imagesModalTitle} - ${idx + 1}`}
+  className="max-w-full max-h-full w-auto h-auto object-contain group-hover:scale-105 transition-transform duration-500"
+  loading="lazy"
+  onError={handleImageError}
+/>
                 
               
 
@@ -1184,15 +1302,13 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
         {/* الجزء الأيمن: الصورة + الاسم + السعر */}
         <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 w-full sm:w-auto">
           <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-lg overflow-hidden border border-[#18b5d8]/20 flex-shrink-0">
-            <img 
-              src={buildImageUrl(theme.mainImage)}
-              alt={theme.name}
-              className="w-full h-full object-cover"
-              loading="lazy"
-              onError={(e) => {
-                e.currentTarget.src = '/assets/placeholder-product.jpg';
-              }}
-            />
+  <img 
+  src={getSafeImageUrl(theme.mainImage)}
+  alt={theme.name}
+  className="w-full h-full object-cover"
+  loading="lazy"
+  onError={handleImageError}
+/>
           </div>
 
           <div className="flex flex-col flex-1 min-w-0">
@@ -1218,9 +1334,9 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
         <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 w-full sm:w-auto justify-center">
           <button
             onClick={() => window.open('https://salla.com/themes/1499917793', '_blank')}
-            className="flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-[#041a20] to-[#051c20] text-white px-3 sm:px-6 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold hover:from-[#16a8cc] hover:to-[#18b5d8] transition-all duration-300 shadow-lg hover:shadow-xl group flex-1 sm:flex-initial justify-center"
+            className="flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-[#041a20] to-[#051c20] text-white px-3 sm:px-6 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold hover:from-[#16a8cc] hover:to-[#18b5d8] transition-all duration-300 shadow-lg hover:shadow-xl group/button flex-1 sm:flex-initial justify-center"
           >
-            <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4 group-hover:animate-bounce" />
+            <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4 group-hover/button:animate-bounce" />
             <span className="hidden sm:inline">{t('home.themes.get_theme_now')}</span>
             <span className="sm:hidden">{t('home.themes.buy')}</span>
           </button>
@@ -1254,6 +1370,7 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
 </div>
 
  {scrollOverlayActive && overlayRect && (
+   createPortal(
    <div className="fixed z-[10001] pointer-events-none">
      {/* Covers outside the hole */}
      <div
@@ -1281,23 +1398,28 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
          left: `${overlayRect.left}px`, 
          width: `${overlayRect.width}px`, 
          height: `${overlayRect.height}px`,
-         borderRadius: '0.75rem',
-         border: '4px solid rgba(255,255,255,0.3)',
-         boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)'
-       }}
-     >
-       <div
-         ref={contentCloneRef}
-         style={{
-           transform: `translateY(-${scrollOffset}px)`,
-           width: '100%',
-           height: `${contentHeight}px`,
-           scrollbarWidth: 'none',
-           msOverflowStyle: 'none'
-         }}
-       />
+        backgroundColor: '#292929',
+        borderRadius: overlayBorderRadius,
+        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)'
+      }}
+    >
+    <div
+  ref={contentCloneRef}
+  className="w-full h-full"
+  style={{
+    transform: `translateY(-${scrollOffset}px)`,
+    scrollbarWidth: 'none',
+    msOverflowStyle: 'none',
+    overflow: 'visible',
+    // أضف هذه:
+    position: 'relative',
+    willChange: 'transform'
+  }}
+/>
      </div>
-   </div>
+   </div>,
+   document.body
+ )
  )}
 
 <div className="scale-90 sm:scale-95 lg:scale-100">
