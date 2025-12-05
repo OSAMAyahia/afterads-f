@@ -177,7 +177,8 @@ const App: React.FC = () => {
       products: regularProducts.filter((product: Product) => product.categoryId === category.id)
     }));
     setCategoryProducts(categoryProductsData);
-    setThemes(themeProducts);
+    const uniqueThemes = Array.from(new Map(themeProducts.map((p: any) => [String(p.name || p.id).trim().toLowerCase(), p])).values());
+    setThemes(uniqueThemes.slice(0, 1));
   }, [categoriesResp, productsResp]);
 
   useEffect(() => {

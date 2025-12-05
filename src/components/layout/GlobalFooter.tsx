@@ -109,21 +109,21 @@ const { data: pagesResp } = useApiQuery<any>({
     <>
       <div className="bg-[#0f1012] border-b border-gray-800">
   <div className="w-full bg-[#0f1113] py-6">
-  <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+  <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
     <div className="flex flex-col md:flex-row items-center gap-4 justify-center">
       <p className="text-[#18b5d5] text-sm font-medium text-center w-full md:w-auto mb-2 md:mb-0">
         {t('footer.stay_connected')}
       </p>
 
-      <div className="flex w-full max-w-md gap-1">
+      <div className="flex w-full md:flex-1 max-w-xl lg:max-w-2xl gap-1.5">
         <input
           type="email"
           placeholder={t('footer.email_placeholder')}
-          className="flex-1 px-3 py-2 rounded bg-[#1a1c1e]/80 border border-[#18b5d5]/20 text-white placeholder-gray-500 focus:outline-none focus:border-[#18b5d5] transition-all text-sm"
+          className="flex-1 px-4 py-2.5 rounded-lg bg-[#1a1c1e]/80 border border-[#18b5d5]/20 text-white placeholder-gray-500 focus:outline-none focus:border-[#18b5d5] focus:ring-1 focus:ring-[#18b5d5]/50 transition-all text-sm"
         />
         <button
           onClick={() => {}}
-          className="px-4 py-2 bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white font-medium rounded hover:shadow-lg hover:shadow-[#18b5d5]/25 transition-all text-sm whitespace-nowrap"
+          className="px-5 py-2.5 bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white font-medium rounded-lg hover:shadow-[0_8px_24px_rgba(24,181,213,0.25)] transition-all text-sm whitespace-nowrap"
         >
           {t('footer.subscribe_now')}
         </button>

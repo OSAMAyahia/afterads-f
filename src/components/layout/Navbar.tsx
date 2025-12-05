@@ -7,6 +7,7 @@ import logo from '../../assets/logo.webp';
 import AuthModal from '../modals/AuthModal';
 import CartDropdown from '../ui/CartDropdown';
 import notfoundImg from '../../assets/istockphoto-1300845620-612x612-removebg-preview.png';
+import malakImg from '../../assets/malak-removebg-preview.png';
 import LiveSearch from '../ui/LiveSearch';
 import LanguageCurrencySelector from '../ui/LanguageCurrencySelector';
 import { createCategorySlug } from '../../utils/slugify';
@@ -858,14 +859,21 @@ useEffect(() => {
               <div className="flex items-center">
                 {isMobile ? (
                   <div className="flex items-center gap-2">
-                    <Link to="/profile" aria-label={t('nav.profile')} className="w-7 h-7 rounded-full overflow-hidden border border-white/20">
-                      <img
-                        src={(user?.avatar || user?.storeLogo || user?.storeImage) ? buildImageUrl(user?.avatar || user?.storeLogo || user?.storeImage || '') : notfoundImg}
-                        alt={storeName}
-                        className="w-full h-full object-cover"
-                        onError={(e) => { e.currentTarget.src = notfoundImg; }}
-                      />
-                    </Link>
+                    {user ? (
+                      <Link to="/profile" aria-label={t('nav.profile')} className="w-8 h-8 rounded-lg overflow-hidden border border-white/20 hover:border-white/30 hover:shadow-[0_6px_18px_rgba(255,255,255,0.15)] transition-all duration-200">
+                        <img
+                          src={(user?.avatar || user?.storeLogo || user?.storeImage) ? buildImageUrl(user?.avatar || user?.storeLogo || user?.storeImage || '') : malakImg}
+                          alt={storeName}
+                          className="w-full h-full object-cover"
+                          onError={(e) => { e.currentTarget.src = malakImg; }}
+                        />
+                      </Link>
+                    ) : (
+                      <button onClick={openAuthModal} aria-label={t('nav.login')} className="relative w-8 h-8 rounded-lg overflow-hidden border border-white/20 hover:border-white/30 hover:shadow-[0_6px_18px_rgba(255,255,255,0.15)] hover:bg-white/10 transition-all duration-200">
+                        <img src={malakImg} alt="Login" className="w-full h-full object-contain" />
+                        <div className="absolute inset-0 rounded-full opacity-0 hover:opacity-100 transition-opacity duration-200" style={{background:'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15), transparent 70%)'}}></div>
+                      </button>
+                    )}
                   </div>
                 ) : (
                   <Link to="/" onClick={() => setIsMenuOpen(false)} className="cursor-pointer">
@@ -889,7 +897,7 @@ useEffect(() => {
                     key={link.name}
                     to={link.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`relative px-4 py-2 text-white/90 hover:text-white transition-colors duration-300 text-sm font-medium group ${
+                    className={`relative px-4 py-2 text-white/90 hover:text-white transition-all duration-300 text-sm font-medium group rounded-lg hover:bg-white/10 hover:shadow-[0_8px_24px_rgba(255,255,255,0.08)] ${
                       isActive(link.href) ? 'text-[#18b5d8]' : ''
                     }`}
                   >
@@ -915,7 +923,7 @@ useEffect(() => {
             if (!user) return;
             setIsCartDropdownOpen(!isCartDropdownOpen);
           }}
-          className="relative text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all duration-300 group"
+          className="relative text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 hover:shadow-[0_8px_24px_rgba(255,255,255,0.08)] transition-all duration-300 group"
         >
           <ShoppingCart size={20} />
           {cartItemsCount > 0 && (
@@ -942,7 +950,7 @@ useEffect(() => {
       </div>
 
       {/* Wishlist Button */}
-      <Link to="/wishlist" className="relative text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all duration-300 group">
+      <Link to="/wishlist" className="relative text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 hover:shadow-[0_8px_24px_rgba(255,255,255,0.08)] transition-all duration-300 group">
         <Heart size={20} />
         {wishlistItemsCount > 0 && (
           <span 
