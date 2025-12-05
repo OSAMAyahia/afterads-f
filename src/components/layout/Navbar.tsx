@@ -860,18 +860,17 @@ useEffect(() => {
                 {isMobile ? (
                   <div className="flex items-center gap-2">
                     {user ? (
-                      <Link to="/profile" aria-label={t('nav.profile')} className="w-8 h-8 rounded-lg overflow-hidden border border-white/20 hover:border-white/30 hover:shadow-[0_6px_18px_rgba(255,255,255,0.15)] transition-all duration-200">
+                      <Link to="/profile" aria-label={t('nav.profile')} className="w-8 h-8 rounded-lg overflow-hidden border border-white/20 hover:border-white/30 transition-all duration-200">
                         <img
-                          src={(user?.avatar || user?.storeLogo || user?.storeImage) ? buildImageUrl(user?.avatar || user?.storeLogo || user?.storeImage || '') : malakImg}
+                          src={(user?.avatar || user?.storeLogo || user?.storeImage) ? buildImageUrl(user?.avatar || user?.storeLogo || user?.storeImage || '') : notfoundImg}
                           alt={storeName}
                           className="w-full h-full object-cover"
-                          onError={(e) => { e.currentTarget.src = malakImg; }}
+                          onError={(e) => { e.currentTarget.src = notfoundImg; }}
                         />
                       </Link>
                     ) : (
-                      <button onClick={openAuthModal} aria-label={t('nav.login')} className="relative w-8 h-8 rounded-lg overflow-hidden border border-white/20 hover:border-white/30 hover:shadow-[0_6px_18px_rgba(255,255,255,0.15)] hover:bg-white/10 transition-all duration-200">
+                      <button onClick={openAuthModal} aria-label={t('nav.login')} className="relative w-8 h-8 rounded-lg overflow-hidden border border-white/20 hover:border-white/30 hover:bg-white/10 transition-all duration-200">
                         <img src={malakImg} alt="Login" className="w-full h-full object-contain" />
-                        <div className="absolute inset-0 rounded-full opacity-0 hover:opacity-100 transition-opacity duration-200" style={{background:'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15), transparent 70%)'}}></div>
                       </button>
                     )}
                   </div>
@@ -897,7 +896,7 @@ useEffect(() => {
                     key={link.name}
                     to={link.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`relative px-4 py-2 text-white/90 hover:text-white transition-all duration-300 text-sm font-medium group rounded-lg hover:bg-white/10 hover:shadow-[0_8px_24px_rgba(255,255,255,0.08)] ${
+                    className={`relative px-4 py-2 text-white/90 hover:text-white transition-colors duration-300 text-sm font-medium group ${
                       isActive(link.href) ? 'text-[#18b5d8]' : ''
                     }`}
                   >
@@ -923,7 +922,7 @@ useEffect(() => {
             if (!user) return;
             setIsCartDropdownOpen(!isCartDropdownOpen);
           }}
-          className="relative text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 hover:shadow-[0_8px_24px_rgba(255,255,255,0.08)] transition-all duration-300 group"
+          className="relative text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all duration-300 group"
         >
           <ShoppingCart size={20} />
           {cartItemsCount > 0 && (
@@ -950,7 +949,7 @@ useEffect(() => {
       </div>
 
       {/* Wishlist Button */}
-      <Link to="/wishlist" className="relative text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 hover:shadow-[0_8px_24px_rgba(255,255,255,0.08)] transition-all duration-300 group">
+      <Link to="/wishlist" className="relative text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all duration-300 group">
         <Heart size={20} />
         {wishlistItemsCount > 0 && (
           <span 
@@ -1027,7 +1026,7 @@ useEffect(() => {
 
       {/* Mobile Menu Overlay */}
       <div 
-        className={`lg:hidden fixed inset-0 bg-black/40 z-[60] transition-opacity duration-200 mobile-menu-overlay ${
+        className={`lg:hidden fixed inset-0 bg-black/40 z-[10001] transition-opacity duration-200 mobile-menu-overlay ${
           isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         onClick={(e) => {
@@ -1038,7 +1037,7 @@ useEffect(() => {
       >
         {/* Mobile Menu Panel */}
         <div 
-          className={`fixed right-0 top-0 h-full w-full max-w-sm transform transition-all duration-300 ease-out flex flex-col ${
+          className={`fixed right-0 top-0 h-full w-full max-w-sm z-[10002] transform transition-all duration-300 ease-out flex flex-col ${
             isMenuOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
           onClick={(e) => e.stopPropagation()}

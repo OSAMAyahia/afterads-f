@@ -416,7 +416,7 @@ const UserProfile: React.FC = () => {
     return (
       <div className="min-h-screen bg-[#1a1a1a] flex items-center justify-center px-4">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#3b82f6] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-16 h-16 border-4 border-[#18b5d5] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-white text-lg">{t('user_profile.loading_data')}</p>
         </div>
       </div>
@@ -427,7 +427,7 @@ const UserProfile: React.FC = () => {
     return (
       <div className="min-h-screen bg-[#1a1a1a] flex items-center justify-center px-4">
         <div className="text-center bg-[#292929] rounded-2xl p-8 max-w-md w-full border border-[#3a3a3a]">
-          <User className="w-16 h-16 text-[#3b82f6] mx-auto mb-4" />
+          <User className="w-16 h-16 text-[#18b5d5] mx-auto mb-4" />
           <h2 className="text-xl font-bold text-white mb-4">{t('user_profile.user_not_found')}</h2>
           <Link to="/login" className="inline-block bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white px-6 py-3 rounded-xl hover:shadow-[0_8px_24px_rgba(24,181,213,0.25)] transition-all shadow-lg">
             {t('user_profile.login')}
@@ -451,7 +451,7 @@ const UserProfile: React.FC = () => {
               <div className={`relative p-6 ${
                 isVIP 
                   ? 'bg-gradient-to-r from-purple-600 via-purple-500 to-pink-500' 
-                  : 'bg-gradient-to-r from-[#1e40af] to-[#3b82f6]'
+                  : 'bg-gradient-to-r from-[#18b5d5] to-[#16a8c4]'
               }`}>
                 {/* VIP Crown Badge */}
                 {isVIP && (
@@ -483,7 +483,7 @@ const UserProfile: React.FC = () => {
                         </div>
                       )}
                     </div>
-                    <label className="absolute -bottom-2 -left-2 bg-white text-[#1e40af] p-2 rounded-full shadow-lg hover:bg-[#1e40af] hover:text-white transition-colors cursor-pointer">
+                    <label className="absolute -bottom-2 -left-2 bg-white text-[#18b5d5] p-2 rounded-full shadow-lg hover:bg-[#18b5d5] hover:text-white transition-colors cursor-pointer">
                       <Camera className="w-5 h-5" />
                       <input type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
                     </label>
@@ -506,18 +506,18 @@ const UserProfile: React.FC = () => {
               {user.role !== 'admin' && (
                 <div className="grid grid-cols-2 gap-2 sm:gap-4 p-3 sm:p-4 border-b border-[#3a3a3a]">
                   <div className="text-center bg-[#1a1a1a] rounded-xl p-3">
-                    <div className="bg-[#1e40af]/20 w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-2">
-                      <Package className="w-5 h-5 text-[#3b82f6]" />
+                    <div className="bg-[#18b5d5]/20 w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-2">
+                      <Package className="w-5 h-5 text-[#18b5d5]" />
                     </div>
                     <p className="text-xl font-bold text-white">{userStats.totalOrders}</p>
-                    <p className="text-xs text-[#3b82f6] font-medium">{t('user_profile.orders')}</p>
+                    <p className="text-xs text-[#18b5d5] font-medium">{t('user_profile.orders')}</p>
                   </div>
                   <div className="text-center bg-[#1a1a1a] rounded-xl p-3">
-                    <div className="bg-[#1e40af]/20 w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-2">
-                      <Star className="w-5 h-5 text-[#3b82f6]" />
+                    <div className="bg-[#18b5d5]/20 w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-2">
+                      <Star className="w-5 h-5 text-[#18b5d5]" />
                     </div>
                     <PriceDisplay price={userStats.totalSpent} className="text-xl font-bold text-white block" />
-                    <p className="text-xs text-[#3b82f6] font-medium">{t('user_profile.spent')}</p>
+                    <p className="text-xs text-[#18b5d5] font-medium">{t('user_profile.spent')}</p>
                   </div>
                 </div>
               )}
@@ -613,51 +613,51 @@ const UserProfile: React.FC = () => {
                       <h4 className="text-base sm:text-lg font-bold text-white mb-4">{t('user_profile.store_information')}</h4>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-xs sm:text-sm font-medium text-[#3b82f6] mb-2">{t('user_profile.store_name')}</label>
+                          <label className="block text-xs sm:text-sm font-medium text-[#18b5d5] mb-2">{t('user_profile.store_name')}</label>
                           {isEditing ? (
                             <input
                               type="text"
                               value={formData.storeName || ''}
                               onChange={(e) => setFormData({...formData, storeName: e.target.value})}
-                              className="w-full px-3 sm:px-4 py-2 bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl text-white focus:ring-2 focus:ring-[#3b82f6] text-sm"
+                              className="w-full px-3 sm:px-4 py-2 bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl text-white focus:ring-2 focus:ring-[#18b5d5] text-sm"
                             />
                           ) : (
                             <div className="bg-[#1a1a1a] px-3 sm:px-4 py-2 rounded-xl text-white text-sm">{user.storeName || t('user_profile.not_specified')}</div>
                           )}
                         </div>
                         <div>
-                          <label className="block text-xs sm:text-sm font-medium text-[#3b82f6] mb-2">{t('user_profile.phone_number')}</label>
+                          <label className="block text-xs sm:text-sm font-medium text-[#18b5d5] mb-2">{t('user_profile.phone_number')}</label>
                           {isEditing ? (
                             <input
                               type="tel"
                               value={formData.phoneNumber || formData.phone || ''}
                               onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
-                              className="w-full px-3 sm:px-4 py-2 bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl text-white focus:ring-2 focus:ring-[#3b82f6] text-sm"
+                              className="w-full px-3 sm:px-4 py-2 bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl text-white focus:ring-2 focus:ring-[#18b5d5] text-sm"
                             />
                           ) : (
                             <div className="bg-[#1a1a1a] px-3 sm:px-4 py-2 rounded-xl text-white text-sm">{user.phoneNumber || user.phone || t('user_profile.not_specified')}</div>
                           )}
                         </div>
                         <div className="sm:col-span-2">
-                          <label className="block text-xs sm:text-sm font-medium text-[#3b82f6] mb-2">{t('user_profile.store_link')}</label>
+                          <label className="block text-xs sm:text-sm font-medium text-[#18b5d5] mb-2">{t('user_profile.store_link')}</label>
                           {isEditing ? (
                             <input
                               type="url"
                               value={formData.storeLink || ''}
                               onChange={(e) => setFormData({...formData, storeLink: e.target.value})}
-                              className="w-full px-3 sm:px-4 py-2 bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl text-white focus:ring-2 focus:ring-[#3b82f6] text-sm"
+                              className="w-full px-3 sm:px-4 py-2 bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl text-white focus:ring-2 focus:ring-[#18b5d5] text-sm"
                               placeholder="https://example.com/store"
                             />
                           ) : (
                             user.storeLink ? (
-                              <a href={user.storeLink} target="_blank" rel="noopener noreferrer" className="text-[#3b82f6] hover:underline break-all text-sm">{user.storeLink}</a>
+                              <a href={user.storeLink} target="_blank" rel="noopener noreferrer" className="text-[#18b5d5] hover:underline break-all text-sm">{user.storeLink}</a>
                             ) : (
                               <div className="bg-[#1a1a1a] px-3 sm:px-4 py-2 rounded-xl text-white text-sm">{t('user_profile.not_specified')}</div>
                             )
                           )}
                         </div>
                         <div className="sm:col-span-2">
-                          <label className="block text-xs sm:text-sm font-medium text-[#3b82f6] mb-2">{t('user_profile.store_logo')}</label>
+                          <label className="block text-xs sm:text-sm font-medium text-[#18b5d5] mb-2">{t('user_profile.store_logo')}</label>
                           {isEditing ? (
                             <div className="space-y-3">
                               <div className="w-full h-32 bg-[#1a1a1a] rounded-xl flex items-center justify-center overflow-hidden border-2 border-[#3a3a3a]">
@@ -714,50 +714,50 @@ const UserProfile: React.FC = () => {
                   <h4 className="text-base sm:text-lg font-bold text-white mb-4">{t('user_profile.basic_information')}</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                     <div>
-                      <label className="block text-xs sm:text-sm font-medium text-[#3b82f6] mb-2">{t('user_profile.first_name')}</label>
+                      <label className="block text-xs sm:text-sm font-medium text-[#18b5d5] mb-2">{t('user_profile.first_name')}</label>
                       {isEditing ? (
                         <input
                           type="text"
                           value={formData.firstName || ''}
                           onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                          className="w-full px-3 sm:px-4 py-2 bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl text-white focus:ring-2 focus:ring-[#3b82f6] text-sm"
+                          className="w-full px-3 sm:px-4 py-2 bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl text-white focus:ring-2 focus:ring-[#18b5d5] text-sm"
                         />
                       ) : (
                         <div className="bg-[#1a1a1a] px-3 sm:px-4 py-2 rounded-xl text-white text-sm">{user.firstName || t('user_profile.not_specified')}</div>
                       )}
                     </div>
                     <div>
-                      <label className="block text-xs sm:text-sm font-medium text-[#3b82f6] mb-2">{t('user_profile.last_name')}</label>
+                      <label className="block text-xs sm:text-sm font-medium text-[#18b5d5] mb-2">{t('user_profile.last_name')}</label>
                       {isEditing ? (
                         <input
                           type="text"
                           value={formData.lastName || ''}
                           onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                          className="w-full px-3 sm:px-4 py-2 bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl text-white focus:ring-2 focus:ring-[#3b82f6] text-sm"
+                          className="w-full px-3 sm:px-4 py-2 bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl text-white focus:ring-2 focus:ring-[#18b5d5] text-sm"
                         />
                       ) : (
                         <div className="bg-[#1a1a1a] px-3 sm:px-4 py-2 rounded-xl text-white text-sm">{user.lastName || t('user_profile.not_specified')}</div>
                       )}
                     </div>
                     <div>
-                      <label className="block text-xs sm:text-sm font-medium text-[#3b82f6] mb-2">{t('user_profile.email')}</label>
+                      <label className="block text-xs sm:text-sm font-medium text-[#18b5d5] mb-2">{t('user_profile.email')}</label>
                       <div className="bg-[#1a1a1a] px-3 sm:px-4 py-2 rounded-xl text-white flex items-center gap-2 text-sm">
-                        <Mail className="w-4 h-4 text-[#3b82f6] flex-shrink-0" />
+                        <Mail className="w-4 h-4 text-[#18b5d5] flex-shrink-0" />
                         <span className="truncate">{user.email}</span>
                       </div>
                     </div>
                     <div>
-                      <label className="block text-xs sm:text-sm font-medium text-[#3b82f6] mb-2">{t('user_profile.phone')}</label>
+                      <label className="block text-xs sm:text-sm font-medium text-[#18b5d5] mb-2">{t('user_profile.phone')}</label>
                       {isEditing ? (
                         <input
                           type="tel"
                           value={formData.phone || ''}
                           onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                          className="w-full px-3 sm:px-4 py-2 bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl text-white focus:ring-2 focus:ring-[#3b82f6] text-sm"
+                          className="w-full px-3 sm:px-4 py-2 bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl text-white focus:ring-2 focus:ring-[#18b5d5] text-sm"
                         />
                       ) : (
                         <div className="bg-[#1a1a1a] px-3 sm:px-4 py-2 rounded-xl text-white flex items-center gap-2 text-sm">
-                          <Phone className="w-4 h-4 text-[#3b82f6] flex-shrink-0" />
+                          <Phone className="w-4 h-4 text-[#18b5d5] flex-shrink-0" />
                           {user.phone || t('user_profile.not_specified')}
                         </div>
                       )}
@@ -769,37 +769,37 @@ const UserProfile: React.FC = () => {
                     <div className="pt-6 border-t border-[#3a3a3a]">
                       <h4 className="text-base sm:text-lg font-bold text-white mb-4">{t('user_profile.account_stats')}</h4>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                        <div className="bg-[#1a1a1a] p-3 sm:p-4 rounded-xl border border-[#3a3a3a] hover:border-[#1e40af] transition-colors">
+                        <div className="bg-[#1a1a1a] p-3 sm:p-4 rounded-xl border border-[#3a3a3a] hover:border-[#18b5d5] transition-colors">
                           <div className="flex items-center gap-2 sm:gap-3">
-                            <div className="bg-[#1e40af] p-2 rounded-lg">
+                            <div className="bg-[#18b5d5] p-2 rounded-lg">
                               <Package className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                             </div>
                             <div>
-                              <p className="text-xs sm:text-sm text-[#3b82f6] font-medium">{t('user_profile.total_orders')}</p>
+                              <p className="text-xs sm:text-sm text-[#18b5d5] font-medium">{t('user_profile.total_orders')}</p>
                               <p className="text-lg sm:text-xl font-bold text-white">{userStats.totalOrders}</p>
                             </div>
                           </div>
                         </div>
 
-                        <div className="bg-[#1a1a1a] p-3 sm:p-4 rounded-xl border border-[#3a3a3a] hover:border-[#1e40af] transition-colors">
+                        <div className="bg-[#1a1a1a] p-3 sm:p-4 rounded-xl border border-[#3a3a3a] hover:border-[#18b5d5] transition-colors">
                           <div className="flex items-center gap-2 sm:gap-3">
-                            <div className="bg-[#1e40af] p-2 rounded-lg">
+                            <div className="bg-[#18b5d5] p-2 rounded-lg">
                               <Star className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                             </div>
                             <div>
-                              <p className="text-xs sm:text-sm text-[#3b82f6] font-medium">{t('user_profile.total_spent')}</p>
+                              <p className="text-xs sm:text-sm text-[#18b5d5] font-medium">{t('user_profile.total_spent')}</p>
                               <PriceDisplay price={userStats.totalSpent} className="text-lg sm:text-xl font-bold text-white" />
                             </div>
                           </div>
                         </div>
 
-                        <div className="bg-[#1a1a1a] p-3 sm:p-4 rounded-xl border border-[#3a3a3a] hover:border-[#1e40af] transition-colors">
+                        <div className="bg-[#1a1a1a] p-3 sm:p-4 rounded-xl border border-[#3a3a3a] hover:border-[#18b5d5] transition-colors">
                           <div className="flex items-center gap-2 sm:gap-3">
-                            <div className="bg-[#1e40af] p-2 rounded-lg">
+                            <div className="bg-[#18b5d5] p-2 rounded-lg">
                               <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                             </div>
                             <div>
-                              <p className="text-xs sm:text-sm text-[#3b82f6] font-medium">{t('user_profile.member_since')}</p>
+                              <p className="text-xs sm:text-sm text-[#18b5d5] font-medium">{t('user_profile.member_since')}</p>
                               <p className="text-lg sm:text-xl font-bold text-white">
                                 {new Date(user.createdAt).toLocaleDateString('ar-SA', { year: 'numeric', month: 'short' })}
                               </p>
@@ -833,7 +833,7 @@ const UserProfile: React.FC = () => {
                 {recentOrders.length > 0 ? (
                   <div className="space-y-4">
                     {recentOrders.map((order) => (
-                      <div key={order.id} className="bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl p-3 sm:p-4 hover:border-[#1e40af] transition-colors">
+                      <div key={order.id} className="bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl p-3 sm:p-4 hover:border-[#18b5d5] transition-colors">
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 gap-2">
                           <div>
                             <h4 className="font-bold text-white text-sm sm:text-base">{t('user_profile.order')} #{order.id}</h4>
@@ -850,20 +850,20 @@ const UserProfile: React.FC = () => {
                                 <span className="text-white text-xs sm:text-sm">
                                   {item.productName || item.product?.name || t('user_profile.unspecified_product')} × {item.quantity}
                                 </span>
-                                <span className="text-[#3b82f6] text-xs sm:text-sm font-bold">
+                                <span className="text-[#18b5d5] text-xs sm:text-sm font-bold">
                                   <PriceDisplay price={item.totalPrice} />
                                 </span>
                               </div>
                             ))}
                             {order.items.length > 2 && (
-                              <div className="text-[#3b82f6] text-xs italic mt-1">
+                              <div className="text-[#18b5d5] text-xs italic mt-1">
                                 {t('user_profile.and_more_products', { count: order.items.length - 2 })}
                               </div>
                             )}
                           </div>
                         )}
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-3 border-t border-[#3a3a3a]">
-                          <div className="text-[#3b82f6] text-sm sm:text-base font-bold flex items-center gap-2">
+                          <div className="text-[#18b5d5] text-sm sm:text-base font-bold flex items-center gap-2">
                             <span>{t('user_profile.total')}:</span>
                             <PriceDisplay price={order.total} className="text-lg" />
                           </div>
@@ -887,7 +887,7 @@ const UserProfile: React.FC = () => {
                   </div>
                 ) : (
                   <div className="text-center py-12 bg-[#1a1a1a] rounded-xl border border-[#3a3a3a]">
-                    <Package className="w-16 h-16 text-[#3b82f6] mx-auto mb-4" />
+                    <Package className="w-16 h-16 text-[#18b5d5] mx-auto mb-4" />
                     <h4 className="text-lg font-bold text-white mb-2">{t('user_profile.no_orders_yet')}</h4>
                     <p className="text-gray-400 mb-4">{t('user_profile.start_shopping')}</p>
                     <Link 
@@ -918,54 +918,54 @@ const UserProfile: React.FC = () => {
                   {showPasswordChange && (
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-xs sm:text-sm font-medium text-[#3b82f6] mb-2">{t('user_profile.current_password')}</label>
+                        <label className="block text-xs sm:text-sm font-medium text-[#18b5d5] mb-2">{t('user_profile.current_password')}</label>
                         <div className="relative">
                           <input
                             type={showPasswords.current ? 'text' : 'password'}
                             value={passwordData.currentPassword}
                             onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
-                            className="w-full px-3 sm:px-4 py-2 bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl text-white focus:ring-2 focus:ring-[#3b82f6] pr-10 text-sm"
+                            className="w-full px-3 sm:px-4 py-2 bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl text-white focus:ring-2 focus:ring-[#18b5d5] pr-10 text-sm"
                           />
                           <button
                             type="button"
                             onClick={() => setShowPasswords({...showPasswords, current: !showPasswords.current})}
-                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#3b82f6]"
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#18b5d5]"
                           >
                             {showPasswords.current ? <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" /> : <Eye className="w-4 h-4 sm:w-5 sm:h-5" />}
                           </button>
                         </div>
                       </div>
                       <div>
-                        <label className="block text-xs sm:text-sm font-medium text-[#3b82f6] mb-2">{t('user_profile.new_password')}</label>
+                        <label className="block text-xs sm:text-sm font-medium text-[#18b5d5] mb-2">{t('user_profile.new_password')}</label>
                         <div className="relative">
                           <input
                             type={showPasswords.new ? 'text' : 'password'}
                             value={passwordData.newPassword}
                             onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
-                            className="w-full px-3 sm:px-4 py-2 bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl text-white focus:ring-2 focus:ring-[#3b82f6] pr-10 text-sm"
+                            className="w-full px-3 sm:px-4 py-2 bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl text-white focus:ring-2 focus:ring-[#18b5d5] pr-10 text-sm"
                           />
                           <button
                             type="button"
                             onClick={() => setShowPasswords({...showPasswords, new: !showPasswords.new})}
-                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#3b82f6]"
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#18b5d5]"
                           >
                             {showPasswords.new ? <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" /> : <Eye className="w-4 h-4 sm:w-5 sm:h-5" />}
                           </button>
                         </div>
                       </div>
                       <div>
-                        <label className="block text-xs sm:text-sm font-medium text-[#3b82f6] mb-2">{t('user_profile.confirm_new_password')}</label>
+                        <label className="block text-xs sm:text-sm font-medium text-[#18b5d5] mb-2">{t('user_profile.confirm_new_password')}</label>
                         <div className="relative">
                           <input
                             type={showPasswords.confirm ? 'text' : 'password'}
                             value={passwordData.confirmPassword}
                             onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
-                            className="w-full px-3 sm:px-4 py-2 bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl text-white focus:ring-2 focus:ring-[#3b82f6] pr-10 text-sm"
+                            className="w-full px-3 sm:px-4 py-2 bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl text-white focus:ring-2 focus:ring-[#18b5d5] pr-10 text-sm"
                           />
                           <button
                             type="button"
                             onClick={() => setShowPasswords({...showPasswords, confirm: !showPasswords.confirm})}
-                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#3b82f6]"
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#18b5d5]"
                           >
                             {showPasswords.confirm ? <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" /> : <Eye className="w-4 h-4 sm:w-5 sm:h-5" />}
                           </button>
@@ -989,7 +989,7 @@ const UserProfile: React.FC = () => {
                     <div className="bg-[#1a1a1a] p-3 sm:p-4 rounded-xl border border-[#3a3a3a]">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 sm:gap-3">
-                          <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-[#3b82f6] flex-shrink-0" />
+                          <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-[#18b5d5] flex-shrink-0" />
                           <div>
                             <p className="font-medium text-white text-sm">{t('user_profile.email_verified')}</p>
                             <p className="text-xs sm:text-sm text-gray-400">{t('user_profile.email_confirmed')}</p>
@@ -1001,7 +1001,7 @@ const UserProfile: React.FC = () => {
                     <div className="bg-[#1a1a1a] p-3 sm:p-4 rounded-xl border border-[#3a3a3a]">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 sm:gap-3">
-                          <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-[#3b82f6] flex-shrink-0" />
+                          <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-[#18b5d5] flex-shrink-0" />
                           <div>
                             <p className="font-medium text-white text-sm">{t('user_profile.phone')}</p>
                             <p className="text-xs sm:text-sm text-gray-400">{user.phone ? t('user_profile.verified') : t('user_profile.not_verified')}</p>
