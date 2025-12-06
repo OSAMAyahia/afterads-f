@@ -325,8 +325,7 @@ const handleSubmit = async (e: React.MouseEvent) => {
                 <th className="text-right py-4 px-6 text-sm font-semibold text-white">المجموعة</th>
                 <th className="text-right py-4 px-6 text-sm font-semibold text-white">نقاط الولاء</th>
 
-                <th className="text-right py-4 px-6 text-sm font-semibold text-white">تاريخ التسجيل</th>
-                <th className="text-center py-4 px-6 text-sm font-semibold text-white">الإجراءات</th>
+                 <th className="text-center py-4 px-6 text-sm font-semibold text-white">الإجراءات</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -392,12 +391,7 @@ const handleSubmit = async (e: React.MouseEvent) => {
                       <span className="text-gray-500">نقطة</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2 text-sm text-gray-900">
-                      <Calendar className="w-4 h-4 text-gray-400" />
-                      <span className="font-medium">{formatDate(customer.createdAt)}</span>
-                    </div>
-                  </td>
+               
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-center gap-2">
                       <button

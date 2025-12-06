@@ -896,7 +896,7 @@ useEffect(() => {
                     key={link.name}
                     to={link.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`relative px-4 py-2 text-white/90 hover:text-white transition-colors duration-300 text-sm font-medium group ${
+                    className={`relative px-4 py-2 text-white/90 hover:text-white transition-all duration-300 text-sm font-medium group rounded-md hover:bg-white/10 hover:shadow-[0_6px_18px_rgba(8,145,178,0.25)] ${
                       isActive(link.href) ? 'text-[#18b5d8]' : ''
                     }`}
                   >
@@ -1306,7 +1306,7 @@ useEffect(() => {
                     key={link.name}
                     to={link.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`relative flex items-center px-3 py-2 text-white/90 hover:text-white rounded-lg transition-all duration-300 space-x-2 group touch-manipulation overflow-hidden ${
+                    className={`relative flex items-center px-3 py-2 text-white/90 hover:text-white rounded-lg transition-all duration-300 space-x-2 group touch-manipulation overflow-hidden group-hover:shadow-[0_8px_24px_rgba(8,145,178,0.3)] ${
                       isActive(link.href) ? 'text-white' : ''
                     }`}
                     style={{

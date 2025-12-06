@@ -322,16 +322,92 @@ const ShoppingCart: React.FC = () => {
   const filteredCartItems = cartItems;
 
   return (
-    <section className="min-h-screen bg-[#292929] relative overflow-hidden overflow-x-hidden" dir={isRTL ? 'rtl' : 'ltr'}>
-      {/* Animated Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#18b5d8] via-transparent to-[#16a2c7]"></div>
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 25% 25%, #18b5d8 0%, transparent 50%), 
-                           radial-gradient(circle at 75% 75%, #16a2c7 0%, transparent 50%)`,
-          backgroundSize: '100px 100px',
-          animation: 'float 20s ease-in-out infinite'
-        }}></div>
+    <section className="min-h-screen bg-[#1a1a1a] relative overflow-hidden overflow-x-hidden" dir={isRTL ? 'rtl' : 'ltr'}>
+      {/* Animated Background Pattern - Matching Categories Page */}
+      <div className="absolute inset-0 opacity-35">
+        <div className="absolute inset-0">
+          <div className="absolute font-mono text-base text-[#7a7a7a] animate-pulse" style={{ top: '10%', left: '15%', animationDelay: '1000ms' }}>
+            const [cartItems, setCartItems] =
+          </div>
+          <div className="absolute font-mono text-base text-[#7a7a7a] animate-pulse" style={{ top: '20%', right: '10%', animationDelay: '1500ms' }}>
+            API.fetchCart();
+          </div>
+          <div className="absolute font-mono text-base text-[#7a7a7a] animate-pulse" style={{ bottom: '25%', left: '20%', animationDelay: '2000ms' }}>
+            cartItems.map(item =&gt;
+          </div>
+          <div className="absolute font-mono text-base text-[#7a7a7a] animate-pulse" style={{ bottom: '15%', right: '15%', animationDelay: '2500ms' }}>
+            updateQuantity(item.id);
+          </div>
+          <div className="absolute font-mono text-base text-[#7a7a7a] animate-pulse" style={{ top: '35%', left: '60%', animationDelay: '3000ms' }}>
+            removeFromCart(item.id);
+          </div>
+          <div className="absolute font-mono text-base text-[#7a7a7a] animate-pulse" style={{ top: '60%', right: '25%', animationDelay: '3500ms' }}>
+            total += item.price;
+          </div>
+          <div className="absolute font-mono text-base text-[#7a7a7a] animate-pulse" style={{ bottom: '40%', left: '40%', animationDelay: '4000ms' }}>
+            setLoading(false);
+          </div>
+        </div>
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#4a4a4a]/40 to-transparent animate-pulse"></div>
+          <div className="absolute top-2/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#2a2a2a]/30 to-transparent animate-pulse delay-1000"></div>
+          <div className="absolute left-1/4 top-0 w-px h-full bg-gradient-to-b from-transparent via-[#4a4a4a]/30 to-transparent animate-pulse delay-500"></div>
+          <div className="absolute right-1/3 top-0 w-px h-full bg-gradient-to-b from-transparent via-[#2a2a7a]/35 to-transparent animate-pulse delay-1500"></div>
+        </div>
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-20 w-2 h-2 bg-[#4a4a4a]/70 rounded-full animate-ping"></div>
+          <div className="absolute top-40 right-32 w-1 h-1 bg-[#2a2a7a]/80 rounded-full animate-ping delay-700"></div>
+          <div className="absolute bottom-32 left-40 w-1.5 h-1.5 bg-[#4a4a7a]/60 rounded-full animate-ping delay-1200"></div>
+          <div className="absolute bottom-60 right-20 w-1 h-1 bg-[#2a2a7a]/70 rounded-full animate-ping delay-2000"></div>
+          <div className="absolute top-1/2 left-1/3 w-1 h-1 bg-[#4a4a7a]/90 rounded-full animate-ping delay-300"></div>
+          <div className="absolute top-80 right-1/4 w-1.5 h-1.5 bg-[#2a2a7a]/50 rounded-full animate-ping delay-1800"></div>
+        </div>
+        <div className="absolute inset-0 opacity-15">
+          <div className="absolute top-0 left-10 text-[#7a7a7a] font-mono text-base leading-6 animate-pulse">
+            1<br/>0<br/>1<br/>1<br/>0<br/>1<br/>0<br/>1<br/>1<br/>0
+          </div>
+          <div className="absolute top-0 left-32 text-[#7a7a7a] font-mono text-base leading-6 animate-pulse delay-500">
+            0<br/>1<br/>0<br/>1<br/>1<br/>0<br/>1<br/>0<br/>1<br/>1
+          </div>
+          <div className="absolute top-0 right-20 text-[#7a7a7a] font-mono text-base leading-6 animate-pulse delay-1000">
+            1<br/>1<br/>0<br/>1<br/>0<br/>1<br/>1<br/>0<br/>1<br/>0
+          </div>
+          <div className="absolute top-0 right-40 text-[#7a7a7a] font-mono text-base leading-6 animate-pulse delay-1500">
+            0<br/>1<br/>1<br/>0<br/>1<br/>0<br/>1<br/>1<br/>0<br/>1
+          </div>
+        </div>
+        <div className="absolute inset-0 opacity-35">
+          <div className="absolute text-[#18b5d8]/50 text-3xl animate-[float_7s_ease-in-out_infinite]" style={{ top: '5%', left: '5%' }}>
+            <span role="img" aria-label="cart">🛒</span>
+          </div>
+          <div className="absolute text-[#ffffff]/45 text-3xl animate-[float_7s_ease-in-out_infinite]" style={{ top: '15%', right: '10%', animationDelay: '600ms' }}>
+            <span role="img" aria-label="package">📦</span>
+          </div>
+          <div className="absolute text-[#ffffff]/40 text-2xl animate-[glow_3.5s_ease-in-out_infinite]" style={{ top: '30%', right: '20%', animationDelay: '1200ms' }}>
+            <span role="img" aria-label="shopping">🛍️</span>
+          </div>
+          <div className="absolute text-[#18b5d8]/50 text-2xl animate-[float_7s_ease-in-out_infinite]" style={{ bottom: '25%', right: '15%', animationDelay: '1800ms' }}>
+            <span role="img" aria-label="checkout">💳</span>
+          </div>
+          <div className="absolute text-[#7a7a7a]/45 text-3xl animate-[glow_3.5s_ease-in-out_infinite]" style={{ top: '25%', left: '20%', animationDelay: '2400ms' }}>
+            <span role="img" aria-label="bag">👜</span>
+          </div>
+          <div className="absolute text-[#7a7a7a]/50 text-4xl animate-[float_7s_ease-in-out_infinite]" style={{ bottom: '35%', left: '25%', animationDelay: '3000ms' }}>
+            <span role="img" aria-label="delivery">🚚</span>
+          </div>
+        </div>
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-[#4a4a7a]/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/3 right-1/3 w-40 h-40 bg-[#4a4a7a]/8 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2000ms'}}></div>
+          <div className="absolute top-2/3 left-2/3 w-28 h-28 bg-[#4a4a7a]/12 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1000ms'}}></div>
+        </div>
+        <div className="absolute inset-0 opacity-15 animate-pulse"
+             style={{
+               backgroundImage: `linear-gradient(rgba(74, 74, 74, 0.3) 1px, transparent 1px),
+                                linear-gradient(90deg, rgba(74, 74, 74, 0.3) 1px, transparent 1px)`,
+               backgroundSize: '40px 40px'
+             }}>
+        </div>
       </div>
 
       <style>
@@ -364,21 +440,11 @@ const ShoppingCart: React.FC = () => {
         {/* Header */}
         <div className="text-center mb-6 sm:mb-12">
           <div className="inline-flex items-center gap-1 sm:gap-3 mb-3 sm:mb-6">
-            <div className="relative w-8 h-8 sm:w-12 sm:h-12">
-              <div className="absolute -inset-2 bg-gradient-to-br from-[#18b5d8]/30 to-[#16a2c7]/30 blur-sm transition-all duration-500" style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}></div>
-              <div className="absolute inset-0 bg-gradient-to-br from-[#18b5d8]/20 to-[#16a2c7]/10 backdrop-blur-md border border-[#18b5d8]/30 transition-all duration-500" style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}></div>
-              <div className="absolute inset-2 bg-gradient-to-br from-[#18b5d8]/15 to-transparent transition-all duration-700" style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}></div>
-              <CartIcon className="absolute inset-0 m-auto w-4 h-4 sm:w-6 sm:h-6 text-[#18b5d8] animate-[glow_3.5s_ease-in-out_infinite]" />
-            </div>
-            <h1 className="text-xl sm:text-3xl md:text-5xl font-black text-white">
+           
+            <h1 className="text-xl sm:text-3xl md:text-5xl font-black text-[#18b5d8]">
               {t('cart.title')} <span className="text-[#18b5d8]">{t('cart.yourCart')}</span>
             </h1>
-            <div className="relative w-8 h-8 sm:w-12 sm:h-12">
-              <div className="absolute -inset-2 bg-gradient-to-br from-[#18b5d8]/30 to-[#16a2c7]/30 blur-sm transition-all duration-500" style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}></div>
-              <div className="absolute inset-0 bg-gradient-to-br from-[#18b5d8]/20 to-[#16a2c7]/10 backdrop-blur-md border border-[#18b5d8]/30 transition-all duration-500" style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}></div>
-              <div className="absolute inset-2 bg-gradient-to-br from-[#18b5d8]/15 to-transparent transition-all duration-700" style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}></div>
-              <CartIcon className="absolute inset-0 m-auto w-4 h-4 sm:w-6 sm:h-6 text-[#18b5d8] animate-[glow_3.5s_ease-in-out_infinite]" />
-            </div>
+            
           </div>
           <p className="text-sm sm:text-xl text-gray-300 max-w-3xl mx-auto px-2 sm:px-4">
             {t('cart.description')}

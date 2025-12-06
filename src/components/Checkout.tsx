@@ -205,12 +205,15 @@ const [availableLoyaltyPoints, setAvailableLoyaltyPoints] = useState<number>(0);
     }
   }, []);
 
-  // Fetch customer loyalty points
+  // Fetch customer loyalty points - SERVER NOW CONTROLS LOYALTY APPLICATION
 useEffect(() => {
   if (!customerResp) return;
   const data = customerResp?.customer || customerResp;
   const points = typeof data?.loyaltyPoints === 'number' ? data.loyaltyPoints : 0;
   setAvailableLoyaltyPoints(points || 0);
+  
+  // ❌ تم إزالة التفعيل التلقائي - الخادم يتحكم الآن
+  console.log('📋 [Checkout] Loyalty points available:', points, '- Server will auto-apply if needed');
 }, [customerResp]);
 
 useEffect(() => {
@@ -377,65 +380,66 @@ const getFinalTotal = () => {
         throw new Error('فشل في معالجة الدفع');
       }
 
-      const orderPayload = {
-        items: cartItems.map(item => {
-          const basePrice = item.product?.price || 0;
-          const optionsPrice: number = item.optionsPricing ? 
-            Object.values(item.optionsPricing).reduce((sum, price) => sum + (price || 0), 0) : 0;
-          const addOnsPrice = item.addOnsPrice || 0;
-          const totalItemPrice = item.totalPrice || ((basePrice + optionsPrice + addOnsPrice) * item.quantity);
-          return {
-            productId: item.productId,
-            productName: item.product?.name || 'منتج غير معروف',
-            price: basePrice,
-            quantity: item.quantity,
-            totalPrice: totalItemPrice,
-            selectedOptions: item.selectedOptions || {},
-            optionsPricing: item.optionsPricing || {},
-            productOptions: item.productOptions || [],
-            productOptionsPriceModifier: item.productOptionsPriceModifier || 0,
-            productImage: item.product?.mainImage || '',
-            attachments: item.attachments || {},
-            addOns: item.addOns || [],
-              applyLoyalty,
-          loyaltyPointsToRedeem: applyLoyalty ? loyaltyPointsToRedeem : 0,
-            basePrice: item.basePrice || basePrice,
-            addOnsPrice: item.addOnsPrice || 0,
-            productType: item.product?.productType || ''
-          };
-        }),
-        customerInfo: {
-          name: customerInfo.name?.trim() || '',
-          email: customerInfo.email?.trim() || '',
-          phone: customerInfo.phone?.trim() || '',
-          notes: customerInfo.notes?.trim() || '',
-          address: customerInfo.address?.trim() || ''
-        },
-        paymentMethod: selectedPaymentMethod,
-        total: serverTotal ?? getFinalTotal(),
-        subtotal: serverSubtotal ?? getTotalPrice(),
-        couponDiscount: getDiscountAmount(),
-        loyaltyDiscount: serverLoyaltyDiscount ?? (applyLoyalty ? loyaltyPointsToRedeem : 0),
-        loyaltyAvailable: serverLoyaltyAvailable ?? availableLoyaltyPoints,
-        appliedCoupon: appliedCoupon ? {
-          code: appliedCoupon.coupon?.code || '',
-          discount: getDiscountAmount()
-        } : null,
-        userId: isGuest ? null : user.id,
-        isGuestOrder: isGuest,
-        ...(paymentResult.paymentId && { 
-          paymentId: paymentResult.paymentId,
-          paymentStatus: 'paid'
-        }),
-        ...(!paymentResult.paymentId && { 
-          paymentStatus: 'pending'
-        })
-      };
+     const orderPayload = {
+  items: cartItems.map(item => {
+    const basePrice = item.product?.price || 0;
+    const optionsPrice: number = item.optionsPricing ? 
+      Object.values(item.optionsPricing).reduce((sum, price) => sum + (price || 0), 0) : 0;
+    const addOnsPrice = item.addOnsPrice || 0;
+    const totalItemPrice = item.totalPrice || ((basePrice + optionsPrice + addOnsPrice) * item.quantity);
+    return {
+      productId: item.productId,
+      productName: item.product?.name || 'منتج غير معروف',
+      price: basePrice,
+      quantity: item.quantity,
+      totalPrice: totalItemPrice,
+      selectedOptions: item.selectedOptions || {},
+      optionsPricing: item.optionsPricing || {},
+      productOptions: item.productOptions || [],
+      productOptionsPriceModifier: item.productOptionsPriceModifier || 0,
+      productImage: item.product?.mainImage || '',
+      attachments: item.attachments || {},
+      addOns: item.addOns || [],
+      basePrice: item.basePrice || basePrice,
+      addOnsPrice: item.addOnsPrice || 0,
+      productType: item.product?.productType || ''
+    };
+  }),
+  customerInfo: {
+    name: customerInfo.name?.trim() || '',
+    email: customerInfo.email?.trim() || '',
+    phone: customerInfo.phone?.trim() || '',
+    notes: customerInfo.notes?.trim() || '',
+    address: customerInfo.address?.trim() || ''
+  },
+  paymentMethod: selectedPaymentMethod,
+  total: serverSubtotal ?? getTotalPrice(), // ✅ السعر قبل خصم النقاط
+  subtotal: serverSubtotal ?? getTotalPrice(),
+  couponDiscount: getDiscountAmount(),
+  applyLoyalty, // ✅ مهم جداً
+  loyaltyPointsToRedeem: applyLoyalty ? loyaltyPointsToRedeem : 0, // ✅ مهم جداً
+  appliedCoupon: appliedCoupon ? {
+    code: appliedCoupon.coupon?.code || '',
+    discount: getDiscountAmount()
+  } : null,
+  userId: isGuest ? null : user.id,
+  isGuestOrder: isGuest,
+  ...(paymentResult.paymentId && { 
+    paymentId: paymentResult.paymentId,
+    paymentStatus: 'paid'
+  }),
+  ...(!paymentResult.paymentId && { 
+    paymentStatus: 'pending'
+  })
+};
 
       console.log('📦 [Checkout] Sending orderPayload:', {
         total: orderPayload.total,
         subtotal: orderPayload.subtotal,
-        couponDiscount: orderPayload.couponDiscount
+        couponDiscount: orderPayload.couponDiscount,
+        applyLoyalty: orderPayload.applyLoyalty,
+        loyaltyPointsToRedeem: orderPayload.loyaltyPointsToRedeem,
+        availableLoyaltyPoints: availableLoyaltyPoints
       });
 
       const result = await apiCall(API_ENDPOINTS.CHECKOUT, {
@@ -891,7 +895,7 @@ const getFinalTotal = () => {
   {(((serverLoyaltyDiscount ?? 0) > 0) || (applyLoyalty && loyaltyPointsToRedeem > 0)) && (
     <div className="flex justify-between text-purple-400 text-sm font-bold">
       <span className="flex items-center gap-1">
-        ⭐ خصم نقاط الولاء ({serverLoyaltyDiscount ?? loyaltyPointsToRedeem})
+        ⭐ خصم نقاط الولاء (سيتم تطبيقه تلقائيًا)
       </span>
       <PriceDisplay price={-(serverLoyaltyDiscount ?? loyaltyPointsToRedeem)} size="sm" />
     </div>
