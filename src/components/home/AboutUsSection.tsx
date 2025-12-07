@@ -409,7 +409,7 @@ const AboutUsSection = () => {
                   </div>
                   <Link
                     to="/categories"
-                    className="inline-flex items-center gap-2 justify-center bg-[#18b5d5]/20 border border-[#18b5d5]/50 text-[#18b5d5] text-sm font-bold rounded-xl px-6 py-3 smooth-hover hover:bg-[#18b5d5]/30"
+                    className="inline-flex items-center gap-2 justify-center bg-[#18b5d5]/20 border border-[#18b5d5]/50 text-[#18b5d5] text-sm font-bold rounded-xl px-6 py-3 smooth-hover hover:bg-[#18b5d5]/30 group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
                   >
                     {t('home.about.start_now')}
                     <ArrowRight className={`w-4 h-4 ${isRTL ? 'rotate-180' : ''}`} />

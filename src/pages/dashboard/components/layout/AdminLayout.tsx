@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import Sidebar from "../../Sidebar";
 import ProductsManagement from "../../sections/ProductsTab";
@@ -22,6 +22,14 @@ import AnnouncementBarManagement from '../../sections/AnnouncementBarManagement'
 import NavigationVisibilitySettings from "../../sections/NavigationVisibilitySettings";
 
 const AdminLayout: React.FC = () => {
+  
+  useEffect(() => {
+    document.title = "داشبورد افتر ادز";
+    return () => {
+      // Reset title when leaving dashboard
+      document.title = "افتر ادز - وكالة رقمية إبداعية";
+    };
+  }, []);
 
   return (
     <div className="flex h-screen overflow-hidden relative">

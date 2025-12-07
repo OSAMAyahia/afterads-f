@@ -1012,11 +1012,9 @@ useEffect(() => {
 ) : (
   <button 
     onClick={openAuthModal} 
-    className="btn btn-primary btn-standard-primary px-6 py-2 rounded-xl text-sm"
-    style={{
-      background: 'linear-gradient(to right, #18b5d8, #0891b2)'
-    }}
-  >
+    className="btn btn-primary btn-standard-primary px-6 py-2 rounded-xl text-sm transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30   group"
+  
+  > 
     <span className="relative z-10">{t('nav.login')}</span>
   </button>
 )}

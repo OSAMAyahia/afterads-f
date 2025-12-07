@@ -204,12 +204,12 @@ const navigate = useNavigate();
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 max-w-lg mx-auto">
+            <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-3 md:gap-4  lg:gap-6 max-w-lg mx-auto">
         
 
               <button
                 onClick={() => navigate(`/theme/${theme.id}`)}
-                className="group bg-gradient-to-r from-[#18b5d5] to-[#292929] text-[#ffffff] px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-3 md:py-4 rounded-lg sm:rounded-xl md:rounded-2xl hover:from-[#292929] hover:to-[#18b5d5] disabled:opacity-50 transition-transform transition-shadow transition-border duration-300 font-semibold shadow-lg hover:shadow-md transform hover:scale-105 active:scale-95 will-change-transform text-xs sm:text-sm md:text-base"              >
+                className="group bg-gradient-to-r from-[#18b5d5] to-[#292929] text-[#ffffff] px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-3 md:py-4 rounded-lg sm:rounded-xl md:rounded-2xl hover:from-[#292929] hover:to-[#18b5d5] disabled:opacity-50 transition-transform transition-shadow transition-border duration-300 font-semibold shadow-lg hover:shadow-md transform hover:scale-105 active:scale-95 will-change-transform text-xs sm:text-sm md:text-base group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"              >
                 <div className="flex items-center justify-center gap-2 sm:gap-3">
                   <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
                   {t('home.themes.live_preview')}
@@ -362,7 +362,7 @@ const ThemesSection: React.FC<ThemesSectionProps> = ({ themes }) => {
             <div className="mt-6 sm:mt-8">
               <button
                 onClick={() => navigate(`/contact`)}
-                className="inline-flex items-center gap-2 bg-[#292929] text-white px-6 py-3 rounded-xl hover:bg-[#1f1f1f] transition-all font-semibold shadow-lg"
+                className="inline-flex items-center gap-2 bg-[#292929] text-white px-6 py-3 rounded-xl hover:bg-[#1f1f1f] transition-all font-semibold shadow-lg group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
               >
                 <Headphones className="w-5 h-5" />
                 {isRTL ? 'تواصل معنا' : 'Contact Us'}

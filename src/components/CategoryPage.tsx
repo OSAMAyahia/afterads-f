@@ -5,6 +5,7 @@ import { smartToast } from '../utils/toastConfig';
 import { Package, Filter, Grid, List, RefreshCw, ArrowLeft, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import ProductCard from './ui/ProductCard';
 import WhatsAppButton from './ui/WhatsAppButton';
+import LoadingSpinner from './ui/LoadingSpinner';
 import { extractIdFromSlug, isValidSlug } from '../utils/slugify';
 import { apiCall, API_ENDPOINTS } from '../config/api';
 import { useApiQuery } from '../hooks/useApiQuery';
@@ -135,16 +136,7 @@ const CategoryPage: React.FC = () => {
 
   const queryLoading = categoryLoading || productsLoading;
   if (loading || queryLoading) {
-    return (
-      <section className="min-h-screen bg-[#0a0a0a] relative overflow-hidden flex items-center justify-center px-4">
-        <TechBackground />
-        <div className="relative text-center max-w-md mx-auto">
-          <RefreshCw className="h-12 w-12 animate-spin mx-auto text-[#7a7a7a] mb-4" />
-          <h2 className="text-2xl font-bold text-white mb-2">{t('loading')}</h2>
-          <p className="text-gray-500">{t('loading_category_data')}</p>
-        </div>
-      </section>
-    );
+    return <LoadingSpinner message={t('loading_category_data')} />;
   }
 
   if (!category) return null;
@@ -155,14 +147,7 @@ const CategoryPage: React.FC = () => {
       
               <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-20 mt-[70px] sm:mt-[80px]">
         
-        {/* Back Button */}
-        <Link 
-          to="/"
-          className="inline-flex items-center gap-2 text-gray-500 hover:text-[#7a7a7a] transition-all duration-300 mb-8 group"
-        >
-          <ArrowLeft className={`w-5 h-5 transition-transform group-hover:${isRTL ? 'translate-x-1' : '-translate-x-1'} ${isRTL ? 'rotate-180' : ''}`} />
-          <span className="text-sm font-medium">{t('back_to_home')}</span>
-        </Link>
+  
 
         {/* Category Header */}
         <div className="text-center mb-12 sm:mb-16">
@@ -268,9 +253,9 @@ const CategoryPage: React.FC = () => {
             
             <Link
               to="/"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#7a7a7a] to-[#5a5a5a] 
+              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#18b5d5] to-[#16a8cc] hover:from-[#16a3c0] hover:to-[#1490b0] 
                        text-white rounded-xl font-semibold transition-all duration-300 
-                       hover:shadow-xl hover:shadow-[#7a7a7a]/20 hover:scale-105 border border-[#2a2a2a]"
+                       hover:shadow-xl hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
             >
               <ArrowLeft className={`w-5 h-5 ${isRTL ? 'rotate-180' : ''}`} />
               <span>{t('back_to_home')}</span>

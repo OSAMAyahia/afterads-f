@@ -123,7 +123,7 @@ const { data: pagesResp } = useApiQuery<any>({
         />
         <button
           onClick={() => {}}
-          className="px-5 py-2.5 bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white font-medium rounded-lg hover:shadow-[0_8px_24px_rgba(24,181,213,0.25)] transition-all text-sm whitespace-nowrap"
+          className="px-5 py-2.5 bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white font-medium rounded-lg hover:shadow-[0_8px_24px_rgba(24,181,213,0.25)] transition-all text-sm whitespace-nowrap group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
         >
           {t('footer.subscribe_now')}
         </button>

@@ -346,7 +346,7 @@ const BlogPost: React.FC = () => {
                   </p>
                   <Link
                     to="/blog"
-                    className="inline-flex items-center gap-2 px-8 py-3 bg-[#18b5d5] text-white rounded-lg hover:bg-[#18b5d5]/80 transition-all duration-300 font-semibold shadow-lg"
+                    className="inline-flex items-center gap-2 px-8 py-3 bg-[#18b5d5] text-white rounded-lg hover:bg-[#18b5d5]/80 transition-all duration-300 font-semibold shadow-lg group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
                   >
                     تصفح جميع المقالات
                     {isRTL ? <ArrowLeft className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5 rotate-180" />}

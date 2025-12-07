@@ -497,7 +497,7 @@ const DynamicComponentCard: React.FC<{ component: any; index: number; onShowImag
                     <button
                       onClick={() => onShowImages(component)}
                       type="button"
-                      className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#18b5d5]/20 to-[#18b5d5]/10 border border-[#18b5d5]/30 text-[#18b5d5] text-sm font-semibold"
+                      className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#18b5d5]/20 to-[#18b5d5]/10 border border-[#18b5d5]/30 text-[#18b5d5] text-sm font-semibold group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
                     >
                       <FaImage className="w-4 h-4" />
                       <span>عرض الصور ({component.galleryImages.length})</span>
@@ -706,7 +706,7 @@ useEffect(() => {
           <p className="text-[#7a7a7a] mb-6">{error || t('home.themes.not_found')}</p>
           <button
             onClick={() => navigate('/')}
-            className="bg-gradient-to-r from-[#7a7a7a] to-[#292929] text-white px-6 py-3 rounded-lg hover:from-[#292929] hover:to-[#7a7a7a] transition-all duration-300 transform hover:scale-105 font-medium"
+            className="bg-gradient-to-r from-[#18b5d5] to-[#16a8cc] hover:from-[#16a3c0] hover:to-[#1490b0] text-white px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 font-medium hover:shadow-lg hover:shadow-[#18b5d5]/25 border border-[#18b5d5]/30"
           >
             {t('home.themes.back_to_home')}
           </button>
@@ -969,7 +969,7 @@ useEffect(() => {
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-2">
             <button
               onClick={() => window.open('https://salla.com/themes/1499917793', '_blank')}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-[#18b5d5] to-[#16a8cc] text-white px-4 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl text-sm sm:text-lg font-semibold hover:from-[#16a8cc] hover:to-[#18b5d5] transition-all duration-300 transform hover:scale-105 micro-hover shadow-xl hover:shadow-2xl border border-[#18b5d5]/30"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-[#18b5d5] to-[#16a8cc] text-white px-4 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl text-sm sm:text-lg font-semibold hover:from-[#16a8cc] hover:to-[#18b5d5] transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
             >
               <ShoppingCart className="w-4 h-4 sm:w-6 sm:h-6" />
               <span className="hidden sm:inline">{t('home.themes.View_Cart')}</span>
@@ -980,7 +980,7 @@ useEffect(() => {
               href="https://drive.google.com/drive/folders/1TuMasEWd5kB6_DzDN9OVhj8afVS6w9zb"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-red-600 to-red-800 text-white px-4 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl text-sm sm:text-lg font-semibold hover:from-red-700 hover:to-red-900 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl micro-hover"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-red-600 to-red-800 text-white px-4 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl text-sm sm:text-lg font-semibold hover:from-red-700 hover:to-red-900 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
             >
               <Play className="w-4 h-4 sm:w-6 sm:h-6" />
               <span className="hidden sm:inline">{t('home.themes.video_explanation')}</span>
@@ -991,7 +991,7 @@ useEffect(() => {
               href="https://salla.sa/dev-etmlwprywtygjjcy"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-green-500 to-green-700 text-white px-4 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl text-sm sm:text-lg font-semibold hover:from-green-600 hover:to-green-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl micro-hover"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-green-500 to-green-700 text-white px-4 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl text-sm sm:text-lg font-semibold hover:from-green-600 hover:to-green-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl micro-hover group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
             >
               <Eye className="w-4 h-4 sm:w-6 sm:h-6" />
               <span className="hidden sm:inline">{t('home.themes.preview_theme')}</span>
@@ -1334,7 +1334,7 @@ useEffect(() => {
         <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 w-full sm:w-auto justify-center">
           <button
             onClick={() => window.open('https://salla.com/themes/1499917793', '_blank')}
-            className="flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-[#041a20] to-[#051c20] text-white px-3 sm:px-6 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold hover:from-[#16a8cc] hover:to-[#18b5d8] transition-all duration-300 shadow-lg hover:shadow-xl group/button flex-1 sm:flex-initial justify-center"
+            className="flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-[#041a20] to-[#051c20] text-white px-3 sm:px-6 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold hover:from-[#16a8cc] hover:to-[#18b5d8] transition-all duration-300 shadow-lg hover:shadow-xl group/button flex-1 sm:flex-initial justify-center group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
           >
             <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4 group-hover/button:animate-bounce" />
             <span className="hidden sm:inline">{t('home.themes.get_theme_now')}</span>
@@ -1346,7 +1346,7 @@ useEffect(() => {
             href="https://drive.google.com/drive/folders/1TuMasEWd5kB6_DzDN9OVhj8afVS6w9zb"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 sm:gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 border border-gray-200"
+            className="flex items-center gap-1 sm:gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 group hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
           >
             <Play className="w-3 h-3 sm:w-4 sm:h-4" />
             <span className="hidden sm:inline">{t('home.themes.video')}</span>
@@ -1357,7 +1357,7 @@ useEffect(() => {
             href="https://salla.sa/dev-etmlwprywtygjjcy"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 sm:gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 border border-gray-200"
+            className="flex items-center gap-1 sm:gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 group hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
           >
             <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
             <span className="hidden sm:inline">{t('home.themes.preview')}</span>

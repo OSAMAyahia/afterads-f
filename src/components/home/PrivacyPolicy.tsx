@@ -464,7 +464,7 @@ const PrivacyPolicy: React.FC = () => {
             <div className="text-center animate-fadeInUp">
               <Link
                 to="/"
-                className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-[#18b5d5] to-[#18b5d5] text-white px-4 sm:px-6 lg:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl hover:from-[#16a3c0] hover:to-[#16a3c0] transition-all duration-300 transform hover:scale-105 font-bold shadow-lg hover:shadow-lg hover:shadow-[#18b5d5]/50 text-sm sm:text-base hover-lift animate-glow"
+                className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-[#18b5d5] to-[#18b5d5] text-white px-4 sm:px-6 lg:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl hover:from-[#16a3c0] hover:to-[#16a3c0] transition-all duration-300 transform hover:scale-105 font-bold shadow-lg hover:shadow-lg hover:shadow-[#18b5d5]/50 text-sm sm:text-base hover-lift animate-glow group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
               >
                 {t('privacy_policy.back_to_home')}
                 {isRTL ? <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />:<ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />  }

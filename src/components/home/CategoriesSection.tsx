@@ -192,7 +192,7 @@ const CategoriesSection: React.FC<CategoriesSectionProps> = ({ categoryProducts,
                             isEven ? "md:justify-start" : "md:justify-end"
                           } justify-center mt-auto w-full`}
                         >
-                          <div className="inline-flex items-center gap-2 px-4 sm:px-5 md:px-6 py-2 md:py-2.5 bg-[#18b5d5]/15 border border-[#18b5d5]/30 text-[#18b5d5] text-xs md:text-sm font-semibold rounded-lg md:rounded-xl">
+                          <div className="inline-flex items-center gap-2 px-4 sm:px-5 md:px-6 py-2 md:py-2.5 bg-[#18b5d5]/15 border border-[#18b5d5]/30 text-[#18b5d5] text-xs md:text-sm font-semibold rounded-lg md:rounded-xl group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30">
                             {t('home.categories.discover_product')}
                           </div>
                         </div>

@@ -618,14 +618,14 @@ const CartDropdown: React.FC<CartDropdownProps> = ({ isOpen, onClose, onHoverCha
             <div className="flex gap-1 xs:gap-2">
               <button
                 onClick={handleViewCart}
-                className="flex-1 btn-pro-outline btn-pro-sm"
+                className="flex-1 btn-pro-outline btn-pro-sm group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
               >
                 <span className="hidden sm:inline">{t('cart_dropdown.view_cart')}</span>
                 <span className="sm:hidden">{t('cart_dropdown.cart')}</span>
               </button>
               <button
                 onClick={handleCheckout}
-                className="flex-1 btn-pro btn-pro-sm flex items-center justify-center gap-1 sm:gap-2"
+                className="flex-1 btn-pro btn-pro-sm flex items-center justify-center gap-1 sm:gap-2 group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
               >
                 <span className="hidden sm:inline">{t('cart_dropdown.checkout')}</span>
                 <span className="sm:hidden">{t('cart_dropdown.buy')}</span>

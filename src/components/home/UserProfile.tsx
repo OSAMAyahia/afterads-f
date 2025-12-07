@@ -429,7 +429,7 @@ const UserProfile: React.FC = () => {
         <div className="text-center bg-[#292929] rounded-2xl p-8 max-w-md w-full border border-[#3a3a3a]">
           <User className="w-16 h-16 text-[#18b5d5] mx-auto mb-4" />
           <h2 className="text-xl font-bold text-white mb-4">{t('user_profile.user_not_found')}</h2>
-          <Link to="/login" className="inline-block bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white px-6 py-3 rounded-xl hover:shadow-[0_8px_24px_rgba(24,181,213,0.25)] transition-all shadow-lg">
+          <Link to="/login" className="inline-block bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white px-6 py-3 rounded-xl hover:shadow-[0_8px_24px_rgba(24,181,213,0.25)] transition-all shadow-lg group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30">
             {t('user_profile.login')}
           </Link>
         </div>
@@ -577,7 +577,7 @@ const UserProfile: React.FC = () => {
                   {!isEditing ? (
                     <button
                       onClick={() => setIsEditing(true)}
-                      className="w-full sm:w-auto bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white px-4 sm:px-6 py-2 rounded-xl hover:shadow-[0_8px_24px_rgba(24,181,213,0.25)] transition-all flex items-center justify-center gap-2 text-sm sm:text-base shadow-lg"
+                      className="w-full sm:w-auto bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white px-4 sm:px-6 py-2 rounded-xl hover:shadow-[0_8px_24px_rgba(24,181,213,0.25)] transition-all flex items-center justify-center gap-2 text-sm sm:text-base shadow-lg group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
                     >
                       <Edit3 className="w-4 h-4" />
                       {t('user_profile.edit')}
@@ -587,7 +587,7 @@ const UserProfile: React.FC = () => {
                       <button
                         onClick={handleSave}
                         disabled={saving}
-                        className="bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white px-4 sm:px-6 py-2 rounded-xl hover:shadow-[0_8px_24px_rgba(24,181,213,0.25)] transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-sm sm:text-base shadow-lg"
+                        className="bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white px-4 sm:px-6 py-2 rounded-xl hover:shadow-[0_8px_24px_rgba(24,181,213,0.25)] transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-sm sm:text-base shadow-lg group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
                       >
                         <Save className="w-4 h-4" />
                         {saving ? t('user_profile.saving') : t('user_profile.save')}
@@ -597,7 +597,7 @@ const UserProfile: React.FC = () => {
                           setIsEditing(false);
                           setFormData(user);
                         }}
-                        className="bg-red-600 text-white px-4 sm:px-6 py-2 rounded-xl hover:bg-red-700 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base shadow-lg"
+                        className="bg-red-600 text-white px-4 sm:px-6 py-2 rounded-xl hover:bg-red-700 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base shadow-lg group transition-all duration-300 hover:shadow-lg hover:shadow-red-500/25 hover:scale-105 border border-red-500/30"
                       >
                         <X className="w-4 h-4" />
                         {t('user_profile.cancel')}
@@ -677,7 +677,7 @@ const UserProfile: React.FC = () => {
                                   </div>
                                 )}
                               </div>
-                              <label className="flex-1 bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white px-4 py-2 rounded-xl cursor-pointer transition-all hover:shadow-[0_8px_24px_rgba(24,181,213,0.25)] text-center block text-sm shadow-lg">
+                              <label className="flex-1 bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white px-4 py-2 rounded-xl cursor-pointer transition-all hover:shadow-[0_8px_24px_rgba(24,181,213,0.25)] text-center block text-sm shadow-lg group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30">
                                 <Camera className="w-4 h-4 inline-block ml-2" />
                                 اختر صورة
                                 <input 
@@ -869,7 +869,7 @@ const UserProfile: React.FC = () => {
                           </div>
                           <button
                             onClick={() => handleOrderTracking(order)}
-                            className="w-full sm:w-auto bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white px-4 py-2 rounded-xl hover:shadow-[0_8px_24px_rgba(24,181,213,0.25)] transition-all text-xs sm:text-sm shadow-lg"
+                            className="w-full sm:w-auto bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white px-4 py-2 rounded-xl hover:shadow-[0_8px_24px_rgba(24,181,213,0.25)] transition-all text-xs sm:text-sm shadow-lg group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
                           >
                             {t('user_profile.track_order')}
                           </button>
@@ -879,7 +879,7 @@ const UserProfile: React.FC = () => {
                     <div className="text-center pt-4">
                       <Link 
                         to="/orders"
-                        className="inline-block bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white px-6 py-3 rounded-xl hover:shadow-[0_8px_24px_rgba(24,181,213,0.25)] transition-all text-sm shadow-lg"
+                        className="inline-block bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white px-6 py-3 rounded-xl hover:shadow-[0_8px_24px_rgba(24,181,213,0.25)] transition-all text-sm shadow-lg group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
                       >
                         {t('user_profile.view_all_orders')}
                       </Link>
@@ -892,7 +892,7 @@ const UserProfile: React.FC = () => {
                     <p className="text-gray-400 mb-4">{t('user_profile.start_shopping')}</p>
                     <Link 
                       to="/products"
-                      className="inline-flex items-center gap-2 bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white px-6 py-3 rounded-xl hover:shadow-[0_8px_24px_rgba(24,181,213,0.25)] transition-all text-sm shadow-lg"
+                      className="inline-flex items-center gap-2 bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white px-6 py-3 rounded-xl hover:shadow-[0_8px_24px_rgba(24,181,213,0.25)] transition-all text-sm shadow-lg group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
                     >
                       {t('user_profile.browse_products')}
                       <Package className="w-4 h-4" />
@@ -974,7 +974,7 @@ const UserProfile: React.FC = () => {
                       <button
                         onClick={handlePasswordChange}
                         disabled={saving || !passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword}
-                        className="w-full bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white px-6 py-2 rounded-xl hover:shadow-[0_8px_24px_rgba(24,181,213,0.25)] transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm shadow-lg"
+                        className="w-full bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white px-6 py-2 rounded-xl hover:shadow-[0_8px_24px_rgba(24,181,213,0.25)] transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm shadow-lg group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
                       >
                         {saving ? t('user_profile.updating') : t('user_profile.update_password')}
                       </button>

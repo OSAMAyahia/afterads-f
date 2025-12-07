@@ -193,7 +193,7 @@ const ContactSection: React.FC = () => {
               />
               <button
                 onClick={handleSubmit}
-                className="w-full bg-gradient-to-r from-[#18b5d5] to-[#0d8aa3] text-white font-bold py-3 px-4 rounded-lg hover:bg-gradient-to-r hover:from-[#0d8aa3] hover:to-[#18b5d5] hover:shadow-lg hover:shadow-[#18b5d5]/30 transition-all duration-300 text-base flex items-center justify-center gap-2 group transform hover:scale-[1.02] active:scale-[0.98]"
+                className="w-full bg-gradient-to-r from-[#18b5d5] to-[#0d8aa3] text-white font-bold py-3 px-4 rounded-lg hover:bg-gradient-to-r hover:from-[#0d8aa3] hover:to-[#18b5d5] hover:shadow-lg hover:shadow-[#18b5d5]/30 transition-all duration-300 text-base flex items-center justify-center gap-2 group transform hover:scale-[1.02] active:scale-[0.98] group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
               >
                 <span>{t('home.contact.send_button')}</span>
                 <Send className="w-4 h-4 text-white group-hover:-translate-x-1 transition-transform" />

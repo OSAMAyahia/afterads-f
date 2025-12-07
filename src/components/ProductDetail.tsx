@@ -1007,7 +1007,7 @@ const ProductDetail: React.FC = () => {
                   <button
                     onClick={addToCart}
                     disabled={addingToCart || !product.isAvailable}
-                    className="flex-1 btn-pro btn-pro-lg space-x-1 sm:space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                    className="flex-1 btn-pro btn-pro-lg space-x-1 sm:space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
                   >
                     {addingToCart ? (
                       <>
@@ -1333,7 +1333,7 @@ const RelatedProducts: React.FC<{ currentProductId: number; categoryId: number |
                     <PriceDisplay price={product.price} />
                   )}
                 </div>
-                <button className="bg-gradient-to-r from-[#7a7a7a] to-[#292929] text-white px-3 py-2 rounded-lg hover:from-[#292929] hover:to-[#7a7a7a] transition-colors duration-200 text-sm micro-hover">
+                <button className="bg-gradient-to-r from-[#7a7a7a] to-[#292929] text-white px-3 py-2 rounded-lg hover:from-[#292929] hover:to-[#7a7a7a] transition-colors duration-200 text-sm micro-hover group transition-all duration-300 hover:shadow-lg hover:shadow-gray-500/25 hover:scale-105 border border-gray-500/30">
                   {t('nav.view')}
                 </button>
               </div>

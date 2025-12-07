@@ -280,7 +280,7 @@ const Profile: React.FC = () => {
           <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-800 mb-2">خطأ في تحميل البيانات</h2>
           <p className="text-gray-600 mb-6">لم نتمكن من تحميل بيانات الملف الشخصي</p>
-          <Link to="/" className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+          <Link to="/" className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors group transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 hover:scale-105 border border-blue-500/30">
             العودة للرئيسية
           </Link>
         </div>

@@ -211,7 +211,7 @@ const ServiceForm: React.FC = () => {
           <p className="text-red-400 mb-4 sm:mb-6 font-tajawal text-base sm:text-lg">{error}</p>
           <button
             onClick={() => navigate('/dashboard')}
-            className="relative action-button bg-gradient-to-r from-green-600 to-green-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-green-800 transition-all duration-300 glow-effect font-tajawal text-sm sm:text-base"
+            className="relative action-button bg-gradient-to-r from-green-600 to-green-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-green-800 transition-all duration-300 glow-effect font-tajawal text-sm sm:text-base group transition-all duration-300 hover:shadow-lg hover:shadow-green-500/25 hover:scale-105 border border-green-500/30"
           >
             العودة إلى الإدارة
           </button>
@@ -347,7 +347,7 @@ const ServiceForm: React.FC = () => {
           <h1 className="form-title text-xl sm:text-2xl lg:text-3xl font-bold animate-fade-in">{id ? 'تعديل المنتج' : 'إضافة منتج جديدة'}</h1>
           <button
             onClick={() => navigate('/dashboard')}
-            className="relative action-button bg-white text-green-700 px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-100 transition-all duration-300 glow-effect animate-pulse text-sm sm:text-base"
+            className="relative action-button bg-white text-green-700 px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-100 transition-all duration-300 glow-effect animate-pulse text-sm sm:text-base group transition-all duration-300 hover:shadow-lg hover:shadow-gray-500/25 hover:scale-105 border border-gray-300/30"
           >
             العودة إلى الإدارة
           </button>
@@ -479,7 +479,7 @@ const ServiceForm: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleRemoveMainImage}
-                  className="relative action-button bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all duration-300 font-tajawal"
+                  className="relative action-button bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all duration-300 font-tajawal group transition-all duration-300 hover:shadow-lg hover:shadow-red-500/25 hover:scale-105 border border-red-500/30"
                 >
                   حذف
                 </button>
@@ -514,7 +514,7 @@ const ServiceForm: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => handleRemoveDetailedImage(index)}
-                      className="relative action-button bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all duration-300 font-tajawal"
+                      className="relative action-button bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all duration-300 font-tajawal group transition-all duration-300 hover:shadow-lg hover:shadow-red-500/25 hover:scale-105 border border-red-500/30"
                     >
                       حذف
                     </button>
@@ -559,7 +559,7 @@ const ServiceForm: React.FC = () => {
               <button
                 type="button"
                 onClick={handleAddFeature}
-                className="relative action-button bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-3 rounded-lg hover:bg-green-800 transition-all duration-300 glow-effect mr-2 font-tajawal"
+                className="relative action-button bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-3 rounded-lg hover:bg-green-800 transition-all duration-300 glow-effect mr-2 font-tajawal group transition-all duration-300 hover:shadow-lg hover:shadow-green-500/25 hover:scale-105 border border-green-500/30"
               >
                 إضافة
               </button>

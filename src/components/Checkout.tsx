@@ -581,7 +581,7 @@ const getFinalTotal = () => {
   }
 
   return (
-    <section className="min-h-screen bg-[#292929] relative overflow-hidden overflow-x-hidden" dir={isRTL ? 'rtl' : 'ltr'}>
+    <section className="min-h-screen relative overflow-hidden  overflow-x-hidden" dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Animated Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0 bg-gradient-to-br from-[#18b5d8] via-transparent to-[#16a2c7]"></div>
@@ -652,7 +652,7 @@ const getFinalTotal = () => {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div className="relative z-10 container bg-[#292929] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 mobile-grid mobile-gap">
           {/* Order Summary - Mobile First */}
           <div className="lg:col-span-1 order-1 lg:order-2">
