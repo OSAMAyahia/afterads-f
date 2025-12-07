@@ -47,36 +47,88 @@ const LiveSearch: React.FC<LiveSearchProps> = ({ onClose, className = '' }) => {
 
   // تحميل المنتجات عند بدء التطبيق
   const { data: productsResp, isLoading: productsLoading } = useApiQuery<any>({ endpoint: API_ENDPOINTS.PRODUCTS, queryKey: ['products'] });
+  
+  // تحميل البيانات من localStorage أولاً
   useEffect(() => {
-    const cached = localStorage.getItem('searchProducts');
-    if (cached) {
-      try {
-        const cachedProducts = JSON.parse(cached);
-        setAllProducts(cachedProducts);
-        setIsLoading(false);
-      } catch {}
+    let productsLoaded = false;
+    let categoriesLoaded = false;
+
+    // تحميل المنتجات - نجرب جميع المصادر الممكنة
+    const productSources = ['cachedAllProducts', 'searchProducts'];
+    
+    for (const source of productSources) {
+      const cached = localStorage.getItem(source);
+      if (cached && !productsLoaded) {
+        try {
+          const parsedProducts = JSON.parse(cached);
+          const availableProducts = parsedProducts.filter((product: Product & { productType?: 'product' | 'theme' }) => 
+            product.isAvailable && 
+            product.name && 
+            product.name.trim() !== '' && 
+            (product.productType || 'product') !== 'theme'
+          );
+          
+          if (availableProducts.length > 0) {
+            setAllProducts(availableProducts);
+            setIsLoading(false);
+            productsLoaded = true;
+            console.log(`✅ تم تحميل ${availableProducts.length} منتج من ${source}`);
+          }
+        } catch (error) {
+          console.error(`❌ خطأ في تحميل ${source}:`, error);
+        }
+      }
     }
 
-    const cats = localStorage.getItem('cachedCategories');
-    if (cats) {
-      try {
-        const parsed = JSON.parse(cats);
-        const map: Record<number, { id: number; name: string; name_ar?: string; name_en?: string }> = {};
-        parsed.forEach((c: any) => { if (c && typeof c.id === 'number') map[c.id] = c; });
-        setCategoryMap(map);
-      } catch {}
+    // تحميل الفئات - نجرب جميع المصادر الممكنة
+    const categorySources = ['cachedAllCategories', 'cachedCategories'];
+    
+    for (const source of categorySources) {
+      const cached = localStorage.getItem(source);
+      if (cached && !categoriesLoaded) {
+        try {
+          const parsed = JSON.parse(cached);
+          const map: Record<number, { id: number; name: string; name_ar?: string; name_en?: string }> = {};
+          parsed.forEach((c: any) => { 
+            if (c && typeof c.id === 'number') map[c.id] = c; 
+          });
+          
+          if (Object.keys(map).length > 0) {
+            setCategoryMap(map);
+            categoriesLoaded = true;
+            console.log(`✅ تم تحميل ${Object.keys(map).length} فئة من ${source}`);
+          }
+        } catch (error) {
+          console.error(`❌ خطأ في تحميل ${source}:`, error);
+        }
+      }
+    }
+
+    // إذا لم يتم تحميل المنتجات، نوقف التحميل
+    if (!productsLoaded) {
+      setIsLoading(false);
+      console.warn('⚠️ لم يتم العثور على منتجات في localStorage');
     }
   }, []);
+
+  // تحديث البيانات من API إذا توفرت
   useEffect(() => {
     if (!productsResp) return;
     const productsData = productsResp?.products || productsResp || [];
     const availableProducts = (productsData as any[])
       .filter((product: Product & { productType?: 'product' | 'theme' }) => 
-        product.isAvailable && product.name && product.name.trim() !== '' && (product.productType || 'product') !== 'theme'
+        product.isAvailable && 
+        product.name && 
+        product.name.trim() !== '' && 
+        (product.productType || 'product') !== 'theme'
       );
-    setAllProducts(availableProducts as Product[]);
-    localStorage.setItem('searchProducts', JSON.stringify(availableProducts));
-    setIsLoading(false);
+    
+    if (availableProducts.length > 0) {
+      setAllProducts(availableProducts as Product[]);
+      localStorage.setItem('searchProducts', JSON.stringify(availableProducts));
+      setIsLoading(false);
+      console.log('✅ تم تحديث المنتجات من API:', availableProducts.length);
+    }
   }, [productsResp]);
 
   const getLocalizedContent = (product: Product, field: 'name' | 'description') => {
@@ -84,9 +136,22 @@ const LiveSearch: React.FC<LiveSearchProps> = ({ onClose, className = '' }) => {
     const arField = `${field}_ar` as keyof Product;
     const enField = `${field}_en` as keyof Product;
     const baseValue = (product as any)[field];
-    const value = currentLang === 'ar'
-      ? ((product as any)[arField] ?? (product as any)[enField] ?? baseValue)
-      : ((product as any)[enField] ?? (product as any)[arField] ?? baseValue);
+    
+    // ترتيب الأولوية حسب اللغة
+    let value;
+    if (currentLang === 'ar') {
+      // أولوية: عربي -> إنجليزي -> أساسي
+      value = (product as any)[arField] || (product as any)[enField] || baseValue;
+    } else {
+      // أولوية: إنجليزي -> عربي -> أساسي
+      value = (product as any)[enField] || (product as any)[arField] || baseValue;
+    }
+    
+    // إذا كانت القيمة فاضية، نستخدم الأساسي
+    if (!value || (typeof value === 'string' && value.trim() === '')) {
+      value = baseValue;
+    }
+    
     if (Array.isArray(value)) {
       return value.map((b: any) => (b && b.text) ? b.text : '').join(' ');
     }
@@ -110,11 +175,19 @@ const LiveSearch: React.FC<LiveSearchProps> = ({ onClose, className = '' }) => {
       return;
     }
 
+    console.log('🔍 البحث عن:', query, '- عدد المنتجات المتاحة:', allProducts.length);
+
     const searchTerm = query.trim().toLowerCase();
 
     const nameMatches = allProducts.filter(product => {
-      const nameText = getLocalizedContent(product, 'name').toLowerCase();
-      return nameText.includes(searchTerm);
+      // البحث في جميع حقول الاسم
+      const name = (product.name || '').toLowerCase();
+      const nameAr = (product.name_ar || '').toLowerCase();
+      const nameEn = (product.name_en || '').toLowerCase();
+      
+      return name.includes(searchTerm) || 
+             nameAr.includes(searchTerm) || 
+             nameEn.includes(searchTerm);
     });
 
     const categoryMatches = allProducts.filter(product => {
@@ -125,12 +198,20 @@ const LiveSearch: React.FC<LiveSearchProps> = ({ onClose, className = '' }) => {
 
     const descriptionMatches = allProducts.filter(product => {
       if (nameMatches.includes(product) || categoryMatches.includes(product)) return false;
-      const descText = getLocalizedContent(product, 'description').toLowerCase();
-      return descText.includes(searchTerm);
+      
+      // البحث في جميع حقول الوصف
+      const desc = getLocalizedContent(product, 'description').toLowerCase();
+      const descAr = (product.description_ar || '').toLowerCase();
+      const descEn = (product.description_en || '').toLowerCase();
+      
+      return desc.includes(searchTerm) || 
+             descAr.includes(searchTerm) || 
+             descEn.includes(searchTerm);
     });
 
     const combinedResults = [...nameMatches, ...categoryMatches, ...descriptionMatches];
 
+    console.log('✅ نتائج البحث:', combinedResults.length);
     setSearchResults(combinedResults.slice(0, 6));
   };
 
@@ -181,7 +262,7 @@ const LiveSearch: React.FC<LiveSearchProps> = ({ onClose, className = '' }) => {
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('keydown', handleEscapeKey);
-      document.body.style.overflow = 'hidden'; // منع التمرير في الخلفية
+      document.body.style.overflow = 'hidden';
       
       return () => {
         document.removeEventListener('mousedown', handleClickOutside);
@@ -226,7 +307,7 @@ const LiveSearch: React.FC<LiveSearchProps> = ({ onClose, className = '' }) => {
               </button>
             </div>
 
-            {/* نتائج البحث المحسنة - Updated with glassmorphism */}
+            {/* نتائج البحث المحسنة */}
             {searchQuery.length >= 2 && (
               <div 
                 className="rounded-2xl overflow-hidden shadow-2xl animate-in slide-in-from-top-2 duration-300"
@@ -244,15 +325,10 @@ const LiveSearch: React.FC<LiveSearchProps> = ({ onClose, className = '' }) => {
               >
                  {isLoading ? (
                    <div className="p-8 text-center">
-                     <div 
-                       className="animate-spin rounded-full h-8 w-8 mx-auto mb-4"
-                       style={{
-                         background: 'conic-gradient(from 0deg, transparent, rgba(24,181,216,0.8), transparent)',
-                         mask: 'radial-gradient(circle at center, transparent 30%, black 32%, black 68%, transparent 70%)',
-                         WebkitMask: 'radial-gradient(circle at center, transparent 30%, black 32%, black 68%, transparent 70%)'
-                       }}
-                     />
-                     <p className="text-white/80 font-medium text-sm">{t('live_search.loading', 'جاري التحميل...')}</p>
+                     <div className="inline-flex items-center justify-center">
+                       <div className="animate-spin rounded-full h-10 w-10 border-4 border-white/20 border-t-[#18b5d8]"></div>
+                     </div>
+                     <p className="text-white/90 font-medium text-base mt-4">{t('live_search.loading', 'جاري التحميل...')}</p>
                    </div>
                  ) : searchResults.length > 0 ? (
                    <>
@@ -262,50 +338,50 @@ const LiveSearch: React.FC<LiveSearchProps> = ({ onClose, className = '' }) => {
                          <button
                            key={product.id}
                            onClick={() => handleProductClick(product)}
-                           className="w-full p-3 hover:bg-white/10 transition-all duration-300 border-b border-white/10 last:border-b-0 text-right group/item"
+                           className="w-full p-4 hover:bg-white/10 transition-all duration-300 border-b border-white/10 last:border-b-0 text-right group/item"
                            style={{
                              animationDelay: `${index * 50}ms`,
                              animation: 'slideInUp 0.4s ease-out forwards'
                            }}
                          >
-                           <div className="flex items-center gap-3">
+                           <div className="flex items-center gap-4">
                              {/* صورة المنتج المحسنة */}
-                             <div className="w-12 h-12 rounded-xl overflow-hidden bg-white/10 flex-shrink-0 group-hover/item:scale-105 transition-transform duration-300 border border-white/20">
+                             <div className="w-16 h-16 rounded-xl overflow-hidden bg-white/10 flex-shrink-0 group-hover/item:scale-105 transition-transform duration-300 border border-white/20 shadow-lg">
                                {product.mainImage ? (
                                  <img
                                    src={buildImageUrl(product.mainImage)}
-                                   alt={product.name}
+                                   alt={getLocalizedContent(product, 'name')}
                                    className="w-full h-full object-cover"
                                  />
                                ) : (
-                                 <div className="w-full h-full flex items-center justify-center">
-                                   <Package size={20} className="text-white/40" />
+                                 <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-white/5 to-white/10">
+                                   <Package size={24} className="text-white/40" />
                                  </div>
                                )}
                              </div>
                              
                              {/* معلومات المنتج المحسنة */}
-                             <div className="flex-1 min-w-0">
-                               <h4 className="font-semibold text-white truncate text-right mb-1 group-hover/item:text-white/90 transition-colors duration-200 text-sm">
+                             <div className="flex-1 min-w-0 text-right">
+                               <h4 className="font-bold text-white truncate mb-1.5 group-hover/item:text-[#18b5d8] transition-colors duration-200 text-base">
                                  {getLocalizedContent(product, 'name')}
                                </h4>
                                {getCategoryName(product) && (
-                                 <p className="text-xs text-white/60 truncate text-right mb-1">
+                                 <p className="text-sm text-white/70 truncate mb-2">
                                    {getCategoryName(product)}
                                  </p>
                                )}
                                <div className="flex items-center justify-end">
-                                 <span className="text-xs font-semibold text-white bg-gradient-to-r from-[#18b5d8] to-[#0891b2] px-2 py-1 rounded-lg">
+                                 <span className="text-sm font-bold text-white bg-gradient-to-r   px-3 py-1.5 rounded-lg shadow-md">
                                    <PriceDisplay price={product.price} />
                                  </span>
                                </div>
                              </div>
                              
-                             {/* سهم الانتقال */}
-                             <div className="opacity-0 group-hover/item:opacity-100 transition-all duration-300 transform group-hover/item:translate-x-1">
-                               <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center">
-                                 <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                             {/* سهم الانتقال المحسّن */}
+                             <div className="opacity-0 group-hover/item:opacity-100 transition-all duration-300 transform group-hover/item:-translate-x-1">
+                               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#18b5d8]/30 to-[#0891b2]/30 flex items-center justify-center border border-white/20">
+                                 <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
                                  </svg>
                                </div>
                              </div>
@@ -316,27 +392,23 @@ const LiveSearch: React.FC<LiveSearchProps> = ({ onClose, className = '' }) => {
               
                      {/* زر عرض جميع النتائج المحسن */}
                      {searchResults.length >= 6 && (
-                       <div className="p-3 border-t border-white/10">
+                       <div className="p-4 border-t border-white/10 bg-white/5">
                          <button
                            onClick={handleViewAll}
-                           className="w-full py-2.5 px-4 rounded-xl btn btn-primary btn-standard-primary text-sm"
-                           style={{
-                             border: '1px solid rgba(255,255,255,0.35)',
-                             boxShadow: '0 6px 18px rgba(0,0,0,0.25)'
-                           }}
+                           className="w-full py-3 px-4 rounded-xl font-bold text-white bg-gradient-to-r from-[#18b5d8] to-[#0891b2] hover:from-[#1aa3c4] hover:to-[#0a7a94] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-base"
                          >
-                           <span className="relative z-10">{t('live_search.view_all_results', 'عرض جميع النتائج')}</span>
+                           {t('live_search.view_all_results', 'عرض جميع النتائج')}
                          </button>
                        </div>
                      )}
                    </>
                  ) : (
-                   <div className="p-6 text-center">
-                     <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-white/10 flex items-center justify-center">
-                       <Package size={24} className="text-white/40" />
+                   <div className="p-8 text-center">
+                     <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/20">
+                       <Package size={32} className="text-white/50" />
                      </div>
-                     <h3 className="text-sm font-semibold text-white mb-1">{t('live_search.no_results', 'لا توجد نتائج')}</h3>
-                     <p className="text-xs text-white/60">{t('live_search.no_products_found', 'لم يتم العثور على منتجات')}</p>
+                     <h3 className="text-base font-bold text-white mb-2">{t('live_search.no_results', 'لا توجد نتائج')}</h3>
+                     <p className="text-sm text-white/70">{t('live_search.no_products_found', 'لم يتم العثور على منتجات تطابق بحثك')}</p>
                    </div>
                  )}
                </div>
