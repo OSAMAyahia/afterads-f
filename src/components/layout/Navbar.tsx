@@ -1012,10 +1012,12 @@ useEffect(() => {
 ) : (
   <button 
     onClick={openAuthModal} 
-    className="relative text-white bg-gradient-to-r from-[#18b5d8] to-[#0891b2] px-6 py-2 rounded-xl hover:from-[#0891b2] hover:to-[#18b5d8] transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl hover:scale-105 transform"
+    className="btn btn-primary btn-standard-primary px-6 py-2 rounded-xl text-sm"
+    style={{
+      background: 'linear-gradient(to right, #18b5d8, #0891b2)'
+    }}
   >
     <span className="relative z-10">{t('nav.login')}</span>
-    <div className="absolute inset-0 rounded-xl bg-white/20 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
   </button>
 )}
                </div>
@@ -1234,32 +1236,13 @@ useEffect(() => {
               >
                 <button 
                   onClick={openAuthModal}
-                  className="relative flex items-center justify-center w-full px-5 py-3.5 text-white rounded-xl transition-all duration-300 touch-manipulation group overflow-hidden"
+                  className="btn btn-primary btn-standard-primary w-full flex items-center justify-center px-5 py-3.5 rounded-xl text-sm"
                   style={{
-                    background: 'linear-gradient(135deg, #18b5d8 0%, #0891b2 100%)',
-                    boxShadow: '0 8px 32px rgba(24,181,216,0.3), inset 0 1px 1px rgba(255,255,255,0.2)'
+                    background: 'linear-gradient(135deg, #18b5d8 0%, #0891b2 100%)'
                   }}
                 >
-                  {/* Animated Background */}
-                  <div 
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-2xl"
-                    style={{
-                      background: 'linear-gradient(135deg, #0891b2 0%, #18b5d8 100%)'
-                    }}
-                  ></div>
-                  
-                  {/* Shimmer Effect */}
-                  <div 
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-500"
-                    style={{
-                      background: 'linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%)',
-                      transform: 'translateX(-100%)',
-                      animation: 'shimmer 1.5s ease-in-out infinite'
-                    }}
-                  ></div>
-                  
                   <User size={20} className="flex-shrink-0 ml-2 relative z-10" />
-<span className="font-bold text-base relative z-10">{t('nav.login')}</span>
+                  <span className="relative z-10">{t('nav.login')}</span>
                 </button>
               </div>
             )}

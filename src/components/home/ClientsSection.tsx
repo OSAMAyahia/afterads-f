@@ -3,6 +3,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useTranslation } from 'react-i18next';
+import { Users, Award, Shield, TrendingUp } from 'lucide-react';
 
 interface Client {
   id: number;
@@ -76,12 +77,16 @@ const ClientsSection: React.FC<ClientsSectionProps> = ({ clients }) => {
         <div className="relative z-10 w-full">
           {/* العنوان */}
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-3 bg-[#18b5d8]/10 border border-[#18b5d8]/20 text-[#18b5d8] px-6 py-3 rounded-full mb-8 backdrop-blur-sm">
+            <div className="inline-flex items-center gap-3 bg-[#18b5d8]/20 border border-[#18b5d8]/30 text-[#18b5d8] px-6 py-3 rounded-full mb-8 backdrop-blur-sm hover:bg-[#18b5d8]/30 transition-all duration-300">
+              <Users className="w-5 h-5" />
               <span className="font-semibold">{t('clients.title')}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
-              {t('clients.subtitle')}{" "}
+              {t('clients.subtitle')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#18b5d5] to-[#0d8aa3] animate-pulse">{t('clients.partners')}</span>
             </h2>
+            <p className="text-lg text-gray-300 max-w-2xl mx-auto mt-4">
+              نفخر بثقة شركاؤنا ونجاح شراكاتنا في تحقيق أهدافهم الرقمية
+            </p>
           </div>
 
           {/* الكاروسيل */}
@@ -89,26 +94,39 @@ const ClientsSection: React.FC<ClientsSectionProps> = ({ clients }) => {
             {clients.map((client) =>
               client.logo ? (
                 <div key={client.id} className="px-2 sm:px-3">
-                  <a
-                    href={
-                      client.website
-                        ? client.website.startsWith("http")
-                          ? client.website
-                          : `https://${client.website}`
-                        : "#"
-                    }
-                    target={client.website ? "_blank" : "_self"}
-                    rel="noopener noreferrer"
-                    onClick={(e) => !client.website && e.preventDefault()}
-                    className="block flex items-center justify-center"
-                  >
-                    <img
-                      src={client.logo}
-                      alt={t('clients.client_logo', { id: client.id })}
-                      loading="lazy"
-                      className="h-16 sm:h-20 w-auto object-contain grayscale hover:grayscale-0 transition-smooth"
-                    />
-                  </a>
+                  <div className="bg-[#333333]/90 backdrop-blur-lg border border-gray-600/40 rounded-xl sm:rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:scale-[1.01] transition-all duration-200 group">
+                    <a
+                      href={
+                        client.website
+                          ? client.website.startsWith("http")
+                            ? client.website
+                            : `https://${client.website}`
+                          : "#"
+                      }
+                      target={client.website ? "_blank" : "_self"}
+                      rel="noopener noreferrer"
+                      onClick={(e) => !client.website && e.preventDefault()}
+                      className="block flex items-center justify-center p-4 sm:p-6 hover:bg-white/10 transition-all duration-200 active:scale-95"
+                    >
+                      <div className="relative">
+                        <img
+                          src={client.logo}
+                          alt={t('clients.client_logo', { id: client.id })}
+                          loading="lazy"
+                          className="h-16 sm:h-20 w-auto object-contain grayscale group-hover:grayscale-0 transition-smooth"
+                        />
+                        {/* Hover overlay effect similar to FAQ */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#18b5d8]/20 to-[#0d8aa3]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
+                      </div>
+                    </a>
+                    {/* Partner badge */}
+                    <div className="px-4 pb-4 flex items-center justify-center">
+                      <div className="flex items-center gap-1 text-xs text-[#18b5d8] bg-[#18b5d8]/20 px-2 py-1 rounded-full">
+                        <Award className="w-3 h-3" />
+                        <span>شريك موثوق</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ) : null
             )}

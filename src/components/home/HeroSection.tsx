@@ -128,7 +128,10 @@ const HeroSection: React.FC = () => {
     const section = document.querySelector('[data-section="themes"]');
     section?.scrollIntoView({ behavior: "smooth", block: "start" });
   }}
-  className="relative px-6 py-2 text-sm sm:px-8 sm:py-3 sm:text-base md:px-10 md:py-4 md:text-lg bg-transparent border-2 border-white/30 text-white font-medium rounded-lg sm:rounded-xl md:rounded-2xl backdrop-blur-md overflow-hidden transition-all duration-700 ease-out hover:border-[#18b5d5] hover:bg-[#18b5d5]/20 hover:shadow-[0_0_25px_rgba(24,181,213,0.5)] hover:scale-105 hover:-translate-y-1 active:scale-95 group"
+  className="btn btn-outline btn-standard-outline px-6 py-2 text-sm sm:px-8 sm:py-3 sm:text-base md:px-10 md:py-4 md:text-lg border-white/30 text-white rounded-lg sm:rounded-xl md:rounded-2xl backdrop-blur-md"
+  style={{
+    border: '2px solid rgba(255,255,255,0.3)'
+  }}
 >
   <span className="relative z-10">
     {t('home.hero.theme_showcase')}
@@ -140,7 +143,10 @@ const HeroSection: React.FC = () => {
     const section = document.querySelector('[data-section="services"]');
     section?.scrollIntoView({ behavior: "smooth", block: "start" });
   }}
-  className="relative px-6 py-2 text-sm sm:px-8 sm:py-3 sm:text-base md:px-10 md:py-4 md:text-lg bg-transparent border-2 border-white/30 text-white font-medium rounded-lg sm:rounded-xl md:rounded-2xl backdrop-blur-md overflow-hidden transition-all duration-700 ease-out hover:border-[#18b5d5] hover:bg-[#18b5d5]/20 hover:shadow-[0_0_25px_rgba(24,181,213,0.5)] hover:scale-105 hover:-translate-y-1 active:scale-95 group"
+  className="btn btn-outline btn-standard-outline px-6 py-2 text-sm sm:px-8 sm:py-3 sm:text-base md:px-10 md:py-4 md:text-lg border-white/30 text-white rounded-lg sm:rounded-xl md:rounded-2xl backdrop-blur-md"
+  style={{
+    border: '2px solid rgba(255,255,255,0.3)'
+  }}
 >
   <span className="relative z-10">
     {t('home.hero.why_us')}

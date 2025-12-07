@@ -1163,7 +1163,10 @@ const ProductDetail: React.FC = () => {
                 <button 
                   onClick={handleSubmitComment}
                   disabled={isSubmittingComment || !commentText.trim()}
-                  className="bg-gradient-to-r from-[#7a7a7a] to-[#292929] text-white px-6 py-3 rounded-lg hover:from-[#292929] hover:to-[#7a7a7a] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2 micro-hover"
+                  className="btn btn-primary btn-standard-primary px-6 py-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  style={{
+                    background: 'linear-gradient(to right, #7a7a7a, #292929)'
+                  }}
                 >
                   {isSubmittingComment ? (
                     <>

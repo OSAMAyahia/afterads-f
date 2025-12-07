@@ -227,7 +227,7 @@ const TermsAndConditions: React.FC = () => {
           <div className="max-w-4xl mx-auto">
             {/* Header */}
             <div className="text-center mb-8 sm:mb-12 lg:mb-16 animate-fadeInUp">
-              <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 sm:mb-6 mobile-text-responsive ultra-mobile-text">
+              <h1 className="text-3xl md:text-4xl font-bold text-[#18b5d5] mb-4 sm:mb-6 mobile-text-responsive ultra-mobile-text">
                 {t('terms_and_conditions.title')}
               </h1>
               <div className="flex items-center justify-center gap-2 sm:gap-3 text-gray-300 text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 mobile-text-responsive">
@@ -380,7 +380,7 @@ const TermsAndConditions: React.FC = () => {
             <div className="text-center animate-fadeInUp">
               <Link
                 to="/"
-                className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-[#7a7a7a] to-[#4a4a4a] text-white px-4 sm:px-6 lg:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl hover:from-[#8a8a8a] hover:to-[#5a5a5a] transition-all duration-300 transform hover:scale-105 font-bold shadow-lg text-sm sm:text-base"
+                className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-[#18b5d5] to-[#18b5d5] text-white px-4 sm:px-6 lg:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl hover:from-[#16a3c0] hover:to-[#16a3c0] transition-all duration-300 transform hover:scale-105 font-bold shadow-lg hover:shadow-lg hover:shadow-[#18b5d5]/50 text-sm sm:text-base"
               >
                 <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                 {t('terms_and_conditions.back_to_home')}

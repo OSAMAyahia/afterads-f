@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Minus, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Minus, ChevronDown, ChevronUp, MessageCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import faq from '../../assets/faqs.webp';
 
@@ -190,6 +190,7 @@ const FAQSection: React.FC = () => {
         {/* العنوان الرئيسي */}
         <div className="text-center mb-8 sm:mb-12 md:mb-16">
           <div className="inline-flex items-center gap-2 sm:gap-3 bg-[#18b5d8]/20 border border-[#18b5d8]/30 text-[#18b5d8] px-4 sm:px-6 py-2 sm:py-3 rounded-full mb-6 sm:mb-8 backdrop-blur-md hover:bg-[#18b5d8]/30 transition-all duration-300">
+            <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
             <span className="font-semibold text-sm sm:text-base">{t('home.faq.frequent_questions')}</span>
           </div>
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 leading-tight px-2">

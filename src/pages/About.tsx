@@ -141,31 +141,11 @@ const About: React.FC = () => {
         {/* Enhanced Header */}
         <div className="text-center mb-12 sm:mb-16 lg:mb-20">
           <div className="flex items-center justify-center gap-3 sm:gap-4 mb-6 sm:mb-8">
-            <div className="relative w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 hidden sm:block">
-              <div className="absolute -inset-2 bg-gradient-to-br from-[#7a7a7a]/30 to-[#292929]/30 blur-sm transform rotate-0 transition-all duration-500 hover:rotate-180"
-                   style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-br from-[#7a7a7a]/20 to-[#292929]/10 backdrop-blur-md border border-[#7a7a7a]/30 transform rotate-0 transition-all duration-500 hover:rotate-180"
-                   style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Heart className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-[#7a7a7a] filter drop-shadow-[0_0_10px_rgba(122,122,122,0.8)] flex-shrink-0" />
-              </div>
-            </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-white mobile-text-3xl ultra-mobile-text-2xl animate-fadeInUp">
+          
+            <h1 className="text-3xl md:text-4xl font-bold text-[#18b5d5] mobile-text-3xl ultra-mobile-text-2xl animate-fadeInUp">
               {t('about.title')}
             </h1>
-            <div className="relative w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 hidden sm:block">
-              <div className="absolute -inset-2 bg-gradient-to-br from-[#7a7a7a]/30 to-[#292929]/30 blur-sm transform rotate-0 transition-all duration-500 hover:rotate-180"
-                   style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-br from-[#7a7a7a]/20 to-[#292929]/10 backdrop-blur-md border border-[#7a7a7a]/30 transform rotate-0 transition-all duration-500 hover:rotate-180"
-                   style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Heart className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-[#7a7a7a] filter drop-shadow-[0_0_10px_rgba(122,122,122,0.8)] flex-shrink-0" />
-              </div>
-            </div>
+          
           </div>
           <p className="text-lg sm:text-xl lg:text-2xl text-gray-100 max-w-4xl mx-auto mb-8 sm:mb-10 lg:mb-12 leading-relaxed mobile-text-lg ultra-mobile-text-base animate-fadeInUp">
             {t('about.description')}
@@ -221,7 +201,7 @@ const About: React.FC = () => {
                     onClick={() => setActiveTab(tab.id)}
                     className={`w-full p-3 sm:p-4 rounded-lg sm:rounded-xl transition-all duration-300 flex items-center gap-2 sm:gap-3 mobile-p-3 ultra-mobile-p-2 hover:transform hover:scale-105 ${
                       activeTab === tab.id
-                        ? 'bg-gradient-to-r from-[#7a7a7a] to-[#4a4a4a] text-white shadow-lg'
+                        ? 'bg-gradient-to-r from-[#18b5d5] to-[#18b5d5] text-white shadow-lg hover:shadow-lg hover:shadow-[#18b5d5]/50'
                         : 'text-gray-100 hover:bg-[#7a7a7a]/20'
                     }`}
                   >
@@ -346,7 +326,10 @@ const About: React.FC = () => {
             <div className="text-center animate-fadeInUp">
               <Link
                 to="/categories"
-                className="inline-flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-[#7a7a7a] to-[#4a4a4a] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl hover:from-[#8a8a8a] hover:to-[#5a5a5a] transition-all duration-300 transform hover:scale-105 font-bold shadow-lg text-sm sm:text-base mobile-text-sm ultra-mobile-text-xs"
+                className="btn btn-primary btn-standard-primary inline-flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl text-sm sm:text-base mobile-text-sm ultra-mobile-text-xs"
+                style={{
+                  background: 'linear-gradient(to right, #18b5d5, #18b5d5)'
+                }}
               >
                 {t('about.cta.start_project')}
               </Link>
@@ -355,7 +338,10 @@ const About: React.FC = () => {
             <div className="text-center animate-fadeInUp">
               <Link
                 to="/"
-                className="inline-flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-[#7a7a7a] to-[#4a4a4a] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl hover:from-[#8a8a8a] hover:to-[#5a5a5a] transition-all duration-300 transform hover:scale-105 font-bold shadow-lg text-sm sm:text-base mobile-text-sm ultra-mobile-text-xs"
+                className="btn btn-primary btn-standard-primary inline-flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl text-sm sm:text-base mobile-text-sm ultra-mobile-text-xs"
+                style={{
+                  background: 'linear-gradient(to right, #18b5d5, #18b5d5)'
+                }}
               >
                 <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                 {t('about.cta.back_home')}

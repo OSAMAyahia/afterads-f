@@ -514,7 +514,11 @@ const Login: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="login-button w-full py-2 sm:py-3 md:py-4 rounded-lg sm:rounded-xl text-white text-sm sm:text-base md:text-lg font-semibold transition-all duration-300 mobile-text-sm ultra-mobile-text-xs mobile-p-3 ultra-mobile-p-2"
+            className="btn btn-primary w-full py-2 sm:py-3 md:py-4 rounded-lg sm:rounded-xl text-white text-sm sm:text-base md:text-lg mobile-text-sm ultra-mobile-text-xs mobile-p-3 ultra-mobile-p-2"
+            style={{
+              background: 'linear-gradient(45deg, #5BC0BE, #3A506B)',
+              fontWeight: 700
+            }}
           >
             <div className="button-content gap-1">
               {loading ? (

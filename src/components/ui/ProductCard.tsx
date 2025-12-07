@@ -186,7 +186,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid', v
                   {product.isAvailable ? t('available') : t('unavailable')}
                 </span>
               </div>
-              <h3 dir="rtl" className="text-xl font-bold text-white mb-2 group-hover:text-[#18b5d5] transition-colors duration-300 line-clamp-2">
+              <h3 dir="rtl" className="text-xl font-bold text-white mb-2  transition-colors duration-300 line-clamp-2">
                 {getLocalizedContent('name')}
               </h3>
               <p className="text-[#CCCCCC] text-sm leading-relaxed line-clamp-2 mb-3">
@@ -325,7 +325,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid', v
               </span>
             </div>
 
-            <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-[#18b5d5] text-white transition-colors">
+            <h3 className="text-xl font-bold mb-3 line-clamp-2   text-white transition-colors">
               {getLocalizedContent('name')}
             </h3>
 
@@ -391,7 +391,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid', v
             </span>
           </div>
 
-          <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-[#18b5d5] text-white transition-colors">
+          <h3 className="text-xl font-bold mb-3 line-clamp-2   text-white transition-colors">
             {getLocalizedContent('name')}
           </h3>
 

@@ -333,8 +333,8 @@ const ThemesSection: React.FC<ThemesSectionProps> = ({ themes }) => {
               <ThemeCard
                 theme={{
                   id: 55,
-                  name: 'قالب ملاك',
-                  description: 'القالب رقم 1 لمتاجر سلة',
+                  name: 'ثيم ملاك',
+                  description: 'الثيم رقم 1 لمتاجر سلة',
                   price: 0,
                   isAvailable: true,
                   categoryId: null,

@@ -163,7 +163,7 @@ const Blog: React.FC = () => {
                       )}
 
                       {/* Title */}
-                      <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-[#18b5d5] text-white transition-colors">
+                      <h3 className="text-xl font-bold mb-3 line-clamp-2  text-white transition-colors">
                         {post.title}
                       </h3>
 

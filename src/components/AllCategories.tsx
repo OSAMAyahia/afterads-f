@@ -137,7 +137,7 @@ const AllCategories: React.FC = () => {
               <div className="flex flex-wrap gap-2 mb-2">
                 <span className="text-xs bg-[#18b5d5]/30 text-white px-3 py-1 rounded-full">{t('categories.title')}</span>
               </div>
-              <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#18b5d5] transition-colors duration-300 line-clamp-2">
+              <h3 className="text-xl font-bold text-white mb-2   transition-colors duration-300 line-clamp-2">
                 {getLocalizedContent(category, 'name')}
               </h3>
               <p className="text-[#CCCCCC] text-sm leading-relaxed line-clamp-2">
@@ -171,7 +171,7 @@ const AllCategories: React.FC = () => {
           <div className="flex flex-wrap gap-2 mb-3">
             <span className="text-xs bg-[#18b5d5]/30 text-white px-3 py-1 rounded-full">{t('categories.title')}</span>
           </div>
-          <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-[#18b5d5] text-white transition-colors">
+          <h3 className="text-xl font-bold mb-3 line-clamp-2   text-white transition-colors">
             {getLocalizedContent(category, 'name')}
           </h3>
           <p className="text-[#CCCCCC] text-sm mb-4 line-clamp-3 flex-grow">

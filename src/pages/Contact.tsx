@@ -283,7 +283,10 @@ const Contact: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-[#18b5d5] to-[#16a8c4] text-white py-2.5 px-5 rounded-lg hover:shadow-[0_8px_24px_rgba(24,181,213,0.25)] transition-all duration-300 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="btn btn-primary btn-standard-primary w-full py-2.5 px-5 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  style={{
+                    background: 'linear-gradient(to right, #18b5d5, #16a8c4)'
+                  }}
                 >
                   {isSubmitting ? (
                     <>

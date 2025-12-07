@@ -135,7 +135,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ testimonials,
       <section ref={sectionRef} data-section="testimonials" className="py-12 md:py-20 bg-[#292929] relative overflow-hidden">
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-[#18b5d8]/10 rounded-xl md:rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-[#18b5d8]/10 rounded-xl md:rounded-2xl  flex items-center justify-center mx-auto mb-4">
               <Quote className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-[#18b5d8]" />
             </div>
             <p className="text-lg sm:text-xl text-gray-400">{t('home.testimonials.no_testimonials')}</p>
@@ -155,10 +155,10 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ testimonials,
       <div className="relative z-10 max-w-6xl mx-auto px-6 lg:px-8">
         {/* العنوان */}
         <div className="text-center mb-8 sm:mb-12 md:mb-16">
-          <div className="inline-flex items-center gap-2 sm:gap-3 bg-[#18b5d8]/10 border border-[#18b5d8]/20 text-[#18b5d8] px-4 sm:px-6 py-2 sm:py-3 rounded-full mb-6 sm:mb-8 backdrop-blur-sm">
+          <div className="inline-flex backdrop-blur-sm hover:bg-[#18b5d8]/30 transition-all duration-300 items-center gap-2 sm:gap-3 bg-[#18b5d8]/10 border border-[#18b5d8]/20 text-[#18b5d8] px-4 sm:px-6 py-2 sm:py-3 rounded-full mb-6 sm:mb-8 backdrop-blur-sm">
             <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
             <span className="font-semibold">{t('home.testimonials.title')}</span>
-            <Star className="w-4 h-4 sm:w-5 sm:h-5" />
+            {/* <Star className="w-4 h-4 sm:w-5 sm:h-5" /> */}
           </div>
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 leading-tight">
             تجارب <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#18b5d5] to-[#0d8aa3] animate-pulse">مميزة</span> من عملائنا

@@ -319,19 +319,12 @@ const LiveSearch: React.FC<LiveSearchProps> = ({ onClose, className = '' }) => {
                        <div className="p-3 border-t border-white/10">
                          <button
                            onClick={handleViewAll}
-                           className="w-full py-2.5 px-4 rounded-xl font-semibold text-white transition-all duration-300 relative overflow-hidden group/btn text-sm bg-[#18b5d8] hover:bg-[#0891b2] focus:ring-2 focus:ring-white/30"
+                           className="w-full py-2.5 px-4 rounded-xl btn btn-primary btn-standard-primary text-sm"
                            style={{
                              border: '1px solid rgba(255,255,255,0.35)',
                              boxShadow: '0 6px 18px rgba(0,0,0,0.25)'
                            }}
                          >
-                           {/* تأثير الإضاءة عند التمرير */}
-                           <div 
-                             className="absolute inset-0 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"
-                             style={{
-                               background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)'
-                             }}
-                           />
                            <span className="relative z-10">{t('live_search.view_all_results', 'عرض جميع النتائج')}</span>
                          </button>
                        </div>

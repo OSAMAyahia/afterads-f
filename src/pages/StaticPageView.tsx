@@ -65,7 +65,7 @@ const StaticPageView: React.FC = () => {
           <div className="text-lg sm:text-xl text-white font-medium mb-4">{t('static_page.not_found')}</div>
           <Link
             to="/"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#7a7a7a] to-[#4a4a4a] text-white px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 rounded-lg hover:from-[#8a8a8a] hover:to-[#5a5a5a] transition-all duration-300 font-bold shadow-lg text-sm sm:text-base"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#18b5d5] to-[#18b5d5] text-white px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 rounded-lg hover:from-[#16a3c0] hover:to-[#16a3c0] transition-all duration-300 font-bold shadow-lg hover:shadow-lg hover:shadow-[#18b5d5]/50 text-sm sm:text-base"
           >
             <ArrowLeft className="w-4 h-4" />
             {t('static_page.back_to_home')}
@@ -160,7 +160,7 @@ const StaticPageView: React.FC = () => {
         <div className="text-center mb-12 sm:mb-16 md:mb-20 animate-fadeInUp">
           <div className="inline-flex items-center gap-2 sm:gap-3 md:gap-4 mb-6 sm:mb-8 flex-wrap justify-center">
           
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white text-center leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-[#18b5d5] text-center leading-tight">
               {page.title}
             </h1>
        
@@ -262,7 +262,7 @@ const StaticPageView: React.FC = () => {
             <div className="text-center animate-fadeInUp">
               <Link
                 to="/"
-                className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-[#7a7a7a] to-[#4a4a4a] text-white px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 rounded-lg sm:rounded-xl hover:from-[#8a8a8a] hover:to-[#5a5a5a] transition-all duration-300 transform hover:scale-105 font-bold shadow-lg text-sm sm:text-base"
+                className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-[#18b5d5] to-[#18b5d5] text-white px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 rounded-lg sm:rounded-xl hover:from-[#16a3c0] hover:to-[#16a3c0] transition-all duration-300 transform hover:scale-105 font-bold shadow-lg hover:shadow-lg hover:shadow-[#18b5d5]/50 text-sm sm:text-base"
               >
                 <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                 {t('static_page.back_to_home')}

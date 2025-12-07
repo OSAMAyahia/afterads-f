@@ -172,7 +172,7 @@ const BlogPost: React.FC = () => {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                           </div>
-                          <h4 className="text-xs font-semibold text-white group-hover:text-[#18b5d5] transition-colors line-clamp-2">
+                          <h4 className="text-xs font-semibold text-white   transition-colors line-clamp-2">
                             {item.title}
                           </h4>
                           <p className="text-xs text-gray-500 mt-1">

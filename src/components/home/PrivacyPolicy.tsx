@@ -146,31 +146,9 @@ const PrivacyPolicy: React.FC = () => {
         {/* Enhanced Header */}
         <div className="text-center mb-8 sm:mb-12 lg:mb-20 animate-scaleIn">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-6 sm:mb-8">
-            <div className="relative w-12 h-12 sm:w-16 sm:h-16 group animate-float">
-              <div className="absolute -inset-2 bg-gradient-to-br from-[#7a7a7a]/40 to-[#18b5d5]/30 blur-sm transform rotate-0 transition-all duration-500 group-hover:scale-110 animate-glow"
-                   style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-br from-[#7a7a7a]/30 to-[#18b5d5]/30 backdrop-blur-md border border-[#7a7a7a]/40 transform rotate-0 transition-all duration-500 group-hover:scale-110"
-                   style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Shield className="w-6 h-6 sm:w-8 sm:h-8 text-[#7a7a7a] filter drop-shadow-[0_0_12px_rgba(122,122,122,0.9)]" />
-              </div>
-            </div>
-            <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#ffffff] mobile-text-responsive ultra-mobile-text text-center leading-tight">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#18b5d5] mobile-text-responsive ultra-mobile-text text-center leading-tight">
               {t('privacy_policy.title_part1')} <span className="gradient-text block sm:inline">{t('privacy_policy.title_part2')}</span>
             </h1>
-            <div className="relative w-12 h-12 sm:w-16 sm:h-16 group animate-float hidden sm:block">
-              <div className="absolute -inset-2 bg-gradient-to-br from-[#18b5d5]/30 to-[#7a7a7a]/40 blur-sm transform rotate-0 transition-all duration-500 group-hover:scale-110 animate-glow"
-                   style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-br from-[#7a7a7a]/30 to-[#7a7a7a]/40 backdrop-blur-md border border-[#7a7a7a]/40 transform rotate-0 transition-all duration-500 group-hover:scale-110"
-                   style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Shield className="w-6 h-6 sm:w-8 sm:h-8 text-[#18b5d5] filter drop-shadow-[0_0_12px_rgba(24,181,213,0.9)]" />
-              </div>
-            </div>
           </div>
           <div className="bg-gradient-to-br from-[#292929]/95 via-[#7a7a7a]/30 to-[#292929]/90 rounded-xl sm:rounded-2xl backdrop-blur-xl border border-white/15 p-3 sm:p-4 max-w-xs sm:max-w-2xl mx-auto animate-slideInRight mobile-padding ultra-mobile-padding">
             <div className="flex items-center gap-2 justify-center flex-wrap">
@@ -486,7 +464,7 @@ const PrivacyPolicy: React.FC = () => {
             <div className="text-center animate-fadeInUp">
               <Link
                 to="/"
-                className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-[#18b5d5] to-[#7a7a7a] text-white px-4 sm:px-6 lg:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl hover:from-[#20c5e5] hover:to-[#8a8a8a] transition-all duration-300 transform hover:scale-105 font-bold shadow-lg text-sm sm:text-base hover-lift animate-glow"
+                className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-[#18b5d5] to-[#18b5d5] text-white px-4 sm:px-6 lg:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl hover:from-[#16a3c0] hover:to-[#16a3c0] transition-all duration-300 transform hover:scale-105 font-bold shadow-lg hover:shadow-lg hover:shadow-[#18b5d5]/50 text-sm sm:text-base hover-lift animate-glow"
               >
                 {t('privacy_policy.back_to_home')}
                 {isRTL ? <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />:<ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />  }

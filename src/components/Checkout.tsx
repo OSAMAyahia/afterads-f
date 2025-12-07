@@ -642,7 +642,7 @@ const getFinalTotal = () => {
             
             <button
               onClick={() => navigate('/cart')}
-              className="btn-pro-outline btn-pro-sm"
+              className="btn btn-outline btn-standard-outline px-4 py-2 rounded-lg text-sm"
             >
               <ArrowLeft className="w-4 h-4" />
               {t('checkout.backToCart')}
@@ -811,7 +811,10 @@ const getFinalTotal = () => {
                   {appliedCoupon ? (
                     <button
                       onClick={removeCoupon}
-                      className="px-3 sm:px-4 py-2 sm:py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors text-sm sm:text-base font-medium mobile-padding mobile-text"
+                      className="btn btn-primary btn-standard-primary px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-sm sm:text-base mobile-padding mobile-text"
+                      style={{
+                        background: 'linear-gradient(to right, #ef4444, #dc2626)'
+                      }}
                     >
                       إلغاء
                     </button>
@@ -819,7 +822,10 @@ const getFinalTotal = () => {
                     <button
                       onClick={() => validateCoupon(couponCode)}
                       disabled={!couponCode.trim() || couponValidating}
-                      className="px-3 sm:px-4 py-2 sm:py-3 bg-[#18b5d8] hover:bg-[#16a2c7] disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors text-sm sm:text-base font-medium mobile-padding mobile-text"
+                      className="btn btn-primary btn-standard-primary px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-sm sm:text-base mobile-padding mobile-text disabled:opacity-50 disabled:cursor-not-allowed"
+                      style={{
+                        background: 'linear-gradient(to right, #18b5d8, #16a2c7)'
+                      }}
                     >
                       {couponValidating ? 'جاري التحقق...' : 'تطبيق'}
                     </button>
