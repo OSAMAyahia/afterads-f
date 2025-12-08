@@ -884,7 +884,7 @@ useEffect(() => {
               href="https://salla.sa/dev-etmlwprywtygjjcy"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-green-500 to-green-700 text-white px-4 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl text-sm sm:text-lg font-semibold hover:from-green-600 hover:to-green-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl micro-hover group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 sm:gap-3 bg-green-700 text-white px-4 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl text-sm sm:text-lg font-semibold hover:bg-green-800 transition-all duration-300 transform shadow-lg hover:shadow-xl hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30 group"
             >
               <Eye className="w-4 h-4 sm:w-6 sm:h-6" />
               <span className="hidden sm:inline">{t('home.themes.preview_theme')}</span>
@@ -897,7 +897,7 @@ useEffect(() => {
 {/* Device Preview Section */}
 {/* Device Preview Section */}
 <div className="mt-6 mb-6 animate-section flex justify-center px-2 sm:px-0 w-full">
-  <div className="shadow-2xl p-2 sm:p-3 w-full max-w-[56vw] lg:max-w-[50vw]">
+  <div className="shadow-2xl p-2 sm:p-3 w-full max-w-[72vw] sm:max-w-[67vw] lg:max-w-[57vw]">
     
     {/* شريط الأزرار */}
     <div className="flex justify-center items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3 bg-gradient-to-r from-[#18b5d8]/10 to-transparent px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-[#18b5d8]/20 w-fit mx-auto">

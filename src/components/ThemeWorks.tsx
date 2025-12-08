@@ -219,7 +219,7 @@ const handlePressStart = (selectedDevice: 'desktop' | 'tablet' | 'mobile') => {
               ref={previewContainerRef}
               className={`bg-[#1a1a1a] rounded-lg overflow-hidden transition-all duration-500 ${
                 device === 'desktop' 
-                  ? 'w-full max-w-full h-[200px] sm:h-[254px] md:h-[308px] lg:h-[362px]' 
+                  ? 'w-full max-w-[95vw] sm:max-w-[107vw] h-[200px] sm:h-[254px] md:h-[308px] lg:h-[362px]' 
                   : device === 'tablet' 
                     ? 'w-full max-w-[90vw] sm:max-w-[380px] md:max-w-[420px] aspect-[3/4]' 
                     : 'w-full max-w-[90vw] sm:max-w-[250px] md:max-w-[280px] aspect-[9/20]'
