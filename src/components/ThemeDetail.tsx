@@ -897,7 +897,7 @@ useEffect(() => {
 {/* Device Preview Section */}
 {/* Device Preview Section */}
 <div className="mt-6 mb-6 animate-section flex justify-center px-2 sm:px-0 w-full">
-  <div className="shadow-2xl p-2 sm:p-3 w-full max-w-[72vw] sm:max-w-[67vw] lg:max-w-[57vw]">
+  <div className="shadow-2xl p-2 sm:p-3 w-full max-w-[95vw] sm:max-w-[60vw] lg:max-w-[50vw]">
     
     {/* شريط الأزرار */}
     <div className="flex justify-center items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3 bg-gradient-to-r from-[#18b5d8]/10 to-transparent px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-[#18b5d8]/20 w-fit mx-auto">
