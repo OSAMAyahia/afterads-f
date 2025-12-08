@@ -55,7 +55,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* @layer base {
+@layer base {
   html, body, button, input, textarea, select { font-family: PingARLT, sans-serif; }
   html, body { font-weight: 400; cursor: url('/cursor (6).cur'), url('/cursor.cur'), url('/cursor (5).cur'), auto; }
   a, button { cursor: url('/cursor (5).cur'), pointer; }
@@ -63,17 +63,8 @@
   input, textarea { cursor: text; }
   h1, h2, h3, h4, h5, h6 { font-weight: 700; }
   
-} */
-
-@layer base {
-  html, body, button, input, textarea, select { font-family: PingARLT, sans-serif; }
-  html, body { font-weight: 400; cursor: url('/cursor3.png'), url('/cursor.cur'), url('/cursor3.png'), auto; }
-  a, button { cursor: url('/cursor3.png'), pointer; }
-  label, .cursor-pointer, [role="button"] { cursor: url('/cursor3.png'), pointer !important; }
-  input, textarea { cursor: text; }
-  h1, h2, h3, h4, h5, h6 { font-weight: 700; }
-  
 }
+
 
 
 @layer components {
