@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -55,11 +55,10 @@ import theme1 from '../assets/themecover.webp';
 import theme2 from '../assets/111.webp';
 import theme3 from '../assets/112.webp';
 import theme4 from '../assets/113.webp';
-import theme5 from '../assets/d.jpeg';
-import theme6 from '../assets/t.jpeg';
-import theme7 from '../assets/m.jpeg';
-import theme8 from '../assets/113.webp';
-import angel from '../assets/angel.webp';
+import theme5 from '../assets/demostore-salla-sa-1024xFULLdesktop-f183e3.jpg';
+import theme6 from '../assets/demostore-salla-sa-800xFULLtablet-f183e3.jpg';
+import theme7 from '../assets/demostore-salla-sa-480xFULLphone-f183e3.jpg';
+ import angel from '../assets/angel.webp';
 import LoadingSpinner from './ui/LoadingSpinner';
 import { FeatureCounter } from './ui/FeatureCounter';
 import ThemeWorks from './ThemeWorks';
@@ -184,200 +183,94 @@ const ThemeDetail: React.FC = () => {
   const [dynamicComponents, setDynamicComponents] = useState<any[]>([]);
   const [componentsLoading, setComponentsLoading] = useState(false)
   const [mainPreviewDevice, setMainPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
+  const [isDeviceChanging, setIsDeviceChanging] = useState(false);
+  const deviceChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [imagesModalOpen, setImagesModalOpen] = useState(false);
   const [imagesModalList, setImagesModalList] = useState<string[]>([]);
   const [imagesModalTitle, setImagesModalTitle] = useState('');
-  const [scrollOverlayActive, setScrollOverlayActive] = useState(false);
-  const [scrollOverlayDevice, setScrollOverlayDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
-  const [overlayRect, setOverlayRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
-  const previewContainerRef = useRef<HTMLDivElement | null>(null);
-  const holdTimerRef = useRef<number | null>(null);
-  const scrollRafRef = useRef<number | null>(null);
-  const contentCloneRef = useRef<HTMLDivElement | null>(null);
-  const [contentHeight, setContentHeight] = useState(0);
-  const [scrollOffset, setScrollOffset] = useState(0);
-  const [overlayBorderRadius, setOverlayBorderRadius] = useState<string>('0.5rem');
+const [isScrolling, setIsScrolling] = useState(false);
+const [currentScrollDevice, setCurrentScrollDevice] = useState<'desktop' | 'tablet' | 'mobile' | null>(null);
+const scrollIntervalRef = useRef<number | null>(null);
+const imageContainerRef = useRef<HTMLDivElement | null>(null);
 
-  const startContentScroll = (initialHeight?: number) => {
-    if (!contentCloneRef.current) return;
-    
-    const speed = 4;
-    let currentOffset = 0;
-    const totalHeight = initialHeight || contentHeight;
-    
-    const step = () => {
-      const maxOffset = totalHeight - (overlayRect?.height || 0);
-      currentOffset += speed;
+const startImageScroll = (device: 'desktop' | 'tablet' | 'mobile') => {
+  setIsScrolling(true);
+  setCurrentScrollDevice(device);
+  
+  const container = imageContainerRef.current;
+  if (!container) return;
+  
+  // إعادة التمرير للبداية
+  container.scrollTop = 0;
+  
+  // بدء التمرير التلقائي
+  let scrollSpeed = 4; // سرعة التمرير (يمكن تعديلها)
+  
+  scrollIntervalRef.current = window.setInterval(() => {
+    if (container) {
+      container.scrollTop += scrollSpeed;
       
-      if (currentOffset >= maxOffset) {
-        // Reset to beginning for continuous scroll
-        currentOffset = 0;
+      // إذا وصلنا للنهاية، نرجع للبداية
+      if (container.scrollTop >= container.scrollHeight - container.clientHeight) {
+        container.scrollTop = 0;
       }
-      
-      setScrollOffset(currentOffset);
-      scrollRafRef.current = requestAnimationFrame(step);
-    };
-    
-    stopScrollAnimation(); // Stop any existing animation
-    scrollRafRef.current = requestAnimationFrame(step);
-  };
-
-  const stopScrollAnimation = () => {
-    if (scrollRafRef.current) {
-      cancelAnimationFrame(scrollRafRef.current);
-      scrollRafRef.current = null;
     }
-  };
-
-const handlePressStart = (device: 'desktop' | 'tablet' | 'mobile') => {
-  if (holdTimerRef.current) {
-    window.clearTimeout(holdTimerRef.current);
-  }
-  
-  const el = previewContainerRef.current;
-  if (!el) return;
-  
-  // استخدم حاوية المعاينة نفسها لضمان التطابق التام مع الحواف والحدود
-  const rect = el.getBoundingClientRect();
-  try {
-    const computed = window.getComputedStyle(el);
-    // التقط قيمة نصف القطر الفعلية للحواف لاستخدامها في طبقة المعاينة
-    const br = computed.borderRadius || computed.borderTopLeftRadius;
-    setOverlayBorderRadius(br && br.trim() !== '' ? br : '0.5rem');
-  } catch {}
-  setOverlayRect({ 
-    top: rect.top, 
-    left: rect.left, 
-    width: rect.width, 
-    height: rect.height 
-  });
-  setScrollOverlayDevice(device);
-  setScrollOverlayActive(true);
-  
-  setTimeout(() => {
-    if (!contentCloneRef.current) return;
-    
-    // نسخ محتوى الصفحة
-    const mainContent = document.querySelector('main') || document.body;
-    const clonedContent = mainContent.cloneNode(true) as HTMLElement;
-    
-    // تنظيف العناصر غير المرغوبة
-    const toRemove = clonedContent.querySelectorAll('.scroll-overlay-container, [class*="fixed"]');
-    toRemove.forEach(el => el.remove());
-    
-    // معالجة جميع العناصر
-    const allElements = clonedContent.querySelectorAll('*');
-    allElements.forEach((el: any) => {
-      const computed = window.getComputedStyle(el);
-      if (computed.position === 'fixed' || computed.position === 'sticky') {
-        el.style.position = 'relative';
-      }
-    });
-    
-    // معالجة الصور
-    const images = clonedContent.querySelectorAll('img');
-    images.forEach((img) => {
-      const originalImg = img as HTMLImageElement;
-      originalImg.style.cssText = `
-        max-width: 100%;
-        height: auto;
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-      `;
-      const src = originalImg.src;
-      if (src) {
-        originalImg.loading = 'eager';
-      }
-    });
-
-    // معالجة الفيديوهات
-    const videos = clonedContent.querySelectorAll('video, iframe');
-    videos.forEach(video => {
-      const placeholder = document.createElement('div');
-      placeholder.style.cssText = `
-        background-color: #2a2a2a;
-        min-height: 200px;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #18b5d8;
-        font-size: 20px;
-        margin: 10px 0;
-        border-radius: 8px;
-      `;
-      placeholder.textContent = '🎬';
-      video.parentNode?.replaceChild(placeholder, video);
-    });
-
-    // حساب العرض الأساسي حسب الجهاز
-    let baseWidth = 1200;
-    if (device === 'mobile') baseWidth = 375;
-    else if (device === 'tablet') baseWidth = 768;
-    
-    // حساب scale factor
-    const scaleFactor = rect.width / baseWidth;
-    
-    // wrapper داخلي للمحتوى
-    const innerWrapper = document.createElement('div');
-    innerWrapper.style.cssText = `
-      width: ${baseWidth}px;
-      background-color: #292929;
-      padding: 15px;
-      box-sizing: border-box;
-      min-height: 100vh;
-    `;
-    innerWrapper.appendChild(clonedContent);
-    
-    // wrapper خارجي مع scale ومحاذاة مركزية
-    const scaledWrapper = document.createElement('div');
-    scaledWrapper.style.cssText = `
-      transform: scale(${scaleFactor});
-      transform-origin: top center;
-      width: ${baseWidth}px;
-      background-color: #292929;
-      margin: 0 auto;
-    `;
-    scaledWrapper.appendChild(innerWrapper);
-    
-    // container رئيسي مع محاذاة مركزية
-    const mainContainer = document.createElement('div');
-    mainContainer.style.cssText = `
-      width: 100%;
-      overflow: hidden;
-      background-color: #292929;
-      min-height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-    `;
-    mainContainer.appendChild(scaledWrapper);
-    
-    // مسح وإضافة المحتوى
-    contentCloneRef.current.innerHTML = '';
-    contentCloneRef.current.appendChild(mainContainer);
-    
-    // حساب الارتفاع وبدء التمرير
-    setTimeout(() => {
-      const realHeight = scaledWrapper.scrollHeight * scaleFactor;
-      setContentHeight(realHeight);
-      setScrollOffset(0);
-      startContentScroll(realHeight);
-    }, 150);
-  }, 50);
+  }, 30); // كل 30ms (يمكن تعديلها للتحكم في السلاسة)
 };
 
-  const handlePressEnd = () => {
-    if (holdTimerRef.current) {
-      window.clearTimeout(holdTimerRef.current);
-      holdTimerRef.current = null;
+const stopImageScroll = () => {
+  setIsScrolling(false);
+  setCurrentScrollDevice(null);
+  
+  if (scrollIntervalRef.current) {
+    window.clearInterval(scrollIntervalRef.current);
+    scrollIntervalRef.current = null;
+  }
+  
+  // إعادة التمرير للبداية
+  if (imageContainerRef.current) {
+    imageContainerRef.current.scrollTop = 0;
+  }
+};
+
+// دالة لتغيير الجهاز مع تأخير (debouncing) لتحسين الأداء
+const handleDeviceChange = useCallback((device: 'desktop' | 'tablet' | 'mobile') => {
+  // إلغاء أي تأخير سابق
+  if (deviceChangeTimeoutRef.current) {
+    clearTimeout(deviceChangeTimeoutRef.current);
+  }
+  
+  // إظهار حالة التحميل
+  setIsDeviceChanging(true);
+  
+  // تأخير بسيط (50ms) لتحسين استجابة الزر
+  deviceChangeTimeoutRef.current = setTimeout(() => {
+    setMainPreviewDevice(device);
+    setIsDeviceChanging(false);
+    
+    // إيقاف التمرير عند تغيير الجهاز
+    if (isScrolling) {
+      stopImageScroll();
     }
-    stopScrollAnimation();
-    setScrollOverlayActive(false);
-    setScrollOffset(0);
-    setContentHeight(0);
+  }, 50);
+}, [isScrolling]);
+
+
+useEffect(() => {
+  return () => {
+    stopImageScroll();
+    // تنظيف التايمر عند إلغاء المكون
+    if (deviceChangeTimeoutRef.current) {
+      clearTimeout(deviceChangeTimeoutRef.current);
+    }
   };
+}, []);
+ 
+
+ 
+ 
+
+ 
   // ---------- FAQ Card ----------
   const FAQCard: React.FC<{ faq: { question: string; answer: string }; index: number }> = ({ faq, index }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -1002,69 +895,98 @@ useEffect(() => {
       </div>
 
 {/* Device Preview Section */}
+{/* Device Preview Section */}
 <div className="mt-6 mb-6 animate-section flex justify-center px-2 sm:px-0 w-full">
-  <div className="shadow-2xl p-2 sm:p-3 w-full max-w-full">
+  <div className="shadow-2xl p-2 sm:p-3 w-full max-w-[56vw] lg:max-w-[50vw]">
     
     {/* شريط الأزرار */}
     <div className="flex justify-center items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3 bg-gradient-to-r from-[#18b5d8]/10 to-transparent px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-[#18b5d8]/20 w-fit mx-auto">
       <span className="text-[#18b5d8] text-[10px] sm:text-xs font-medium">{t('home.themes.preview_label')}</span>
       <button
-        onClick={() => setMainPreviewDevice('desktop')}
-        className={`p-0.5 sm:p-1 rounded-lg transition-all ${
+        onClick={() => handleDeviceChange('desktop')}
+        disabled={isDeviceChanging}
+        className={`p-0.5 sm:p-1 rounded-lg transition-all relative ${
           mainPreviewDevice === 'desktop' 
             ? 'bg-[#18b5d8] text-white shadow-lg' 
             : 'bg-white/10 text-[#18b5d8] hover:bg-white/20'
-        }`}
+        } ${isDeviceChanging ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         <Monitor className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+        {isDeviceChanging && mainPreviewDevice === 'desktop' && (
+          <div className="absolute inset-0 bg-[#18b5d8]/50 rounded-lg flex items-center justify-center">
+            <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+          </div>
+        )}
       </button>
       <button
-        onClick={() => setMainPreviewDevice('tablet')}
-        className={`p-0.5 sm:p-1 rounded-lg transition-all ${
+        onClick={() => handleDeviceChange('tablet')}
+        disabled={isDeviceChanging}
+        className={`p-0.5 sm:p-1 rounded-lg transition-all relative ${
           mainPreviewDevice === 'tablet' 
             ? 'bg-[#18b5d8] text-white shadow-lg' 
             : 'bg-white/10 text-[#18b5d8] hover:bg-white/20'
-        }`}
+        } ${isDeviceChanging ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         <Tablet className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+        {isDeviceChanging && mainPreviewDevice === 'tablet' && (
+          <div className="absolute inset-0 bg-[#18b5d8]/50 rounded-lg flex items-center justify-center">
+            <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+          </div>
+        )}
       </button>
       <button
-        onClick={() => setMainPreviewDevice('mobile')}
-        className={`p-0.5 sm:p-1 rounded-lg transition-all ${
+        onClick={() => handleDeviceChange('mobile')}
+        disabled={isDeviceChanging}
+        className={`p-0.5 sm:p-1 rounded-lg transition-all relative ${
           mainPreviewDevice === 'mobile' 
             ? 'bg-[#18b5d8] text-white shadow-lg' 
             : 'bg-white/10 text-[#18b5d8] hover:bg-white/20'
-        }`}
+        } ${isDeviceChanging ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         <Smartphone className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+        {isDeviceChanging && mainPreviewDevice === 'mobile' && (
+          <div className="absolute inset-0 bg-[#18b5d8]/50 rounded-lg flex items-center justify-center">
+            <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+          </div>
+        )}
       </button>
     </div>
 
     {/* عرض الصورة */}
-    <div className="relative w-full sm:w-fit mx-auto">
+    <div className="relative w-full mx-auto max-w-full flex justify-center">
       <div className="group relative overflow-hidden rounded-lg bg-gradient-to-br from-[#292929]/60 to-[#1a1a1a]/80 border border-[#18b5d8]/30">
         
+        {/* Badge للحالة */}
         <div className="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 bg-[#18b5d8]/90 backdrop-blur-sm px-1.5 sm:px-2 py-0.5 rounded-full text-white text-[10px] sm:text-xs font-semibold z-10 flex items-center gap-1">
           {mainPreviewDevice === 'desktop' && <><Monitor className="w-2 h-2 sm:w-2.5 sm:h-2.5" /> <span className="hidden sm:inline">Desktop</span></>}
           {mainPreviewDevice === 'tablet' && <><Tablet className="w-2 h-2 sm:w-2.5 sm:h-2.5" /> <span className="hidden sm:inline">Tablet</span></>}
           {mainPreviewDevice === 'mobile' && <><Smartphone className="w-2 h-2 sm:w-2.5 sm:h-2.5" /> <span className="hidden sm:inline">Mobile</span></>}
         </div>
 
-        <div className="p-2 sm:p-3">
-          <div 
+        {/* Badge للسكرول */}
+        {isScrolling && currentScrollDevice === mainPreviewDevice && (
+          <div className="absolute top-1.5 sm:top-2 left-1.5 sm:left-2 bg-green-500/90 backdrop-blur-sm px-1.5 sm:px-2 py-0.5 rounded-full text-white text-[10px] sm:text-xs font-semibold z-10 flex items-center gap-1">
+            <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
+            <span>Scrolling</span>
+          </div>
+        )}
+
+<div 
+            ref={imageContainerRef}
             className={`bg-white/5 rounded-lg overflow-hidden transition-all duration-500 ${
               mainPreviewDevice === 'desktop' 
-                ? 'w-full max-w-[95vw] sm:max-w-[640px] h-[200px] sm:h-[220px] md:h-[350px]' 
+                ? 'w-full max-w-full h-[200px] sm:h-[254px] md:h-[308px] lg:h-[362px]' 
                 : mainPreviewDevice === 'tablet' 
-                  ? 'w-full max-w-[90vw] sm:max-w-[420px] aspect-[3/4]' 
-                  : 'w-full max-w-[280px] aspect-[9/20]'
-            } flex items-center justify-center mx-auto cursor-pointer`}
-          ref={previewContainerRef}
-          onClick={() => handlePressStart(mainPreviewDevice)}
-          onMouseUp={handlePressEnd}
-          onMouseLeave={handlePressEnd}
-          onTouchEnd={handlePressEnd}
-        >
+                  ? 'w-full max-w-[90vw] sm:max-w-[380px] md:max-w-[420px] aspect-[3/4]' 
+                  : 'w-full max-w-[90vw] sm:max-w-[250px] md:max-w-[280px] aspect-[9/20]'
+            } flex items-start justify-center mx-auto cursor-pointer relative overflow-y-auto`}
+            style={{
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+            }}
+            onMouseEnter={() => startImageScroll(mainPreviewDevice)}
+            onMouseLeave={stopImageScroll}
+          >
             <img 
               src={
                 mainPreviewDevice === 'desktop' ? theme5 :
@@ -1072,9 +994,26 @@ useEffect(() => {
                 theme7
               }
               alt={`${mainPreviewDevice} Preview`}
-              className={`w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-700 ${scrollOverlayActive && scrollOverlayDevice === mainPreviewDevice ? 'opacity-0' : ''}`}
+              className={`w-full h-auto transition-transform duration-300 ${
+                mainPreviewDevice === 'desktop' 
+                  ? 'object-contain object-top' 
+                  : 'object-cover object-top'
+              }`}
+              style={{ minHeight: '100%', display: 'block' }}
+              onLoad={(e) => {
+                // إعادة تعيين الموضع عند تحميل الصورة
+                if (imageContainerRef.current) {
+                  imageContainerRef.current.scrollTop = 0;
+                }
+              }}
             />
           </div>
+
+        {/* Overlay hint */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#18b5d8]/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none flex items-end justify-center pb-4">
+          <span className="text-white text-xs sm:text-sm font-medium bg-black/50 px-3 py-1 rounded-full">
+            Hover to scroll
+          </span>
         </div>
       </div>
     </div>
@@ -1082,6 +1021,11 @@ useEffect(() => {
   </div>
 </div>
 
+<style jsx>{`
+  div[ref="imageContainerRef"]::-webkit-scrollbar {
+    display: none;
+  }
+`}</style>
       {/* Why Choose Malak Theme Section */}
       <div className="mt-8 sm:mt-16 mb-12 sm:mb-20 relative animate-section">
         <div className="absolute inset-0 bg-gradient-to-br from-[#18b5d5]/5 via-transparent to-[#292929]/20 rounded-xl sm:rounded-3xl"></div>
@@ -1369,58 +1313,7 @@ useEffect(() => {
   </div>
 </div>
 
- {scrollOverlayActive && overlayRect && (
-   createPortal(
-   <div className="fixed z-[10001] pointer-events-none">
-     {/* Covers outside the hole */}
-     <div
-       className="fixed bg-black/40"
-       style={{ top: 0, left: 0, width: '100vw', height: `${overlayRect.top}px` }}
-     />
-     <div
-       className="fixed bg-black/40"
-       style={{ top: `${overlayRect.top + overlayRect.height}px`, left: 0, width: '100vw', height: `calc(100vh - ${overlayRect.top + overlayRect.height}px)` }}
-     />
-     <div
-       className="fixed bg-black/40"
-       style={{ top: `${overlayRect.top}px`, left: 0, width: `${overlayRect.left}px`, height: `${overlayRect.height}px` }}
-     />
-     <div
-       className="fixed bg-black/40"
-       style={{ top: `${overlayRect.top}px`, left: `${overlayRect.left + overlayRect.width}px`, width: `calc(100vw - ${overlayRect.left + overlayRect.width}px)`, height: `${overlayRect.height}px` }}
-     />
-
-     {/* Content container with cloned content */}
-     <div
-       className="fixed overflow-hidden scroll-overlay-container"
-       style={{ 
-         top: `${overlayRect.top}px`, 
-         left: `${overlayRect.left}px`, 
-         width: `${overlayRect.width}px`, 
-         height: `${overlayRect.height}px`,
-        backgroundColor: '#292929',
-        borderRadius: overlayBorderRadius,
-        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)'
-      }}
-    >
-    <div
-  ref={contentCloneRef}
-  className="w-full h-full"
-  style={{
-    transform: `translateY(-${scrollOffset}px)`,
-    scrollbarWidth: 'none',
-    msOverflowStyle: 'none',
-    overflow: 'visible',
-    // أضف هذه:
-    position: 'relative',
-    willChange: 'transform'
-  }}
-/>
-     </div>
-   </div>,
-   document.body
- )
- )}
+ 
 
 <div className="scale-90 sm:scale-95 lg:scale-100">
   <ThemeWorks />

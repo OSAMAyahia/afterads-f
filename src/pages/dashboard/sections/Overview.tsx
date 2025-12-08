@@ -538,7 +538,7 @@ const NewOverviewPage: React.FC = () => {
     <div className="p-6 space-y-6">
       {/* --- رأس الصفحة --- */}
       <div className="bg-gradient-to-r bg-[#203f61] to-bg-[#2a537e] rounded-2xl p-8 text-white">
-        <h2 className="text-3xl font-bold mb-2">النظرة العامة الجديدة</h2>
+        <h2 className="text-3xl font-bold mb-2">النظرة العامة </h2>
         <p className="text-gray-300 mb-4">إحصائيات محدثة ومحللة من منظور مختلف</p>
         <div className="flex items-center gap-4 text-sm">
           <div className="bg-white bg-opacity-20 rounded-lg px-3 py-1">

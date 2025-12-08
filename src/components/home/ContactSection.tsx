@@ -58,12 +58,13 @@ const ContactSection: React.FC = () => {
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Compact Header */}
         <div className="text-center mb-6 sm:mb-8">
-          <div className="inline-flex items-center gap-2 bg-[#ffffff]/10 backdrop-blur-lg border border-[#18b5d5]/30 text-[#18b5d5] px-4 py-2 rounded-full mb-4 shadow-lg shadow-[#18b5d5]/10">
+          <div className="inline-flex items-center gap-3 bg-[#18b5d8]/20 border border-[#18b5d8]/30 text-[#18b5d8] px-6 py-3 rounded-full mb-8 backdrop-blur-sm hover:bg-[#18b5d8]/30 transition-all duration-300">
             <Send className="w-4 h-4 animate-pulse" />
             <span className="font-bold text-sm">{t('home.contact.contact_us_now')}</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-black text-white mb-3 leading-tight">
             {t('home.contact.lets_talk_business')}
+           <span className='text-transparent bg-clip-text bg-gradient-to-r from-[#18b5d5] to-[#0d8aa3] animate-pulse'>{t('home.contact.business')}</span> 
           </h2>
           <p className="text-sm text-[#ffffff]/80 max-w-2xl mx-auto leading-relaxed font-light">
             {t('home.contact.subtitle')}

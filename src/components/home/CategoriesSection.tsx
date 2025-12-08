@@ -114,13 +114,13 @@ const CategoriesSection: React.FC<CategoriesSectionProps> = ({ categoryProducts,
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-16 md:mb-24">
-            <div className="inline-flex items-center gap-2 sm:gap-3 bg-[#1f1f1f]/70 border border-[#18b5d5]/30 text-[#18b5d5] px-4 sm:px-6 py-2 sm:py-3 rounded-full mb-6 md:mb-8">
+            <div className="inline-flex items-center gap-3 bg-[#18b5d8]/20 border border-[#18b5d8]/30 text-[#18b5d8] px-6 py-3 rounded-full mb-8 backdrop-blur-sm hover:bg-[#18b5d8]/30 transition-all duration-300">
               <Zap className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="font-bold text-xs sm:text-sm md:text-base">{t('home.categories.featured_products')}</span>
-              <Star className="w-3 h-3 sm:w-4 sm:h-4" />
+              {/* <Star className="w-3 h-3 sm:w-4 sm:h-4" /> */}
             </div>
             <h2 id="categories-heading" className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 md:mb-6 leading-tight px-2">
-              <span className="gradient-text">{t('home.categories.title')}</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#18b5d5] to-[#0d8aa3] animate-pulse ">{t('home.categories.title')}</span>
             </h2>
             <p className="text-sm sm:text-base md:text-lg text-[#ffffff]/75 max-w-3xl mx-auto leading-relaxed font-light px-4">
               {t('home.categories.subtitle')}
