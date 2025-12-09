@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 
 interface Position {
@@ -8,192 +8,252 @@ interface Position {
 
 const CustomCursor = () => {
   const location = useLocation();
-  const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
+  const [position, setPosition] = useState<Position>({ x: -100, y: -100 });
   const [isClicking, setIsClicking] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [smoothPosition, setSmoothPosition] = useState<Position>({ x: 0, y: 0 });
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
+  const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Hide custom cursor in dashboard pages
+  // Hide custom cursor in specific pages
   const hideCursorPaths = ['/admin', '/login'];
   const shouldHideCursor = hideCursorPaths.some(path => 
     location.pathname.startsWith(path)
   );
   
-  // Hide custom cursor on mobile and tablet - show only on desktop
+  // Detect mobile/tablet devices
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    // Check if we're on mobile/tablet after component mounts
     const checkMobile = () => {
-      if (typeof window !== 'undefined') {
-        // Only hide on actual mobile devices (768px and below)
-        setIsMobile(window.innerWidth <= 768);
-      }
+      setIsMobile(window.innerWidth <= 768 || 'ontouchstart' in window);
     };
     
     checkMobile();
-    
-    // Add resize listener to update mobile state
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', checkMobile);
-      return () => window.removeEventListener('resize', checkMobile);
-    }
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  useEffect(() => {
-    // Smooth animation loop using requestAnimationFrame
-    let animationFrameId: number;
+  // Handle mouse movement with optimization
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    // Position the glow directly at cursor tip
+    setPosition({ x: e.clientX, y: e.clientY });
     
-    const animate = () => {
-      setSmoothPosition(prev => {
-        const dx = position.x - prev.x;
-        const dy = position.y - prev.y;
-        const factor = 0.12; // Smoothing factor (lower = smoother but slower)
-        
-        return {
-          x: prev.x + dx * factor,
-          y: prev.y + dy * factor
-        };
-      });
-      animationFrameId = requestAnimationFrame(animate);
-    };
+    const target = e.target as HTMLElement;
+    const isInputField = target.tagName === 'INPUT' || 
+                        target.tagName === 'TEXTAREA' || 
+                        target.isContentEditable;
     
-    animate();
+    setIsVisible(!isInputField);
     
-    return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
-    };
-  }, [position]);
+    // Check if hovering over interactive elements
+    const isInteractive = target.tagName === 'A' || 
+                         target.tagName === 'BUTTON' ||
+                         target.role === 'button' ||
+                         target.onclick !== null ||
+                         window.getComputedStyle(target).cursor === 'pointer';
+    
+    setIsHovering(isInteractive);
+  }, []);
 
-  useEffect(() => {
-    // Don't add event listeners if cursor should be hidden or if document is not available
-    if (shouldHideCursor || isMobile || typeof document === 'undefined' || typeof window === 'undefined') {
-      return;
+  // Handle click with debounce
+  const handleClick = useCallback(() => {
+    setIsClicking(true);
+    
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
     }
+    
+    clickTimeoutRef.current = setTimeout(() => {
+      setIsClicking(false);
+    }, 150);
+  }, []);
 
-    // Mark as initialized
-    setIsInitialized(true);
-    console.log('CustomCursor: Initializing cursor effect');
+  const handleMouseLeave = useCallback(() => {
+    setIsVisible(false);
+  }, []);
 
-    const handleMouseMove = (e: MouseEvent) => {
-      // Use requestAnimationFrame for smoother movement
-      requestAnimationFrame(() => {
-        setPosition({ x: e.clientX, y: e.clientY });
-      });
-      const target = e.target as HTMLElement | null;
-      const hideForText = !!target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
-      setIsVisible(!hideForText);
-    };
+  const handleMouseEnter = useCallback(() => {
+    setIsVisible(true);
+  }, []);
 
-    const handleClick = () => {
-      setIsClicking(true);
-      setTimeout(() => setIsClicking(false), 100);
-    };
+  // Setup event listeners
+  useEffect(() => {
+    if (shouldHideCursor || isMobile) return;
 
-    const handleTouchStart = () => {
-      setIsClicking(true);
-      setTimeout(() => setIsClicking(false), 100);
-    };
+    document.addEventListener('mousemove', handleMouseMove, { passive: true });
+    document.addEventListener('mousedown', handleClick);
+    document.addEventListener('mouseleave', handleMouseLeave);
+    document.addEventListener('mouseenter', handleMouseEnter);
 
-    const handleMouseLeave = () => {
-      setIsVisible(false);
-    };
-
-    const handleMouseEnter = () => {
-      setIsVisible(true);
-    };
-
-    try {
-      // More sensitive event listeners
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('click', handleClick);
-      document.addEventListener('mousedown', handleClick); // Extra sensitivity
-      document.addEventListener('touchstart', handleTouchStart); // Touch support
-      document.addEventListener('mouseleave', handleMouseLeave);
-      document.addEventListener('mouseenter', handleMouseEnter);
-    } catch (error) {
-      console.warn('CustomCursor: Failed to add event listeners', error);
-    }
+    // Keep default cursor visible
+    document.body.style.cursor = 'default';
+    document.documentElement.style.cursor = 'default';
 
     return () => {
-      try {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('click', handleClick);
-        document.removeEventListener('mousedown', handleClick);
-        document.removeEventListener('touchstart', handleTouchStart);
-        document.removeEventListener('mouseleave', handleMouseLeave);
-        document.removeEventListener('mouseenter', handleMouseEnter);
-      } catch (error) {
-        console.warn('CustomCursor: Failed to remove event listeners', error);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mousedown', handleClick);
+      document.removeEventListener('mouseleave', handleMouseLeave);
+      document.removeEventListener('mouseenter', handleMouseEnter);
+      
+      // Restore default cursor
+      document.body.style.cursor = '';
+      document.documentElement.style.cursor = '';
+      
+      if (clickTimeoutRef.current) {
+        clearTimeout(clickTimeoutRef.current);
       }
     };
-  }, [shouldHideCursor, location.pathname, isMobile]);
+  }, [shouldHideCursor, isMobile, handleMouseMove, handleClick, handleMouseLeave, handleMouseEnter]);
 
-  // Don't render anything if cursor should be hidden or on mobile
-  if (shouldHideCursor || isMobile) {
-    console.log('CustomCursor: Hidden due to shouldHideCursor or isMobile', { shouldHideCursor, isMobile });
-    return null;
-  }
+  // Don't render on mobile or hidden paths
+  if (shouldHideCursor || isMobile) return null;
 
-  // Debug info
-  if (!isInitialized) {
-    console.log('CustomCursor: Not initialized yet');
-  } else {
-    console.log('CustomCursor: Rendering at position', smoothPosition, 'visible:', isVisible);
-  }
+  const scale = isClicking ? 0.8 : isHovering ? 1.6 : 1.2;
+  const opacity = isVisible ? 1 : 0;
 
   return (
-    <div
-      className={`fixed pointer-events-none z-50 transition-all duration-75 ease-out ${
-        isVisible ? 'opacity-100' : 'opacity-0'
-      }`}
-      style={{
-        left: smoothPosition.x - 12,
-        top: smoothPosition.y - 12,
-        transform: isClicking ? 'scale(0.7)' : 'scale(1)',
-        willChange: 'transform, left, top',
-      }}
-    >
-      {/* Blue circle cursor effect with strong glow */}
-      <div className="relative">
-        {/* Outer glow layers */}
-        <div className="absolute inset-0 w-6 h-6 rounded-full bg-[#18b5d8] opacity-30 animate-pulse" 
-             style={{transform: 'scale(2)', filter: 'blur(2px)'}} />
-        <div className="absolute inset-0 w-6 h-6 rounded-full bg-[#18b5d8] opacity-40 animate-pulse" 
-             style={{transform: 'scale(1.5)', filter: 'blur(1px)', animationDelay: '0.2s'}} />
+    <>
+      <style>{`
+        @keyframes pulse-glow {
+          0%, 100% { opacity: 0.3; transform: scale(2); }
+          50% { opacity: 0.5; transform: scale(2.2); }
+        }
         
-        {/* Main circle */}
+        @keyframes ripple {
+          0% { transform: scale(1); opacity: 0.6; }
+          100% { transform: scale(3); opacity: 0; }
+        }
+      `}</style>
+      
+      <div
+        className="fixed pointer-events-none z-[9999]"
+        style={{
+          left: position.x,
+          top: position.y,
+          opacity,
+          transition: 'opacity 200ms ease-out',
+        }}
+      >
+        {/* Outer glow effect - centered on cursor */}
         <div 
-          className="w-6 h-6 rounded-full bg-[#18b5d8] opacity-70 relative"
+          className="absolute"
           style={{
-            boxShadow: '0 0 15px #18b5d8, 0 0 25px #18b5d8, 0 0 35px #18b5d8',
+            width: '50px',
+            height: '50px',
+            left: '-25px',
+            top: '-25px',
+            background: 'radial-gradient(circle, rgba(24,181,216,0.3) 0%, rgba(24,181,216,0.15) 50%, transparent 70%)',
+            filter: 'blur(12px)',
+            animation: 'pulse-glow 2s ease-in-out infinite',
+            transform: `scale(${scale})`,
+            transition: 'transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+          }}
+        />
+        
+        {/* Secondary glow layer - centered on cursor */}
+        <div 
+          className="absolute"
+          style={{
+            width: '35px',
+            height: '35px',
+            left: '-17.5px',
+            top: '-17.5px',
+            background: 'radial-gradient(circle, rgba(95,211,255,0.4) 0%, rgba(24,181,216,0.2) 60%, transparent 80%)',
+            filter: 'blur(8px)',
+            transform: `scale(${scale * 0.9})`,
+            transition: 'transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+          }}
+        />
+        
+        {/* Main cursor circle - centered on cursor */}
+        <div
+          className="absolute"
+          style={{
+            width: '20px',
+            height: '20px',
+            left: '-10px',
+            top: '-10px',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #18b5d8 0%, #5fd3ff 100%)',
+            boxShadow: `
+              0 0 15px rgba(24, 181, 216, 0.6),
+              0 0 30px rgba(24, 181, 216, 0.4),
+              0 0 45px rgba(24, 181, 216, 0.2),
+              inset 0 0 8px rgba(255, 255, 255, 0.3)
+            `,
+            transform: `scale(${scale * 0.8})`,
+            transition: 'transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1)',
           }}
         >
           {/* Inner bright core */}
-          <div 
-            className="absolute inset-1 rounded-full bg-[#5fd3ff] opacity-90"
+          <div
+            className="absolute inset-0 rounded-full"
             style={{
-              boxShadow: 'inset 0 0 5px rgba(255, 255, 255, 0.8)',
+              background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8) 0%, transparent 60%)',
+              transform: 'scale(0.5)',
             }}
           />
         </div>
-      </div>
-      
-      {/* Ripple effect on click */}
-      {isClicking && (
-        <div 
-          className="absolute inset-0 w-6 h-6 rounded-full bg-[#18b5d8] opacity-50"
+        
+        {/* Click ripple effect - centered on cursor */}
+        {isClicking && (
+          <>
+            <div
+              className="absolute rounded-full border-2 border-[#18b5d8]"
+              style={{
+                width: '20px',
+                height: '20px',
+                left: '-10px',
+                top: '-10px',
+                animation: 'ripple 500ms ease-out',
+              }}
+            />
+            <div
+              className="absolute rounded-full border border-[#5fd3ff]"
+              style={{
+                width: '20px',
+                height: '20px',
+                left: '-10px',
+                top: '-10px',
+                animation: 'ripple 600ms ease-out 50ms',
+              }}
+            />
+          </>
+        )}
+        
+        {/* Trailing particles - centered on cursor */}
+        <div
+          className="absolute"
           style={{
-            animation: 'ripple 300ms ease-out',
-            transform: 'scale(2)',
-            filter: 'blur(2px)',
+            width: '6px',
+            height: '6px',
+            left: '-3px',
+            top: '-3px',
+            borderRadius: '50%',
+            backgroundColor: '#5fd3ff',
+            opacity: 0.4,
+            filter: 'blur(1px)',
+            transform: `scale(${scale * 0.5})`,
+            transition: 'all 150ms ease-out',
           }}
         />
-      )}
-    </div>
+        <div
+          className="absolute"
+          style={{
+            width: '4px',
+            height: '4px',
+            left: '-2px',
+            top: '-2px',
+            borderRadius: '50%',
+            backgroundColor: '#18b5d8',
+            opacity: 0.3,
+            filter: 'blur(1px)',
+            transform: `scale(${scale * 0.4})`,
+            transition: 'all 200ms ease-out',
+          }}
+        />
+      </div>
+    </>
   );
 };
 
