@@ -169,10 +169,10 @@ const CustomCursor = () => {
         <div
           className="absolute"
           style={{
-            width: '42px',
-            height: '42px',
-            left: '-21px',
-            top: '-21px',
+            width: '32px',
+            height: '32px',
+            left: '-16px',
+            top: '-16px',
             borderRadius: '50%',
             background: 'linear-gradient(135deg, #18b5d8 0%, #5fd3ff 100%)',
             boxShadow: `
