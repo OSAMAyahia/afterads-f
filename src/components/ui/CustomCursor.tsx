@@ -11,6 +11,8 @@ const CustomCursor = () => {
   const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
   const [isClicking, setIsClicking] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [smoothPosition, setSmoothPosition] = useState<Position>({ x: 0, y: 0 });
+  const [isInitialized, setIsInitialized] = useState(false);
   
   // Hide custom cursor in dashboard pages
   const hideCursorPaths = ['/admin', '/login'];
@@ -19,7 +21,7 @@ const CustomCursor = () => {
   );
   
   // Hide custom cursor on mobile and tablet - show only on desktop
-  const [isMobile, setIsMobile] = useState(true); // Default to true for SSR
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     // Check if we're on mobile/tablet after component mounts
@@ -40,13 +42,47 @@ const CustomCursor = () => {
   }, []);
 
   useEffect(() => {
+    // Smooth animation loop using requestAnimationFrame
+    let animationFrameId: number;
+    
+    const animate = () => {
+      setSmoothPosition(prev => {
+        const dx = position.x - prev.x;
+        const dy = position.y - prev.y;
+        const factor = 0.12; // Smoothing factor (lower = smoother but slower)
+        
+        return {
+          x: prev.x + dx * factor,
+          y: prev.y + dy * factor
+        };
+      });
+      animationFrameId = requestAnimationFrame(animate);
+    };
+    
+    animate();
+    
+    return () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
+  }, [position]);
+
+  useEffect(() => {
     // Don't add event listeners if cursor should be hidden or if document is not available
     if (shouldHideCursor || isMobile || typeof document === 'undefined' || typeof window === 'undefined') {
       return;
     }
 
+    // Mark as initialized
+    setIsInitialized(true);
+    console.log('CustomCursor: Initializing cursor effect');
+
     const handleMouseMove = (e: MouseEvent) => {
-      setPosition({ x: e.clientX, y: e.clientY });
+      // Use requestAnimationFrame for smoother movement
+      requestAnimationFrame(() => {
+        setPosition({ x: e.clientX, y: e.clientY });
+      });
       const target = e.target as HTMLElement | null;
       const hideForText = !!target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
       setIsVisible(!hideForText);
@@ -94,9 +130,71 @@ const CustomCursor = () => {
         console.warn('CustomCursor: Failed to remove event listeners', error);
       }
     };
-  }, [shouldHideCursor, location.pathname]);
+  }, [shouldHideCursor, location.pathname, isMobile]);
 
-  return null;
+  // Don't render anything if cursor should be hidden or on mobile
+  if (shouldHideCursor || isMobile) {
+    console.log('CustomCursor: Hidden due to shouldHideCursor or isMobile', { shouldHideCursor, isMobile });
+    return null;
+  }
+
+  // Debug info
+  if (!isInitialized) {
+    console.log('CustomCursor: Not initialized yet');
+  } else {
+    console.log('CustomCursor: Rendering at position', smoothPosition, 'visible:', isVisible);
+  }
+
+  return (
+    <div
+      className={`fixed pointer-events-none z-50 transition-all duration-75 ease-out ${
+        isVisible ? 'opacity-100' : 'opacity-0'
+      }`}
+      style={{
+        left: smoothPosition.x - 12,
+        top: smoothPosition.y - 12,
+        transform: isClicking ? 'scale(0.7)' : 'scale(1)',
+        willChange: 'transform, left, top',
+      }}
+    >
+      {/* Blue circle cursor effect with strong glow */}
+      <div className="relative">
+        {/* Outer glow layers */}
+        <div className="absolute inset-0 w-6 h-6 rounded-full bg-[#18b5d8] opacity-30 animate-pulse" 
+             style={{transform: 'scale(2)', filter: 'blur(2px)'}} />
+        <div className="absolute inset-0 w-6 h-6 rounded-full bg-[#18b5d8] opacity-40 animate-pulse" 
+             style={{transform: 'scale(1.5)', filter: 'blur(1px)', animationDelay: '0.2s'}} />
+        
+        {/* Main circle */}
+        <div 
+          className="w-6 h-6 rounded-full bg-[#18b5d8] opacity-70 relative"
+          style={{
+            boxShadow: '0 0 15px #18b5d8, 0 0 25px #18b5d8, 0 0 35px #18b5d8',
+          }}
+        >
+          {/* Inner bright core */}
+          <div 
+            className="absolute inset-1 rounded-full bg-[#5fd3ff] opacity-90"
+            style={{
+              boxShadow: 'inset 0 0 5px rgba(255, 255, 255, 0.8)',
+            }}
+          />
+        </div>
+      </div>
+      
+      {/* Ripple effect on click */}
+      {isClicking && (
+        <div 
+          className="absolute inset-0 w-6 h-6 rounded-full bg-[#18b5d8] opacity-50"
+          style={{
+            animation: 'ripple 300ms ease-out',
+            transform: 'scale(2)',
+            filter: 'blur(2px)',
+          }}
+        />
+      )}
+    </div>
+  );
 };
 
 export default CustomCursor;

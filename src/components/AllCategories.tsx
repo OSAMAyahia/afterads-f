@@ -167,19 +167,17 @@ const AllCategories: React.FC = () => {
             }}
           />
         </div>
-        <div className="p-6 flex flex-col flex-grow">
-          <div className="flex flex-wrap gap-2 mb-3">
-            <span className="text-xs bg-[#18b5d5]/30 text-white px-3 py-1 rounded-full">{t('categories.title')}</span>
-          </div>
-          <h3 className="text-xl font-bold mb-3 line-clamp-2   text-white transition-colors">
+        <div className="p-6 flex flex-col flex-grow min-h-[180px]">
+          
+          <h3 className="text-xl font-bold mb-3 line-clamp-2 text-white transition-colors min-h-[56px]">
             {getLocalizedContent(category, 'name')}
           </h3>
-          <p className="text-[#CCCCCC] text-sm mb-4 line-clamp-3 flex-grow">
+          <p className="text-[#CCCCCC] text-sm mb-4 line-clamp-3 flex-grow min-h-[60px]">
             {getLocalizedContent(category, 'description') || t('categories.default_description')}
           </p>
           <div className="flex items-center justify-between text-xs text-[#BBBBBB] border-t border-[#444444] pt-4 mt-auto">
             <span className="text-[#18b5d5] text-sm font-medium">{t('categories.explore_products')}</span>
-            <span className="text-white/80">{t('view_all')}</span>
+            <span className="text-white/80">{t('categories.view_all')}</span>
           </div>
         </div>
       </Link>
