@@ -108,7 +108,7 @@ const CustomCursor = () => {
   // Don't render on mobile or hidden paths
   if (shouldHideCursor || isMobile) return null;
 
-  const scale = isClicking ? 0.8 : isHovering ? 1.6 : 1.2;
+const scale = isClicking ? 0.7 : isHovering ? 1.3 : 1.0;
   const opacity = isVisible ? 1 : 0;
 
   return (
@@ -138,10 +138,10 @@ const CustomCursor = () => {
         <div 
           className="absolute"
           style={{
-            width: '70px',
-            height: '70px',
-            left: '-35px',
-            top: '-35px',
+           width: '50px',
+          height: '50px',
+          left: '-25px',
+          top: '-25px',
             background: 'radial-gradient(circle, rgba(24,181,216,0.3) 0%, rgba(24,181,216,0.15) 50%, transparent 70%)',
             filter: 'blur(12px)',
             animation: 'pulse-glow 2s ease-in-out infinite',
@@ -154,10 +154,10 @@ const CustomCursor = () => {
         <div 
           className="absolute"
           style={{
-            width: '50px',
-            height: '50px',
-            left: '-25px',
-            top: '-25px',
+         width: '35px',
+height: '35px',
+left: '-17.5px',
+top: '-17.5px',
             background: 'radial-gradient(circle, rgba(95,211,255,0.4) 0%, rgba(24,181,216,0.2) 60%, transparent 80%)',
             filter: 'blur(8px)',
             transform: `scale(${scale * 0.9})`,
@@ -169,10 +169,10 @@ const CustomCursor = () => {
         <div
           className="absolute"
           style={{
-            width: '32px',
-            height: '32px',
-            left: '-16px',
-            top: '-16px',
+width: '28px',
+height: '28px',
+left: '-14px',
+top: '-14px',
             borderRadius: '50%',
             background: 'linear-gradient(135deg, #18b5d8 0%, #5fd3ff 100%)',
             boxShadow: `
@@ -201,10 +201,10 @@ const CustomCursor = () => {
             <div
               className="absolute rounded-full border-2 border-[#18b5d8]"
               style={{
-                width: '32px',
-                height: '32px',
-                left: '-16px',
-                top: '-16px',
+      width: '28px',
+height: '28px',
+left: '-14px',
+top: '-14px',
                 animation: 'ripple 500ms ease-out',
               }}
             />
