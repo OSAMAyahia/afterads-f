@@ -138,10 +138,10 @@ const CustomCursor = () => {
         <div 
           className="absolute"
           style={{
-            width: '50px',
-            height: '50px',
-            left: '-25px',
-            top: '-25px',
+            width: '70px',
+            height: '70px',
+            left: '-35px',
+            top: '-35px',
             background: 'radial-gradient(circle, rgba(24,181,216,0.3) 0%, rgba(24,181,216,0.15) 50%, transparent 70%)',
             filter: 'blur(12px)',
             animation: 'pulse-glow 2s ease-in-out infinite',
@@ -154,10 +154,10 @@ const CustomCursor = () => {
         <div 
           className="absolute"
           style={{
-            width: '35px',
-            height: '35px',
-            left: '-17.5px',
-            top: '-17.5px',
+            width: '50px',
+            height: '50px',
+            left: '-25px',
+            top: '-25px',
             background: 'radial-gradient(circle, rgba(95,211,255,0.4) 0%, rgba(24,181,216,0.2) 60%, transparent 80%)',
             filter: 'blur(8px)',
             transform: `scale(${scale * 0.9})`,
@@ -169,17 +169,17 @@ const CustomCursor = () => {
         <div
           className="absolute"
           style={{
-            width: '20px',
-            height: '20px',
-            left: '-10px',
-            top: '-10px',
+            width: '42px',
+            height: '42px',
+            left: '-21px',
+            top: '-21px',
             borderRadius: '50%',
             background: 'linear-gradient(135deg, #18b5d8 0%, #5fd3ff 100%)',
             boxShadow: `
-              0 0 15px rgba(24, 181, 216, 0.6),
-              0 0 30px rgba(24, 181, 216, 0.4),
-              0 0 45px rgba(24, 181, 216, 0.2),
-              inset 0 0 8px rgba(255, 255, 255, 0.3)
+              0 0 20px rgba(24, 181, 216, 0.7),
+              0 0 40px rgba(24, 181, 216, 0.5),
+              0 0 60px rgba(24, 181, 216, 0.3),
+              inset 0 0 10px rgba(255, 255, 255, 0.3)
             `,
             transform: `scale(${scale * 0.8})`,
             transition: 'transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1)',
@@ -201,20 +201,20 @@ const CustomCursor = () => {
             <div
               className="absolute rounded-full border-2 border-[#18b5d8]"
               style={{
-                width: '20px',
-                height: '20px',
-                left: '-10px',
-                top: '-10px',
+                width: '32px',
+                height: '32px',
+                left: '-16px',
+                top: '-16px',
                 animation: 'ripple 500ms ease-out',
               }}
             />
             <div
               className="absolute rounded-full border border-[#5fd3ff]"
               style={{
-                width: '20px',
-                height: '20px',
-                left: '-10px',
-                top: '-10px',
+                width: '32px',
+                height: '32px',
+                left: '-16px',
+                top: '-16px',
                 animation: 'ripple 600ms ease-out 50ms',
               }}
             />
@@ -225,10 +225,10 @@ const CustomCursor = () => {
         <div
           className="absolute"
           style={{
-            width: '6px',
-            height: '6px',
-            left: '-3px',
-            top: '-3px',
+            width: '10px',
+            height: '10px',
+            left: '-5px',
+            top: '-5px',
             borderRadius: '50%',
             backgroundColor: '#5fd3ff',
             opacity: 0.4,
@@ -240,10 +240,10 @@ const CustomCursor = () => {
         <div
           className="absolute"
           style={{
-            width: '4px',
-            height: '4px',
-            left: '-2px',
-            top: '-2px',
+            width: '7px',
+            height: '7px',
+            left: '-3.5px',
+            top: '-3.5px',
             borderRadius: '50%',
             backgroundColor: '#18b5d8',
             opacity: 0.3,
