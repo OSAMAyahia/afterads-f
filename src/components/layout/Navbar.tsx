@@ -887,30 +887,11 @@ function Navbar() {
                       </button>
                     )}
                   </div>
-                ) : isTablet ? (
-                  // Tablet: Show logo and user avatar together
-                  <div className="flex items-center gap-3">
-                    <Link to="/" onClick={() => setIsMenuOpen(false)} className="cursor-pointer">
-                      <img src={logo} alt="Logo" className="h-8 md:h-10 w-auto" />
-                    </Link>
-                    {user ? (
-                      <Link to="/profile" aria-label={t('nav.profile')} className="w-9 h-9 rounded-lg overflow-hidden border border-white/20 hover:border-white/30 transition-all duration-200">
-                        <img
-                          src={(user?.avatar || user?.storeLogo || user?.storeImage) ? buildImageUrl(user?.avatar || user?.storeLogo || user?.storeImage || '') : notfoundImg}
-                          alt={storeName}
-                          className="w-full h-full object-cover"
-                          onError={(e) => { e.currentTarget.src = notfoundImg; }}
-                        />
-                      </Link>
-                    ) : (
-                      <button
-                        onClick={openAuthModal}
-                        className="btn btn-primary btn-standard-primary px-4 py-1.5 rounded-lg text-sm transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 border border-[#18b5d5]/30 group"
-                      >
-                        <span className="relative z-10">{t('nav.login')}</span>
-                      </button>
-                    )}
-                  </div>
+                                ) : isTablet ? (
+                  // Tablet: Show logo only
+                  <Link to="/" onClick={() => setIsMenuOpen(false)} className="cursor-pointer">
+                    <img src={logo} alt="Logo" className="h-6 md:h-8 w-auto" />
+                  </Link>
                 ) : (
                   <Link to="/" onClick={() => setIsMenuOpen(false)} className="cursor-pointer">
                     <img src={logo} alt="Logo" className="h-6 sm:h-8 w-auto" />
