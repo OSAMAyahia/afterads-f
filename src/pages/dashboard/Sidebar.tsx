@@ -195,24 +195,24 @@ const Sidebar: React.FC<SidebarProps> = ({
         }
       ]
     },
-     {
-      title: 'إدارة الثيم',
-      items: [
+    //  {
+    //   title: 'إدارة الثيم',
+    //   items: [
 
-        {
-          path: 'theme-works',
-          name: 'شركائنا',
-          icon: <Briefcase className="w-5 h-5" />,
-          role: 'admin'
-        },
-        {
-          path: 'theme-cards',
-          name: 'بطاقات الثيم',
-          icon: <Star className="w-5 h-5" />,
-          role: 'admin'
-        }
-      ]
-    },
+    //     {
+    //       path: 'theme-works',
+    //       name: 'شركائنا',
+    //       icon: <Briefcase className="w-5 h-5" />,
+    //       role: 'admin'
+    //     },
+    //     {
+    //       path: 'theme-cards',
+    //       name: 'بطاقات الثيم',
+    //       icon: <Star className="w-5 h-5" />,
+    //       role: 'admin'
+    //     }
+    //   ]
+    // },
     {
       title: 'العروض',
       items: [
