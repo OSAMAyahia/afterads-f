@@ -364,18 +364,18 @@ const CouponsManagement: React.FC = () => {
                         ) : (
                           <span className="flex items-center gap-1 text-green-600">
                             <DollarSign className="w-4 h-4" />
-                            {coupon.discountValue} جنيه
+                            {coupon.discountValue} ريال سعودي
                           </span>
                         )}
                       </div>
                       {coupon.maxDiscount && coupon.discountType === 'percentage' && (
                         <div className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded">
-                          حد أقصى: {coupon.maxDiscount} جنيه
+                          حد أقصى: {coupon.maxDiscount} ريال سعودي
                         </div>
                       )}
                       {coupon.minimumAmount && coupon.minimumAmount > 0 && (
                         <div className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded">
-                          حد أدنى: {coupon.minimumAmount} جنيه
+                          حد أدنى: {coupon.minimumAmount} ريال سعودي
                         </div>
                       )}
                     </div>
@@ -527,7 +527,7 @@ const CouponsManagement: React.FC = () => {
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61] transition-all bg-white"
                       >
                         <option value="percentage">نسبة مئوية (%)</option>
-                        <option value="fixed">مبلغ ثابت (جنيه)</option>
+                        <option value="fixed">مبلغ ثابت (ريال سعودي)</option>
                       </select>
                     </div>
 
@@ -551,7 +551,7 @@ const CouponsManagement: React.FC = () => {
                   {formData.discountType === 'percentage' && (
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        الحد الأقصى للخصم (جنيه)
+                        الحد الأقصى للخصم (ريال سعودي)
                       </label>
                       <input
                         type="number"
@@ -567,7 +567,7 @@ const CouponsManagement: React.FC = () => {
 
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      الحد الأدنى لقيمة الطلب (جنيه)
+                      الحد الأدنى لقيمة الطلب (ريال سعودي)
                     </label>
                     <input
                       type="number"

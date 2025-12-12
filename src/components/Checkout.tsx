@@ -63,9 +63,32 @@ interface PaymentMethod {
 }
 
 const Checkout: React.FC = () => {
-  const { t, i18n } = useTranslation('common');
+  const { t, i18n } = useTranslation();
   const { getCurrentCurrencySymbol } = useCurrency();
   const isRTL = i18n.language === 'ar';
+
+  // Debug translation loading
+  useEffect(() => {
+    console.log('=== Checkout Translation Debug ===');
+    console.log('Current language:', i18n.language);
+    console.log('Current namespace:', 'common');
+    console.log('Testing checkout.checkout:', t('checkout.checkout'));
+    console.log('Testing checkout.addressPlaceholder:', t('checkout.addressPlaceholder'));
+    console.log('Testing checkout.phone:', t('checkout.phone'));
+    
+    // Check what's available in the current namespace
+    const resources = i18n.services.resourceStore.data;
+    console.log('Available resources:', Object.keys(resources));
+    console.log('Current language resources:', Object.keys(resources[i18n.language] || {}));
+    
+    if (resources[i18n.language]?.common) {
+      console.log('Common namespace keys:', Object.keys(resources[i18n.language].common).slice(0, 20));
+      console.log('Has checkout section:', !!resources[i18n.language].common.checkout);
+      if (resources[i18n.language].common.checkout) {
+        console.log('Checkout keys:', Object.keys(resources[i18n.language].common.checkout));
+      }
+    }
+  }, [t, i18n]);
 
   // Helper function to get localized content for add-ons
   const getLocalizedAddOnContent = (field: 'name' | 'description', addOn: any) => {
@@ -804,7 +827,7 @@ const getFinalTotal = () => {
                     type="text"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
-                    placeholder="كود الخصم"
+                    placeholder={t('checkout.couponPlaceholder') || 'كود الخصم'}
                     className="flex-1 px-3 sm:px-4 py-2 sm:py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#18b5d8] text-sm sm:text-base mobile-padding mobile-text"
                     disabled={!!appliedCoupon}
                   />
@@ -966,7 +989,7 @@ const getFinalTotal = () => {
                     value={customerInfo.name}
                     onChange={handleInputChange}
                     className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#18b5d8] focus:border-transparent transition-all text-sm sm:text-base mobile-padding mobile-text"
-                    placeholder="أدخل اسمك الكامل"
+                    placeholder={t('checkout.fullNamePlaceholder') || t('checkout.fullName') || 'أدخل اسمك الكامل'}
                     required
                   />
                 </div>
@@ -983,7 +1006,7 @@ const getFinalTotal = () => {
                       value={customerInfo.phone}
                       onChange={handleInputChange}
                       className="w-full pl-3 sm:pl-4 pr-10 sm:pr-12 py-2 sm:py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#18b5d8] focus:border-transparent transition-all text-sm sm:text-base mobile-padding mobile-text"
-                      placeholder="05xxxxxxxx"
+                      placeholder={t('checkout.phonePlaceholder') || '05xxxxxxxx'}
                       required
                     />
                   </div>
@@ -1000,7 +1023,7 @@ const getFinalTotal = () => {
                       value={customerInfo.email}
                       onChange={handleInputChange}
                       className="w-full pl-3 sm:pl-4 pr-10 sm:pr-12 py-2 sm:py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#18b5d8] focus:border-transparent transition-all text-sm sm:text-base mobile-padding mobile-text"
-                      placeholder="example@email.com"
+                      placeholder={t('checkout.emailPlaceholder') || 'example@email.com'}
                     />
                   </div>
                 </div>

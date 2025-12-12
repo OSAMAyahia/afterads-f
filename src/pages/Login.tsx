@@ -96,6 +96,11 @@ const Login: React.FC = () => {
       });
 
       if (response.user && response.token) { 
+        // مسح بيانات المستخدم العادي قبل تسجيل دخول الأدمن
+        localStorage.removeItem('user');
+        localStorage.removeItem('cart');
+        localStorage.removeItem('wishlist');
+        
         // حفظ بيانات المستخدم والتوكن
         localStorage.setItem('isAuthenticated', 'true');
         localStorage.setItem('adminUser', JSON.stringify(response.user));

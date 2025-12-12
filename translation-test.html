@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Translation Test</title>
+</head>
+<body>
+    <h1>Translation Keys Test</h1>
+    <div id="test-results"></div>
+    
+    <script type="module">
+        // Import the translation files directly
+        import enTranslations from './src/i18n/locales/en/common.json';
+        
+        const testResults = document.getElementById('test-results');
+        
+        // Test checkout translations
+        const checkoutKeys = [
+            'checkout.checkout',
+            'checkout.reviewOrder', 
+            'checkout.backToCart',
+            'checkout.deliveryInfo',
+            'checkout.fullName',
+            'checkout.phone',
+            'checkout.addressPlaceholder',
+            'checkout.addressNote',
+            'checkout.notes',
+            'checkout.notesPlaceholder',
+            'checkout.paymentMethod',
+            'checkout.cashOnDelivery',
+            'checkout.cashOnDeliveryDesc',
+            'checkout.confirmOrder',
+            'checkout.termsAgreement'
+        ];
+        
+        let results = '<h2>Checkout Translation Keys:</h2><ul>';
+        
+        checkoutKeys.forEach(key => {
+            const keys = key.split('.');
+            let value = enTranslations;
+            
+            for (const k of keys) {
+                if (value && typeof value === 'object' && k in value) {
+                    value = value[k];
+                } else {
+                    value = undefined;
+                    break;
+                }
+            }
+            
+            if (value) {
+                results += `<li style="color: green">✅ ${key}: "${value}"</li>`;
+            } else {
+                results += `<li style="color: red">❌ ${key}: NOT FOUND</li>`;
+            }
+        });
+        
+        results += '</ul>';
+        testResults.innerHTML = results;
+        
+        console.log('English translations:', enTranslations);
+    </script>
+</body>
+</html>

@@ -611,10 +611,10 @@
                           <div className="text-sm text-gray-900">
                             {product.originalPrice && (
                               <span className="line-through text-gray-400 ml-2">
-                                {product.originalPrice} ج.م
+                                {product.originalPrice} ر.س
                               </span>
                             )}
-                            <span className="font-semibold">{product.price} ج.م</span>
+                            <span className="font-semibold">{product.price} ر.س</span>
                           </div>
                         </td>
                         

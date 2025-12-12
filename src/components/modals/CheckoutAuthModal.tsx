@@ -98,6 +98,11 @@ const CheckoutAuthModal: React.FC<CheckoutAuthModalProps> = ({
       console.log('✅ [CheckoutAuthModal] Login successful:', response);
       
       if (response.user) {
+        // مسح بيانات الأدمن قبل تسجيل دخول المستخدم العادي
+        localStorage.removeItem('isAuthenticated');
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminUser');
+        
         try {
           localStorage.setItem('user', JSON.stringify(response.user));
           window.dispatchEvent(new CustomEvent('userUpdated', { detail: response.user }));

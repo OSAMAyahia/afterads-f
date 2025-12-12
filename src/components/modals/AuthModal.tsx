@@ -112,6 +112,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
       });
       
       if (response.user) {
+        // مسح بيانات الأدمن قبل تسجيل دخول المستخدم العادي
+        localStorage.removeItem('isAuthenticated');
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminUser');
+        
         try {
           localStorage.setItem('user', JSON.stringify(response.user));
           window.dispatchEvent(new CustomEvent('userUpdated', { detail: response.user }));
@@ -166,6 +171,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
       });
       
       if (response.user) {
+        // مسح بيانات الأدمن قبل تسجيل دخول المستخدم العادي
+        localStorage.removeItem('isAuthenticated');
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminUser');
+        
         try {
           localStorage.setItem('user', JSON.stringify(response.user));
           window.dispatchEvent(new CustomEvent('userUpdated', { detail: response.user }));

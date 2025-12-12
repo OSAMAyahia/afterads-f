@@ -161,6 +161,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid', v
   if (variant === 'blog' && viewMode === 'list') {
     return (
       <div className="relative w-full mb-6">
+        {product.originalPrice && 
+          <div className="absolute top-4 right-4 bg-gradient-to-r from-red-600 to-red-500 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg backdrop-blur-sm z-10">
+            {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
+          </div>
+        }
         <div className="bg-[#333333]/60 backdrop-blur border border-[#444444] rounded-2xl overflow-hidden">
           <Link
             to={`/product/${createProductSlug(product.id, getLocalizedContent('name'))}`}
@@ -226,7 +231,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid', v
     return (
       <div className="relative w-full mb-6">
         {product.originalPrice && 
-          <div className="absolute -top-3 -left-3 bg-gradient-to-r from-red-600 to-red-500 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-2xl backdrop-blur-sm z-[100]">
+          <div className="absolute top-4 right-4 bg-gradient-to-r from-red-600 to-red-500 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg backdrop-blur-sm z-10">
             {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
           </div>
         }
@@ -303,6 +308,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid', v
   if (variant === 'blog') {
     return (
       <div className="relative w-full px-2 py-3">
+        {product.originalPrice && 
+          <div className="absolute top-4 right-4 bg-gradient-to-r from-red-600 to-red-500 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg backdrop-blur-sm z-10">
+            {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
+          </div>
+        }
         <Link
           to={`/product/${createProductSlug(product.id, getLocalizedContent('name'))}`}
           className="block bg-[#333333]/60 backdrop-blur border border-[#444444] rounded-2xl overflow-hidden hover:border-[#18b5d5] transition-all duration-300 hover:shadow-2xl hover:shadow-[#18b5d5]/25 h-full flex flex-col group"
@@ -363,7 +373,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid', v
   return (
     <div className="relative w-full px-2 py-3">
       {product.originalPrice && 
-        <div className="absolute -top-3 -left-3 bg-gradient-to-r from-red-600 to-red-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-2xl backdrop-blur-sm z-[100]">
+        <div className="absolute top-4 right-4 bg-gradient-to-r from-red-600 to-red-500 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg backdrop-blur-sm z-10">
           {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
         </div>
       }

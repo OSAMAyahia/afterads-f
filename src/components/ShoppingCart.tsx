@@ -123,11 +123,17 @@ const ShoppingCart: React.FC = () => {
           setServerLoyaltyDiscount(typeof (srv as any).loyaltyDiscount === 'number' ? (srv as any).loyaltyDiscount : null);
           setServerLoyaltyAvailable(typeof (srv as any).loyaltyAvailable === 'number' ? (srv as any).loyaltyAvailable : null);
         }
+        // Validate cart data - filter out items with invalid product data
+        cartToLoad = cartToLoad.filter((item: CartItem) => item && item.product && item.product.id && item.product.name);
         localStorage.setItem('cart', JSON.stringify(cartToLoad));
         window.dispatchEvent(new CustomEvent('cartUpdated'));
       } else {
         const savedCart = localStorage.getItem('cart');
-        if (savedCart) cartToLoad = JSON.parse(savedCart);
+        if (savedCart) {
+          cartToLoad = JSON.parse(savedCart);
+          // Validate cart data - filter out items with invalid product data
+          cartToLoad = cartToLoad.filter((item: CartItem) => item && item.product && item.product.id && item.product.name);
+        }
       }
       setCartItems(cartToLoad);
     } catch {
@@ -288,7 +294,7 @@ const ShoppingCart: React.FC = () => {
   const subtotal = useMemo(() => {
     if (serverSubtotal !== null && serverSubtotal !== undefined) return serverSubtotal;
     return cartItems.reduce((total, item) => {
-      const basePrice = item.basePrice || item.product.price;
+      const basePrice = item.basePrice || item.product?.price || 0;
       const addOnsPrice = item.addOnsPrice || 0;
       
       // Calculate options price from both sources
@@ -318,8 +324,8 @@ const ShoppingCart: React.FC = () => {
     navigate('/checkout');
   };
 
-  // Filter cart items (no search, but keeping filteredCartItems for consistency)
-  const filteredCartItems = cartItems;
+  // Filter cart items - remove items with invalid product data
+  const filteredCartItems = cartItems.filter(item => item && item.product && item.product.id && item.product.name);
 
   return (
     <section className="min-h-screen bg-[#1a1a1a] relative overflow-hidden overflow-x-hidden" dir={isRTL ? 'rtl' : 'ltr'}>
@@ -514,232 +520,138 @@ const ShoppingCart: React.FC = () => {
                   key={item.id}
                   className="w-full bg-white/5 backdrop-blur-2xl rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20 overflow-hidden group hover:border-[#18b5d8]/50 hover:shadow-[0_0_20px_rgba(24,181,216,0.5)] transition-all duration-500 transform hover:-translate-y-1 relative"
                 >
-                  {/* Decorative Circle */}
-                  <div className="absolute top-0 right-0 w-16 h-16 sm:w-32 sm:h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 animate-pulse"></div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6 p-4 sm:p-8 relative z-10">
-                    {/* Product Image */}
-                    <div className="md:col-span-1 order-1 relative">
-                      <img
-                        src={buildImageUrl(item.product.mainImage)}
-                        alt={item.product.name}
-                        loading="lazy"
-                        className="w-full h-32 sm:h-48 object-cover rounded-xl sm:rounded-2xl border-2 border-[#18b5d8]/40 shadow-lg group-hover:border-[#18b5d8] transition-all duration-300 transform hover:scale-105"
-                        onError={(e) => (e.currentTarget.src = 'https://tse1.mm.bing.net/th/id/OIP.M6p4cLkcKW9PWIObAjYi8gHaHa?cb=ucfimg2ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3')}
-                      />
+                  {/* Skip rendering if product data is invalid */}
+                  {!item.product && (
+                    <div className="p-8 text-center text-red-400">
+                      <p>Product data is unavailable</p>
                     </div>
-
-                    {/* Product Info */}
-                    <div className="md:col-span-2 order-2 flex flex-col justify-between">
-                      <div>
-                        <h3 className="text-lg sm:text-xl font-black text-white mb-1 sm:mb-2 line-clamp-2 hover:text-[#18b5d8] transition-colors duration-300">
-                          {item.product.name}
-                        </h3>
-                       {item.product.description && Array.isArray(item.product.description) && item.product.description.length > 0 && (
-  <div className="text-gray-300 text-xs sm:text-sm mb-2 sm:mb-3">
-    {item.product.description.map((desc: any, idx: number) => (
-      <div key={idx} dangerouslySetInnerHTML={{ __html: desc.text || '' }} />
-    ))}
-  </div>
-)}
-                        {/* Price Breakdown */}
-                        <div className="mb-3 sm:mb-4 p-3 sm:p-4 bg-gradient-to-r from-[#18b5d8]/10 to-[#16a2c7]/10 rounded-lg sm:rounded-xl border border-[#18b5d8]/30">
-                          <div className="space-y-2">
-                            {/* Base Price */}
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-300 text-xs sm:text-sm font-medium">{t('base_price')}:</span>
-                              <PriceDisplay 
-                                price={item.product.price * item.quantity} 
-                                className="text-sm sm:text-base font-bold text-white"
-                              />
-                            </div>
-                            
-                            {/* Product Options Price */}
-                            {item.productOptionsPriceModifier && item.productOptionsPriceModifier > 0 && (
-                              <div className="flex justify-between items-center">
-                                <span className="text-gray-300 text-xs sm:text-sm font-medium">{t('product_options')}:</span>
-                                <PriceDisplay 
-                                  price={item.productOptionsPriceModifier * item.quantity} 
-                                  className="text-sm sm:text-base font-bold text-[#18b5d8]"
-                                />
-                              </div>
-                            )}
-
-                            {/* Display attachments if exists */}
-{item.attachments?.text && (
-  <div className="mb-3 sm:mb-4 p-3 sm:p-4 bg-white/10 rounded-lg sm:rounded-xl border border-[#18b5d8]/30">
-    <h4 className="text-xs sm:text-sm font-bold text-white mb-2">
-      {t('cart.notes')}:
-    </h4>
-    <p className="text-gray-300 text-sm">{item.attachments.text}</p>
-  </div>
-)}
-
-{item.attachments?.images && Array.isArray(item.attachments.images) && item.attachments.images.length > 0 && (
-  <div className="mb-3 sm:mb-4 p-3 sm:p-4 bg-white/10 rounded-lg sm:rounded-xl border border-[#18b5d8]/30">
-    <h4 className="text-xs sm:text-sm font-bold text-white mb-2">
-      {t('cart.attachedImages')}:
-    </h4>
-    <div className="flex gap-2 flex-wrap">
-      {item.attachments.images.map((img, idx) => (
-        <img 
-          key={idx} 
-          src={buildImageUrl(img)} 
-          alt={`attachment-${idx}`} 
-          className="w-16 h-16 rounded object-cover border border-[#18b5d8]/30"
-        />
-      ))}
-    </div>
-  </div>
-)}
-                            
-                            {/* Add-ons Price */}
-                            {item.addOnsPrice && item.addOnsPrice > 0 && (
-                              <div className="flex justify-between items-center">
-                                <span className="text-gray-300 text-xs sm:text-sm font-medium">{t('addons')}:</span>
-                                <PriceDisplay 
-                                  price={item.addOnsPrice * item.quantity} 
-                                  className="text-sm sm:text-base font-bold text-[#16a2c7]"
-                                />
-                              </div>
-                            )}
-                            
-                            {/* Total Price */}
-                            <div className="border-t border-white/20 pt-2 mt-2">
-                              <div className="flex justify-between items-center">
-                                <span className="text-white text-sm sm:text-base font-bold">{t('total')}:</span>
-                                <PriceDisplay 
-                                  price={(() => {
-                                    const basePrice = item.product.price * item.quantity;
-                                    const optionsPrice = (item.productOptionsPriceModifier || 0) * item.quantity;
-                                    const addOnsPrice = (item.addOnsPrice || 0) * item.quantity;
-                                    return basePrice + optionsPrice + addOnsPrice;
-                                  })()} 
-                                  originalPrice={item.product.originalPrice && item.product.originalPrice > item.product.price ? (item.product.originalPrice * item.quantity) : undefined}
-                                  className="text-lg sm:text-xl font-black text-[#18b5d8]"
-                                  size="lg"
-                                />
-                              </div>
-                            </div>
-                          </div>
+                  )}
+                  {item.product && (
+                    <>
+                      {/* Decorative Circle */}
+                      <div className="absolute top-0 right-0 w-16 h-16 sm:w-32 sm:h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 animate-pulse"></div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6 p-4 sm:p-8 relative z-10">
+                        {/* Product Image */}
+                        <div className="md:col-span-1 order-1 relative">
+                          <img
+                            src={buildImageUrl(item.product?.mainImage || '')}
+                            alt={item.product?.name || 'Product'}
+                            loading="lazy"
+                            className="w-full h-32 sm:h-48 object-cover rounded-xl sm:rounded-2xl border-2 border-[#18b5d8]/40 shadow-lg group-hover:border-[#18b5d8] transition-all duration-300 transform hover:scale-105"
+                            onError={(e) => (e.currentTarget.src = 'https://tse1.mm.bing.net/th/id/OIP.M6p4cLkcKW9PWIObAjYi8gHaHa?cb=ucfimg2ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3')}
+                          />
                         </div>
-                        
-                        {/* Display selected options */}
-                        {item.selectedOptions && Object.keys(item.selectedOptions).length > 0 && (
-                          <div className="mb-3 sm:mb-4 p-3 sm:p-4 bg-white/10 rounded-lg sm:rounded-xl border border-[#18b5d8]/30">
-                            <h4 className="text-xs sm:text-sm font-bold text-white mb-2 sm:mb-3 flex items-center gap-1 sm:gap-2">
-                              <Package className="w-3 h-3 sm:w-4 sm:h-4" />
-                              {t('cart.selectedOptions')}:
-                            </h4>
-                            <div className="space-y-1 sm:space-y-2">
-                              {Object.entries(item.selectedOptions).map(([key, value]) => (
-                                <div key={key} className="flex justify-between items-center text-xs sm:text-sm">
-                                  <span className="text-gray-300">{key}:</span>
-                                  <span className="text-[#18b5d8] font-medium">{value}</span>
+
+                        {/* Product Info */}
+                        <div className="md:col-span-2 order-2 flex flex-col justify-between">
+                          <div>
+                            <h3 className="text-lg sm:text-xl font-black text-white mb-1 sm:mb-2 line-clamp-2 hover:text-[#18b5d8] transition-colors duration-300">
+                              {item.product?.name || 'Product Name Unavailable'}
+                            </h3>
+                            {item.product?.description && Array.isArray(item.product.description) && item.product.description.length > 0 && (
+                              <div className="text-gray-300 text-xs sm:text-sm mb-2 sm:mb-3">
+                                {item.product.description.map((desc: any, idx: number) => (
+                                  <div key={idx} dangerouslySetInnerHTML={{ __html: desc.text || '' }} />
+                                ))}
+                              </div>
+                            )}
+                            
+                            {/* Price Breakdown */}
+                            <div className="mb-3 sm:mb-4 p-3 sm:p-4 bg-gradient-to-r from-[#18b5d8]/10 to-[#16a2c7]/10 rounded-lg sm:rounded-xl border border-[#18b5d8]/30">
+                              <div className="space-y-2">
+                                {/* Base Price */}
+                                <div className="flex justify-between items-center">
+                                  <span className="text-gray-300 text-xs sm:text-sm font-medium">{t('base_price')}:</span>
+                                  <PriceDisplay 
+                                    price={(item.product?.price || 0) * item.quantity} 
+                                    className="text-sm sm:text-base font-bold text-white"
+                                  />
                                 </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        
-                        {/* Display product options */}
-                        {item.productOptions && Array.isArray(item.productOptions) && item.productOptions.length > 0 && (
-                          <div className="mb-3 sm:mb-4 p-3 sm:p-4 bg-white/10 rounded-lg sm:rounded-xl border border-[#18b5d8]/30">
-                            <h4 className="text-xs sm:text-sm font-bold text-white mb-2 sm:mb-3 flex items-center gap-1 sm:gap-2">
-                              <Package className="w-3 h-3 sm:w-4 sm:h-4" />
-                              {t('cart.productOptions')}:
-                            </h4>
-                            <div className="space-y-1 sm:space-y-2">
-                              {item.productOptions.map((option, index) => (
-                                <div key={index} className="flex justify-between items-center text-xs sm:text-sm">
-                                  <span className="text-gray-300">
-                                    {option.optionName ? (i18n.language === 'ar' ? option.optionName.ar : option.optionName.en) : option.optionId}:
-                                  </span>
-                                  <span className="text-[#18b5d8] font-medium">
-                                    {Array.isArray(option.value) ? option.value.join(', ') : option.value}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        
-                        {/* Display selected add-ons */}
-                        {item.addOns && Array.isArray(item.addOns) && item.addOns.length > 0 && (
-                          <div className="mb-3 sm:mb-4 p-3 sm:p-4 bg-white/10 rounded-lg sm:rounded-xl border border-[#18b5d8]/30">
-                            <h4 className="text-xs sm:text-sm font-bold text-white mb-2 sm:mb-3 flex items-center gap-1 sm:gap-2">
-                              <Package className="w-3 h-3 sm:w-4 sm:h-4" />
-                              {t('cart.additionalProducts')}:
-                            </h4>
-                            <div className="space-y-1 sm:space-y-2">
-                              {item.addOns.map((addOn: any, index: number) => (
-                                <div key={index} className="flex justify-between items-center text-xs sm:text-sm">
-                                  <div className="flex flex-col">
-                                    <span className="text-gray-300">{getLocalizedAddOnContent('name', addOn)}</span>
-                                    {getLocalizedAddOnContent('description', addOn) && (
-                                      <span className="text-xs text-gray-400">{getLocalizedAddOnContent('description', addOn)}</span>
-                                    )}
+                                
+                                {/* Product Options Price */}
+                                {item.productOptionsPriceModifier && item.productOptionsPriceModifier > 0 && (
+                                  <div className="flex justify-between items-center">
+                                    <span className="text-gray-300 text-xs sm:text-sm font-medium">{t('product_options')}:</span>
+                                    <PriceDisplay 
+                                      price={item.productOptionsPriceModifier * item.quantity} 
+                                      className="text-sm sm:text-base font-bold text-[#18b5d8]"
+                                    />
                                   </div>
-                                  <PriceDisplay price={addOn.price} className="text-[#18b5d8] font-bold" size="sm" />
-                                </div>
-                              ))}
-                            </div>
-                            {item.basePrice && item.addOnsPrice && (
-                              <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-white/20">
-                                <div className="flex justify-between items-center text-xs sm:text-sm mb-1">
-                                  <span className="text-gray-300">{t('cart.basePrice')}:</span>
-                                  <PriceDisplay price={item.basePrice} />
-                                </div>
-                                <div className="flex justify-between items-center text-xs sm:text-sm">
-                                  <span className="text-gray-300">{t('cart.additionalProductsPrice')}:</span>
-                                  <PriceDisplay price={item.addOnsPrice} />
+                                )}
+                                
+                                {/* Add-ons Price */}
+                                {item.addOnsPrice && item.addOnsPrice > 0 && (
+                                  <div className="flex justify-between items-center">
+                                    <span className="text-gray-300 text-xs sm:text-sm font-medium">{t('addons')}:</span>
+                                    <PriceDisplay 
+                                      price={item.addOnsPrice * item.quantity} 
+                                      className="text-sm sm:text-base font-bold text-[#16a2c7]"
+                                    />
+                                  </div>
+                                )}
+                                
+                                {/* Total Price */}
+                                <div className="border-t border-white/20 pt-2 mt-2">
+                                  <div className="flex justify-between items-center">
+                                    <span className="text-white text-sm sm:text-base font-bold">{t('total')}:</span>
+                                    <PriceDisplay 
+                                      price={(() => {
+                                        const basePrice = (item.product?.price || 0) * item.quantity;
+                                        const optionsPrice = (item.productOptionsPriceModifier || 0) * item.quantity;
+                                        const addOnsPrice = (item.addOnsPrice || 0) * item.quantity;
+                                        return basePrice + optionsPrice + addOnsPrice;
+                                      })()} 
+                                      originalPrice={item.product?.originalPrice && item.product.originalPrice > (item.product?.price || 0) ? (item.product.originalPrice * item.quantity) : undefined}
+                                      className="text-lg sm:text-xl font-black text-[#18b5d8]"
+                                      size="lg"
+                                    />
+                                  </div>
                                 </div>
                               </div>
-                            )}
+                            </div>
                           </div>
-                        )}
-                      </div>
 
-                      <div className="flex flex-col gap-2 sm:gap-4">
-                        {/* Quantity Controls */}
-                        <div className="flex items-center gap-2 sm:gap-3">
-                          <span className="text-white font-bold text-sm sm:text-base">{t('cart.quantity')}:</span>
-                          <div className="flex items-center bg-[#18b5d8]/10 rounded-lg sm:rounded-xl overflow-hidden border border-[#18b5d8]/30">
+                          {/* Quantity Controls */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 sm:gap-4 bg-white/10 rounded-full p-1 sm:p-2">
+                              <button
+                                type="button"
+                                onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                                className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-r from-[#18b5d8] to-[#16a2c7] text-white hover:from-[#16a2c7] hover:to-[#18b5d8] transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-[#18b5d8]/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={item.quantity <= 1}
+                                aria-label={t('cart.decreaseQuantity')}
+                              >
+                                <Minus className="w-3 h-3 sm:w-4 sm:h-4" />
+                              </button>
+                              <span className="text-white font-bold text-sm sm:text-base min-w-[2rem] sm:min-w-[2.5rem] text-center">
+                                {item.quantity}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-r from-[#18b5d8] to-[#16a2c7] text-white hover:from-[#16a2c7] hover:to-[#18b5d8] transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-[#18b5d8]/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={item.quantity >= 10}
+                                aria-label={t('cart.increaseQuantity')}
+                              >
+                                <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+                              </button>
+                            </div>
+
+                            {/* Remove Button */}
                             <button
                               type="button"
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                              className="p-1 sm:p-2 hover:bg-[#18b5d8]/30 transition-colors text-white"
-                              disabled={item.quantity <= 1}
-                              aria-label={t('cart.decreaseQuantity')}
+                              onClick={() => removeFromCart(item.id)}
+                              className="flex items-center gap-1 sm:gap-2 text-red-400 hover:text-red-300 transition-colors font-bold text-sm sm:text-base"
+                              aria-label={`${t('cart.removeFromCart')} ${item.product?.name || 'Product'}`}
                             >
-                              <Minus className="w-3 h-3 sm:w-4 sm:h-4" />
-                            </button>
-                            <span className="px-2 sm:px-4 py-1 sm:py-2 text-white font-bold min-w-[2rem] sm:min-w-[3rem] text-center text-sm sm:text-base">
-                              {item.quantity}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              className="p-1 sm:p-2 hover:bg-[#18b5d8]/30 transition-colors text-white"
-                              aria-label={t('cart.increaseQuantity')}
-                            >
-                              <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+                              <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                              {t('cart.removeFromCart')}
                             </button>
                           </div>
                         </div>
-
-                        {/* Remove Button */}
-                        <button
-                          type="button"
-                          onClick={() => removeFromCart(item.id)}
-                          className="flex items-center gap-1 sm:gap-2 text-red-400 hover:text-red-300 transition-colors font-bold text-sm sm:text-base"
-                          aria-label={`${t('cart.removeFromCart')} ${item.product.name}`}
-                        >
-                          <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                          {t('cart.removeFromCart')}
-                        </button>
                       </div>
-                    </div>
-                  </div>
+                    </>
+                  )}
                 </div>
               ))}
             </div>

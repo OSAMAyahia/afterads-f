@@ -22,7 +22,7 @@ import AnnouncementBarManagement from '../../sections/AnnouncementBarManagement'
 import NavigationVisibilitySettings from "../../sections/NavigationVisibilitySettings";
 
 const AdminLayout: React.FC = () => {
-  
+
   useEffect(() => {
     document.title = "داشبورد افتر ادز";
     return () => {

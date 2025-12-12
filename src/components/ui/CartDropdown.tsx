@@ -78,9 +78,14 @@ const CartItemCard = memo(({
   isRTL: boolean;
   t: any;
 }) => {
+  // Skip rendering if product is null
+  if (!item.product) {
+    return null;
+  }
+
   // Memoize calculations
   const itemPrices = useMemo(() => {
-    const basePrice = (item.basePrice || item.product.price) * item.quantity;
+    const basePrice = (item.basePrice || item.product?.price || 0) * item.quantity;
     
     let optionsPrice = 0;
     if (item.optionsPricing) {
@@ -109,8 +114,8 @@ const CartItemCard = memo(({
   );
 
   const hasAdditionalServices = useMemo(() => 
-    item.product.additionalServices && item.product.additionalServices.length > 0,
-    [item.product.additionalServices]
+    item.product?.additionalServices && item.product.additionalServices.length > 0,
+    [item.product?.additionalServices]
   );
 
   return (
@@ -118,8 +123,8 @@ const CartItemCard = memo(({
       {/* Product Image */}
       <div className="w-8 h-8 xs:w-10 xs:h-10 sm:w-12 sm:h-12 rounded-md xs:rounded-lg overflow-hidden bg-white/10 flex-shrink-0">
         <img
-          src={item.product.mainImage ? buildImageUrl(item.product.mainImage) : notfoundImg}
-          alt={item.product.name}
+          src={item.product?.mainImage ? buildImageUrl(item.product.mainImage) : notfoundImg}
+          alt={item.product?.name || 'Product'}
           className="w-full h-full object-cover"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
@@ -131,7 +136,7 @@ const CartItemCard = memo(({
       {/* Product Info */}
       <div className="flex-1 min-w-0">
         <h4 className="text-white text-xs sm:text-sm font-medium truncate">
-          {item.product.name}
+          {item.product?.name || 'Product Name Unavailable'}
         </h4>
         
         {/* Options */}
@@ -215,7 +220,7 @@ const CartItemCard = memo(({
               {t('cart_dropdown.available_to_add')}:
             </div>
             <div className="space-y-1">
-              {item.product.additionalServices!.slice(0, 2).map((service, index) => (
+              {item.product?.additionalServices?.slice(0, 2).map((service, index) => (
                 <div key={index} className="text-xs text-gray-200 flex justify-between items-center bg-white/5 rounded px-2 py-1">
                   <span className="flex items-center gap-1">
                     <span className="text-blue-400 text-xs">+</span>
@@ -227,9 +232,9 @@ const CartItemCard = memo(({
                 </div>
               ))}
             </div>
-            {item.product.additionalServices!.length > 2 && (
+            {item.product?.additionalServices && item.product.additionalServices.length > 2 && (
               <div className="text-xs text-blue-300 mt-1 text-center">
-                +{item.product.additionalServices!.length - 2} {t('cart_dropdown.other_products')}
+                +{item.product.additionalServices.length - 2} {t('cart_dropdown.other_products')}
               </div>
             )}
           </div>
@@ -274,7 +279,7 @@ const CartItemCard = memo(({
             
             {/* Total */}
             <div className="flex justify-between items-center text-sm font-semibold">
-              <span className="text-white">{t('total')}</span>
+              <span className="text-white">{t('cart_dropdown.total')}</span>
               <span className="text-[#18b5d8]">
                 <PriceDisplay price={itemPrices.total} />
               </span>
@@ -500,7 +505,7 @@ const CartDropdown: React.FC<CartDropdownProps> = ({ isOpen, onClose, onHoverCha
   // Memoized calculate total
   const calculatedTotal = useMemo(() => {
     return cartItems.reduce((total, item) => {
-      const basePrice = item.basePrice || item.product.price;
+      const basePrice = item.basePrice || item.product?.price || 0;
       
       const optionsPrice = item.optionsPricing ? 
         Object.values(item.optionsPricing).reduce((sum, price) => sum + (price || 0), 0) : 0;
