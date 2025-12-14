@@ -6,6 +6,7 @@ import { apiCall, API_ENDPOINTS, buildImageUrl } from '../config/api';
 import { useApiQuery } from '../hooks/useApiQuery';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import RichTextDisplay from '../components/ui/RichTextDisplay';
+import logo from '../assets/logo.webp';
 
 interface Documentation {
   id: string;
@@ -337,6 +338,11 @@ const DocumentationPost: React.FC = () => {
       <div className="border-b border-[#3a3a3a] sticky top-0 z-50" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0.02) 100%)', backdropFilter: 'blur(20px) saturate(160%)', WebkitBackdropFilter: 'blur(20px) saturate(160%)' }}>
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-3">
           <div className="flex items-center justify-between gap-4">
+            {/* Logo */}
+            <Link to="/documentation" className="flex items-center gap-2">
+              <img src={logo} alt="Logo" className="h-8 w-auto" />
+            </Link>
+            
             {/* Navigation Filters */}
             <div className="flex items-center gap-3 flex-1">
               {/* Main Classification Dropdown */}

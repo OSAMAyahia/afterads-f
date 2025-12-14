@@ -154,17 +154,6 @@
     "not_found": "Product Not Found",
     "main_image": "Main Image"
   },
-  "blog": {
-    "article_not_found": "Article Not Found",
-    "article_not_available": "Article content is not currently available",
-    "back_to_blog": "Back to Blog",
-    "related_articles": "Related Articles",
-    "author_specialist": "Specialized Content Writer and Editor",
-    "enjoyed_article": "Enjoyed the article?",
-    "discover_more": "Discover more featured articles in our blog",
-    "browse_all_articles": "Browse All Articles",
-    "search_placeholder": "Search for articles..."
-  },
   "profile": {
     "error_loading": "Error loading profile data",
     "loading_profile": "Loading Profile...",
@@ -1392,7 +1381,20 @@
     "no_results_hint": "Try different keywords or choose another category",
     "cta_title": "Discover AfterAds",
     "cta_subtitle": "Explore our digital services and e-commerce solutions on our official website",
-    "cta_button": "Visit AfterAds"
+    "cta_button": "Visit AfterAds",
+    "blog_title": "AfterAds Blog",
+    "article_not_found": "Article Not Found",
+    "article_not_found_description": "We couldn't find the requested article",
+    "back_to_blog": "Back to Blog",
+    "sidebar_left": "Left",
+    "sidebar_right": "Right",
+    "back": "Back",
+    "related_posts": "Related Posts",
+    "content_writer": "Content Writer & Editor",
+    "enjoyed_article": "Enjoyed the article?",
+    "discover_more_articles": "Discover more featured articles in our blog",
+    "browse_all_articles": "Browse All Articles",
+    "content_not_available": "Article content is not currently available."
   },
   "documentation": {
     "error_loading_data": "Failed to load data",

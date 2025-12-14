@@ -1288,7 +1288,20 @@
     "no_results_hint": "جرب البحث بكلمات مختلفة أو اختر فئة أخرى",
     "cta_title": "اكتشف AfterAds",
     "cta_subtitle": "استكشف خدماتنا الرقمية وحلول التجارة الإلكترونية على موقعنا الرسمي",
-    "cta_button": "زيارة AfterAds"
+    "cta_button": "زيارة AfterAds",
+    "blog_title": "مدونة AfterAds",
+    "article_not_found": "المقال غير موجود",
+    "article_not_found_description": "لم نتمكن من العثور على المقال المطلوب",
+    "back_to_blog": "العودة للمدونة",
+    "sidebar_left": "شمال",
+    "sidebar_right": "يمين",
+    "back": "العودة",
+    "related_posts": "مقالات ذات صلة",
+    "content_writer": "كاتب ومحرر محتوى متخصص",
+    "enjoyed_article": "استمتعت بالمقال؟",
+    "discover_more_articles": "اكتشف المزيد من المقالات المميزة في مدونتنا",
+    "browse_all_articles": "تصفح جميع المقالات",
+    "content_not_available": "محتوى المقال غير متاح حاليًا."
   },
   "documentation": {
     "error_loading_data": "فشل في تحميل البيانات",
@@ -1452,17 +1465,6 @@
     "loading": "جاري تحميل المنتج",
     "not_found": "المنتج غير موجود",
     "main_image": "الصورة الرئيسية"
-  },
-  "blog": {
-    "article_not_found": "المقال غير موجود",
-    "article_not_available": "محتوى المقال غير متاح حاليًا",
-    "back_to_blog": "العودة للمدونة",
-    "related_articles": "مقالات ذات صلة",
-    "author_specialist": "كاتب ومحرر محتوى متخصص",
-    "enjoyed_article": "استمتعت بالمقال؟",
-    "discover_more": "اكتشف المزيد من المقالات المميزة في مدونتنا",
-    "browse_all_articles": "تصفح جميع المقالات",
-    "search_placeholder": "ابحث عن مقالات..."
   },
   "profile": {
     "error_loading": "خطأ في تحميل بيانات الملف الشخصي",

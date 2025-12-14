@@ -95,7 +95,7 @@ const Blog: React.FC = () => {
           <Search className="absolute right-6 top-1/2 transform -translate-y-1/2 text-[#AAAAAA] w-5 h-5" />
           <input
             type="text"
-            placeholder={t('blog.search_placeholder') || 'ابحث عن مقالات...'}
+            placeholder={t('blog.search_placeholder') || t('blog.search_placeholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full px-6 py-4 pr-14 bg-[#333333] border-2 border-[#444444] rounded-2xl text-white placeholder-[#AAAAAA] focus:outline-none focus:border-[#18b5d5] focus:ring-4 focus:ring-[#18b5d5]/30 transition-all duration-300 shadow-lg"

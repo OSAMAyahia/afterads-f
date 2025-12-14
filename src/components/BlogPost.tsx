@@ -84,14 +84,14 @@ const BlogPost: React.FC = () => {
           <div className="w-24 h-24 bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
             <Eye className="w-12 h-12 text-red-400" />
           </div>
-          <h3 className="text-3xl font-bold text-white mb-4">المقال غير موجود</h3>
-          <p className="text-gray-300 mb-8">{error || 'لم نتمكن من العثور على المقال المطلوب'}</p>
+          <h3 className="text-3xl font-bold text-white mb-4">{t('blog.article_not_found')}</h3>
+          <p className="text-gray-300 mb-8">{error || t('blog.article_not_found_description')}</p>
           <Link
             to="/blog"
             className="inline-flex items-center px-8 py-3 bg-[#18b5d5] text-white rounded-lg hover:bg-[#18b5d5]/80 transition-all duration-300 font-semibold shadow-lg"
           >
             {isRTL ? <ArrowLeft className="w-5 h-5 ml-2" /> : <ArrowLeft className="w-5 h-5 mr-2" />}
-            العودة للمدونة
+            {t('blog.back_to_blog')}
           </Link>
         </div>
       </div>
@@ -106,7 +106,7 @@ const BlogPost: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>{post.metaTitle || post.title} | مدونة AfterAds</title>
+        <title>{post.metaTitle || post.title} | {t('blog.blog_title')}</title>
         <meta name="description" content={post.metaDescription || post.excerpt} />
         <meta name="keywords" content={post.keywords || post.categories.join(', ')} />
         <meta name="author" content={post.author} />
@@ -127,7 +127,7 @@ const BlogPost: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className={`grid grid-cols-1 lg:grid-cols-4 gap-6 ${isRTL ? 'lg:grid-flow-col-dense' : ''}`}>
               
-              {/* Sidebar - Left Side (شمال) */}
+              {/* Sidebar - Left Side ({t('blog.sidebar_left')}) */}
               <aside className={`lg:col-span-1 ${isRTL ? 'lg:col-start-4' : ''}`}>
                 {/* Back Button */}
                 <div className="mb-6">
@@ -136,23 +136,23 @@ const BlogPost: React.FC = () => {
                     className="w-full inline-flex items-center justify-center gap-2 text-[#18b5d5] hover:text-[#18b5d5]/80 font-semibold py-3 px-4 bg-[#1f1f1f]/50 border border-[#18b5d5]/20 rounded-lg hover:border-[#18b5d5]/40 transition-all group"
                   >
                     {isRTL ? (
-                      <>
-                        <span className="text-sm">العودة</span>
-                        <ArrowLeft className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                      </>
-                    ) : (
-                      <>
-                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                        <span className="text-sm">العودة</span>
-                      </>
-                    )}
+                          <>
+                            <span className="text-sm">{t('blog.back')}</span>
+                            <ArrowLeft className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                          </>
+                        ) : (
+                          <>
+                            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                            <span className="text-sm">{t('blog.back')}</span>
+                          </>
+                        )}
                   </Link>
                 </div>
 
                 {/* Related Posts */}
                 {related.length > 0 && (
                   <div className="  rounded-xl p-4 sticky top-20">
-                    <h3 className="text-lg font-bold text-white mb-4">مقالات ذات صلة</h3>
+                    <h3 className="text-lg font-bold text-white mb-4">{t('blog.related_posts')}</h3>
                     <div className="space-y-3">
                       {related.map(item => (
                         <Link
@@ -176,7 +176,7 @@ const BlogPost: React.FC = () => {
                             {item.title}
                           </h4>
                           <p className="text-xs text-gray-500 mt-1">
-                            {new Date(item.createdAt).toLocaleDateString('ar-EG')}
+                            {new Date(item.createdAt).toLocaleDateString(isRTL ? 'ar-EG' : 'en-GB')}
                           </p>
                         </Link>
                       ))}
@@ -185,7 +185,7 @@ const BlogPost: React.FC = () => {
                 )}
               </aside>
 
-              {/* Main Article - Right Side (يمين) */}
+              {/* Main Article - Right Side ({t('blog.sidebar_right')}) */}
               <article className={`lg:col-span-3 ${isRTL ? 'lg:col-start-1' : ''}`}>
                 
                 {/* Header Info */}
@@ -205,7 +205,7 @@ const BlogPost: React.FC = () => {
 
                     <div className="flex items-center gap-2 text-gray-300">
                       <Calendar className="w-4 h-4 text-[#18b5d5]" />
-                      <span>{new Date(post.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                      <span>{new Date(post.createdAt).toLocaleDateString(isRTL ? 'ar-EG' : 'en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                     </div>
 
                     <div className="h-4 w-px bg-gray-600"></div>
@@ -307,7 +307,7 @@ const BlogPost: React.FC = () => {
                     ) : post.content ? (
                       <RichTextDisplay content={post.content as any} />
                     ) : (
-                      <p className="text-gray-400">محتوى المقال غير متاح حاليًا.</p>
+                      <p className="text-gray-400">{t('blog.content_not_available')}</p>
                     )}
                   </div>
 
@@ -330,7 +330,7 @@ const BlogPost: React.FC = () => {
                       </div>
                       <div className="flex-1">
                         <h3 className="text-xl md:text-2xl font-bold text-white mb-1">{post.author}</h3>
-                        <p className="text-sm text-gray-300">كاتب ومحرر محتوى متخصص</p>
+                        <p className="text-sm text-gray-300">{t('blog.content_writer')}</p>
                       </div>
                     </div>
                   </div>
@@ -339,16 +339,16 @@ const BlogPost: React.FC = () => {
                 {/* CTA */}
                 <div className="mt-12 bg-gradient-to-r from-[#18b5d5]/20 to-transparent border border-[#18b5d5]/30 rounded-2xl p-8 md:p-12 text-center">
                   <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-                    استمتعت بالمقال؟
+                    {t('blog.enjoyed_article')}
                   </h2>
                   <p className="text-gray-300 mb-6">
-                    اكتشف المزيد من المقالات المميزة في مدونتنا
+                    {t('blog.discover_more_articles')}
                   </p>
                   <Link
                     to="/blog"
                     className="inline-flex items-center gap-2 px-8 py-3 bg-[#18b5d5] text-white rounded-lg hover:bg-[#18b5d5]/80 transition-all duration-300 font-semibold shadow-lg group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
                   >
-                    تصفح جميع المقالات
+                    {t('blog.browse_all_articles')}
                     {isRTL ? <ArrowLeft className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5 rotate-180" />}
                   </Link>
                 </div>

@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { smartToast } from '../utils/toastConfig';
 import { extractIdFromSlug, isValidSlug, createProductSlug, createProductSlugNameOnly, createCategorySlug } from '../utils/slugify';
+
 import { 
   Heart, 
   ShoppingCart, 
@@ -125,10 +126,8 @@ interface Category {
 const FAQCard: React.FC<{ faq: { question: string; question_ar?: string; question_en?: string; answer: string; answer_ar?: string; answer_en?: string; }; index: number }> = ({ faq, index }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { i18n } = useTranslation();
-
   const getLocalizedFAQContent = (field: 'question' | 'answer') => {
     const currentLang = i18n.language;
-    
     if (currentLang === 'ar') {
       return faq[`${field}_ar`] || faq[`${field}_en`] || faq[field] || '';
     } else {
@@ -158,7 +157,6 @@ const FAQCard: React.FC<{ faq: { question: string; question_ar?: string; questio
           )}
         </div>
       </button>
-      
       <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
         isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
       }`}>
@@ -197,14 +195,12 @@ const ProductDetail: React.FC = () => {
   const [productOptionsPriceModifier, setProductOptionsPriceModifier] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
   // Comments state
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentText, setCommentText] = useState('');
   const [commentRating, setCommentRating] = useState(5);
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [commentsLoading, setCommentsLoading] = useState(false);
-  
   // Auth state
   const [user, setUser] = useState<any>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -219,9 +215,7 @@ const ProductDetail: React.FC = () => {
   const getLocalizedContent = (field: 'name' | 'description' | 'shortDescription', item?: any) => {
     const currentLang = i18n.language;
     const targetItem = item || product;
-    
     if (!targetItem) return '';
-    
     const value = currentLang === 'ar'
       ? targetItem[`${field}_ar`] || targetItem[`${field}_en`] || targetItem[field]
       : targetItem[`${field}_en`] || targetItem[`${field}_ar`] || targetItem[field];
@@ -244,9 +238,7 @@ const ProductDetail: React.FC = () => {
   // Helper function to get localized category content
   const getCategoryLocalizedContent = (field: 'name' | 'description') => {
     if (!category) return '';
-    
     const currentLang = i18n.language;
-    
     if (currentLang === 'ar') {
       return category[`${field}_ar`] || category[`${field}_en`] || category[field] || '';
     } else {
@@ -319,8 +311,6 @@ const ProductDetail: React.FC = () => {
     }
   }, [product]);
 
-  
-
   const handleAttachmentImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files);
@@ -368,18 +358,14 @@ const ProductDetail: React.FC = () => {
   // Validation function to check if all required options are selected
   const validateRequiredOptions = () => {
     if (!product?.productOptions) return true;
-    
     const requiredOptions = product.productOptions.filter(option => option.required);
-    
     for (const requiredOption of requiredOptions) {
       const selectedOption = selectedProductOptions.find(selected => selected.optionId === requiredOption.id);
-      
       if (!selectedOption) {
         const optionLabel = i18n.language === 'ar' ? requiredOption.label.ar : requiredOption.label.en;
         smartToast.frontend.error(t('required_option_missing', { option: optionLabel }));
         return false;
       }
-      
       // Check if the value is empty for text/number inputs
       if (requiredOption.type === 'text' || requiredOption.type === 'number') {
         if (!selectedOption.value || (typeof selectedOption.value === 'string' && selectedOption.value.trim() === '')) {
@@ -388,7 +374,6 @@ const ProductDetail: React.FC = () => {
           return false;
         }
       }
-      
       // Check if the value is empty for arrays (checkbox)
       if (Array.isArray(selectedOption.value) && selectedOption.value.length === 0) {
         const optionLabel = i18n.language === 'ar' ? requiredOption.label.ar : requiredOption.label.en;
@@ -396,23 +381,19 @@ const ProductDetail: React.FC = () => {
         return false;
       }
     }
-    
     return true;
   };
 
   const addToCart = async () => {
     if (!product) return;
-
     // Validate required options before adding to cart
     if (!validateRequiredOptions()) {
       return;
     }
-
     setAddingToCart(true);
     try {
       const addOnsPrice = getAddOnsPrice();
       const totalPrice = product.price + addOnsPrice + productOptionsPriceModifier;
-      
       const attachmentsWithAddOns = {
         ...attachments,
         addOns: selectedAddOns,
@@ -422,7 +403,6 @@ const ProductDetail: React.FC = () => {
         addOnsPrice: addOnsPrice,
         productOptionsPriceModifier: productOptionsPriceModifier
       };
-      
       const success = await addToCartUnified(
         product.id,
         getLocalizedContent('name'),
@@ -431,7 +411,6 @@ const ProductDetail: React.FC = () => {
         product.price, // Pass only the base price, not totalPrice
         product.mainImage
       );
-
       // Toast message is handled by addToCartUnified function
     } catch (error) {
       console.error('Error adding to cart:', error);
@@ -443,7 +422,6 @@ const ProductDetail: React.FC = () => {
 
   const addToWishlist = async () => {
     if (!product) return;
-    
     try {
       const success = await addToWishlistUnified(product.id, getLocalizedContent('name'));
       if (success) {
@@ -457,7 +435,6 @@ const ProductDetail: React.FC = () => {
 
   const fetchComments = async () => {
     if (!product) return;
-    
     try {
       setCommentsLoading(true);
       const commentsData = await commentService.getProductComments(product.id);
@@ -476,15 +453,12 @@ const ProductDetail: React.FC = () => {
       setIsAuthModalOpen(true);
       return;
     }
-    
     if (!product || !commentText.trim()) {
       smartToast.frontend.error(t('comment_required'));
       return;
     }
-
     try {
       setIsSubmittingComment(true);
-      
       const commentData: CreateCommentData = {
         productId: product.id,
         userId: user.id,
@@ -493,14 +467,11 @@ const ProductDetail: React.FC = () => {
         content: commentText.trim(),
         rating: commentRating
       };
-
       const newComment = await commentService.createComment(commentData);
-      
       // إعادة جلب التعليقات من الخادم للحصول على أحدث البيانات
       await fetchComments();
       setCommentText('');
       setCommentRating(5);
-      
       smartToast.frontend.success(t('comment_added'));
     } catch (error) {
       console.error('Error submitting comment:', error);
@@ -509,7 +480,7 @@ const ProductDetail: React.FC = () => {
       setIsSubmittingComment(false);
     }
   };
-  
+
   const handleLoginSuccess = (userData: any) => {
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
@@ -695,7 +666,6 @@ const ProductDetail: React.FC = () => {
              }}>
         </div>
       </div>
-
       <style>
         {`
           @keyframes float {
@@ -729,357 +699,324 @@ const ProductDetail: React.FC = () => {
           }
         `}
       </style>
-
       <div className="relative max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8 lg:py-16 mt-[70px] sm:mt-[80px]">
-        {/* Breadcrumb */}
-      <nav className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm mb-4 sm:mb-8 overflow-x-auto" dir="ltr">
-        <button onClick={() => navigate('/')} className="text-[#7a7a7a] hover:text-white transition-colors whitespace-nowrap text-xs sm:text-sm">
-          {t('home')}
-        </button>
-        <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-[#7a7a7a] flex-shrink-0" />
-        {category && (
-          <>
-            <Link
-              to={`/category/${createCategorySlug(category.id, getCategoryLocalizedContent('name'))}`}
-              className="text-[#7a7a7a] hover:text-white transition-colors whitespace-nowrap text-xs sm:text-sm"
-            >
-              {getCategoryLocalizedContent('name')}
-            </Link>
-            <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-[#7a7a7a] flex-shrink-0" />
-          </>
-        )}
-        <span className="text-white font-medium truncate text-xs sm:text-sm">{getLocalizedContent('name')}</span>
-      </nav>
+{/* Breadcrumb - إزالة overflow-x-auto */}
+<nav className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm mb-4 sm:mb-8" dir="ltr">
+  <button onClick={() => navigate('/')} className="text-[#7a7a7a] hover:text-white transition-colors whitespace-nowrap text-xs sm:text-sm">
+    {t('home')}
+  </button>
+  <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-[#7a7a7a] flex-shrink-0" />
+  {category && (
+    <>
+      <Link
+        to={`/category/${createCategorySlug(category.id, getCategoryLocalizedContent('name'))}`}
+        className="text-[#7a7a7a] hover:text-white transition-colors whitespace-nowrap text-xs sm:text-sm"
+      >
+        {getCategoryLocalizedContent('name')}
+      </Link>
+      <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-[#7a7a7a] flex-shrink-0" />
+    </>
+  )}
+  <span className="text-white font-medium truncate text-xs sm:text-sm">{getLocalizedContent('name')}</span>
+</nav>
 
-        {/* Main Product Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 lg:gap-12">
-          {/* Image Section with Immersive Effects */}
-          <div className="space-y-3 sm:space-y-6">
-            <div className="bg-gradient-to-br from-[#292929]/95 via-[#7a7a7a]/30 to-[#292929]/90 rounded-2xl sm:rounded-3xl backdrop-blur-xl border border-white/10 shadow-2xl p-3 sm:p-6 lg:p-8 overflow-hidden">
-              {/* Main Image Container - Improved Mobile Responsiveness */}
-              <div className="relative w-full aspect-square sm:aspect-[4/3] lg:aspect-[3/2] overflow-hidden rounded-2xl sm:rounded-3xl bg-[#4a4a4a]/20 parallax-bg">
-                <img
-                  src={buildImageUrl(selectedImage)}
-                  alt={getLocalizedContent('name')}
-                  className="w-full h-full object-cover sm:object-contain transition-all duration-500 hover:scale-105 micro-hover"
-                  onError={(e) => {
-                    e.currentTarget.src = notfoundImg;
-                  }}
-                />
-                {/* Image Overlay for Better Mobile Viewing */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none"></div>
-              </div>
+{/* Main Product Section - New Layout: Title at top, then image + description side by side */}
+{/* العنوان في المنتصف */}
+<div className="mb-6 text-center">
+  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 leading-tight bg-gradient-to-r from-[#18b5d8] to-white bg-clip-text text-transparent inline-block">
+    {getLocalizedContent('name')}
+  </h1>
+  {getLocalizedContent('shortDescription') && (
+    <p className="text-sm sm:text-base text-[#c0c0c0] leading-relaxed max-w-3xl mx-auto">{getLocalizedContent('shortDescription')}</p>
+  )}
+</div>
 
-              {/* Thumbnails with Enhanced Mobile Design */}
-              <div className="flex gap-2 sm:gap-3 lg:gap-4 overflow-x-auto pb-2 mt-3 sm:mt-4 scrollbar-hide">
-                <button
-                  onClick={() => setSelectedImage(product.mainImage)}
-                  className={`flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 rounded-xl sm:rounded-2xl overflow-hidden border-2 transition-all duration-300 micro-hover ${
-                    selectedImage === product.mainImage ? 'border-[#18b5d8] shadow-lg shadow-[#18b5d8]/30 scale-105' : 'border-[#7a7a7a] hover:border-[#18b5d8]'
-                  }`}
-                >
-                  <img
-                    src={product.mainImage ? buildImageUrl(product.mainImage) : notfoundImg}
-                    alt="الصورة الرئيسية"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.src = notfoundImg;
-                    }}
-                  />
-                </button>
-                
-                {product.detailedImages && product.detailedImages.map((image, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImage(image)}
-                    className={`flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 rounded-xl sm:rounded-2xl overflow-hidden border-2 transition-all duration-300 micro-hover ${
-                      selectedImage === image ? 'border-[#18b5d8] shadow-lg shadow-[#18b5d8]/30 scale-105' : 'border-[#7a7a7a] hover:border-[#18b5d8]'
-                    }`}
-                  >
-                    <img
-                      src={image ? buildImageUrl(image) : notfoundImg}
-                      alt={`${t('detailed_image')} ${index + 1}`}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.src = notfoundImg;
-                      }}
-                    />
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-
-
-          {/* Details Section with Metallics and Shapes */}
-          <div className="space-y-4 sm:space-y-6 lg:space-y-8">
-            <div className="bg-gradient-to-br from-[#292929]/95 via-[#7a7a7a]/30 to-[#292929]/90 rounded-2xl sm:rounded-3xl backdrop-blur-xl border border-white/10 shadow-2xl p-4 sm:p-6 lg:p-8">
-              <div className="mb-4 sm:mb-6">
-                <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold text-white mb-3 sm:mb-4 leading-tight">{getLocalizedContent('name')}</h1>
-                <div className="flex flex-col gap-2 sm:gap-3 mb-4 sm:mb-6">
-                  <div className="flex flex-col">
-                    {product.originalPrice && product.originalPrice > product.price ? (
-                      <PriceDisplay 
-                        price={product.price} 
-                        originalPrice={product.originalPrice}
-                        className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#18b5d8]"
-                        size="xl"
-                      />
-                    ) : (
-                      <PriceDisplay 
-                        price={product.price}
-                        className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#18b5d8]"
-                        size="xl"
-                      />
-                    )}
-                    
-                    {/* Total Price Display with Product Options and Add-ons */}
-                    {(selectedAddOns.length > 0 || productOptionsPriceModifier !== 0) && (
-                      <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-[#18b5d8]/10 rounded-lg border border-[#18b5d8]/20">
-                        <div className="text-xs sm:text-sm text-[#7a7a7a] mb-2">{t('total_price')}:</div>
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                          <div className="space-y-1">
-                            <div className="text-xs sm:text-sm text-[#7a7a7a]">{t('base_price')}: {formatPrice(product.price)}</div>
-                            {productOptionsPriceModifier !== 0 && (
-                              <div className={`text-xs sm:text-sm ${productOptionsPriceModifier > 0 ? 'text-[#18b5d8]' : 'text-red-400'}`}>
-                                {t('product_options')}: {productOptionsPriceModifier > 0 ? '+' : ''}{formatPrice(productOptionsPriceModifier)}
-                              </div>
-                            )}
-                            {selectedAddOns.length > 0 && (
-                              <div className="text-xs sm:text-sm text-[#18b5d8]">{t('addons')}: +{formatPrice(getAddOnsPrice())}</div>
-                            )}
+{/* الصورة والوصف - محاذاة من الأعلى */}
+<div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-10 items-start">
+  {/* Image Section */}
+  <div className="relative w-full overflow-hidden rounded-xl shadow-lg self-start">
+    <img
+      src={buildImageUrl(selectedImage)}
+      alt={getLocalizedContent('name')}
+      className="w-full h-auto object-contain transition-all duration-500 hover:scale-105"
+      onError={(e) => {
+        e.currentTarget.src = notfoundImg;
+      }}
+    />
+  </div>
+  
+  {/* Description Section */}
+  <div className="flex flex-col self-start">
+    <div className="mb-4">
+     <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-white mb-3 flex items-center gap-2">
+        <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-[#18b5d8]" />
+        {t('product_details')}
+      </h3>
+   <div className="text-white leading-relaxed text-sm sm:text-base">
+        {Array.isArray(getLocalizedRich('description')) ? (
+          <div className="space-y-3 sm:space-y-4">
+            {(getLocalizedRich('description') as any[]).map((block: any, idx: number) => {
+              const hasImages = Array.isArray(block.images) && block.images.length > 0;
+              const isHorizontal = hasImages && block.images.every((img: any) => img.orientation === 'horizontal');
+              return (
+                <div key={idx} className="space-y-3">
+                  {block.text && (
+                    <RichTextDisplay content={block.text} className="text-white text-sm leading-relaxed" />
+                  )}
+                  {hasImages && (
+                    isHorizontal ? (
+                      <div className="grid grid-cols-2 gap-2">
+                        {block.images.map((img: any, i: number) => (
+                          <div key={i} className="rounded-lg overflow-hidden h-28">
+                            <img src={buildImageUrl(img.url)} alt="" className="w-full h-full object-cover" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).src = notfoundImg; }} />
                           </div>
-                          <div className="text-xl sm:text-2xl font-bold text-[#18b5d8]">
-                            {formatPrice(calculateTotalPrice())}
-                          </div>
-                        </div>
+                        ))}
                       </div>
-                    )}
-                  </div>
-                </div>
-                
-                {getLocalizedContent('shortDescription') && (
-                  <p className="text-sm sm:text-base text-[#7a7a7a] leading-relaxed mb-4 sm:mb-6">{getLocalizedContent('shortDescription')}</p>
-                )}
-              </div>
-
-              {/* Product Options */}
-              {product.productOptions && product.productOptions.length > 0 && (
-                <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
-                  <div className="bg-gradient-to-r from-[#7a7a7a]/30 to-[#292929]/30 rounded-xl p-3 sm:p-4 border border-[#7a7a7a]/40">
-                    <h3 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4 flex items-center">
-                      <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-[#18b5d8] mr-2" />
-                      {t('product_options')}
-                    </h3>
-                    <ProductOptionsSelector
-                      options={product.productOptions}
-                      language={i18n.language}
-                      onSelectionChange={handleProductOptionsChange}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Additional Services */}
-              {product.addOns && product.addOns.length > 0 && (
-                <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
-                  <div className="bg-gradient-to-r from-[#7a7a7a]/30 to-[#292929]/30 rounded-xl p-3 sm:p-4 border border-[#7a7a7a]/40">
-                    <h3 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4 flex items-center">
-                      <Gift className="w-4 h-4 sm:w-5 sm:h-5 text-[#18b5d8] mr-2" />
-                      {t('addons')}
-                    </h3>
-                    <div className="grid grid-cols-1 gap-2 sm:gap-3">
-                      {product.addOns.map((addOn, index) => {
-                        const isSelected = selectedAddOns.some(item => item.name === addOn.name);
-                        return (
-                          <div
-                            key={index}
-                            onClick={() => toggleAddOn(addOn)}
-                            className={`p-3 sm:p-4 rounded-lg border-2 cursor-pointer transition-all duration-300 ${
-                              isSelected
-                                ? 'border-[#18b5d8] bg-[#18b5d8]/10'
-                                : 'border-[#7a7a7a]/40 hover:border-[#18b5d8]/50'
-                            }`}
-                          >
-                            <div className="flex items-center justify-between">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2">
-                                  <div className={`w-3 h-3 sm:w-4 sm:h-4 rounded border-2 flex items-center justify-center ${
-                                    isSelected ? 'border-[#18b5d8] bg-[#18b5d8]' : 'border-[#7a7a7a]'
-                                  }`}>
-                                    {isSelected && <span className="text-white text-xs">✓</span>}
-                                  </div>
-                                  <h4 className="font-semibold text-white text-sm sm:text-base">{getLocalizedContent('name', addOn)}</h4>
-                                </div>
-                                {getLocalizedContent('description', addOn) && (
-                                  <p className="text-xs sm:text-sm text-[#7a7a7a] mt-1 mr-5 sm:mr-6">{getLocalizedContent('description', addOn)}</p>
-                                )}
-                              </div>
-                              <div className="text-base sm:text-lg font-bold text-[#18b5d8]">
-                                +<PriceDisplay price={addOn.price} />
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Attachments with Textured Grains */}
-              <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
-                <div className="bg-gradient-to-r from-[#7a7a7a]/30 to-[#292929]/30 rounded-xl p-3 sm:p-4 border border-[#7a7a7a]/40" style={{ backgroundImage: 'url(/grain-texture.png)', backgroundSize: 'cover' }}>
-                  <h3 className="text-xs sm:text-sm font-bold text-white mb-2 sm:mb-3 flex items-center">
-                    <span className="w-4 h-4 sm:w-5 sm:h-5 bg-[#18b5d8]/50 rounded-lg flex items-center justify-center text-white text-xs mr-2">📎</span>
-                    {t('additional_attachments')}
-                  </h3>
-                  
-                  <div className="mb-2 sm:mb-3">
-                    <textarea
-                      value={attachments.text}
-                      onChange={(e) => handleAttachmentTextChange(e.target.value)}
-                      rows={2}
-                      className="w-full px-2 sm:px-3 py-2 bg-transparent border border-[#7a7a7a]/40 rounded-lg focus:ring-1 focus:ring-[#18b5d8] focus:border-[#18b5d8] text-white text-xs sm:text-sm"
-                      placeholder={t('notes_placeholder')}
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-2 sm:gap-3">
-                    <div className="flex-1">
-                      <input
-                        type="file"
-                        onChange={handleAttachmentImagesChange}
-                        accept="image/*"
-                        multiple
-                        className="hidden"
-                        id="attachmentImages"
-                      />
-                      <label htmlFor="attachmentImages" className="cursor-pointer">
-                        <div className="flex items-center gap-1 sm:gap-2 p-2 border border-dashed border-[#7a7a7a]/40 rounded-lg hover:border-[#18b5d8] transition-colors">
-                          <span className="text-base sm:text-lg text-[#18b5d8]">📷</span>
-                          <span className="text-xs sm:text-sm text-[#7a7a7a]">{t('add_images')}</span>
-                        </div>
-                      </label>
-                    </div>
-                    {attachments.images.length > 0 && (
-                      <span className="text-xs text-[#7a7a7a] bg-[#4a4a4a]/50 px-2 py-1 rounded">
-                        {attachments.images.length} {t('image')}
-                      </span>
-                    )}
-                  </div>
-
-                  {attachments.images.length > 0 && (
-                    <div className="mt-2 sm:mt-3 flex gap-1 sm:gap-2 flex-wrap">
-                      {attachments.images.map((file, index) => (
-                        <div key={index} className="relative group">
-                          <img
-                            src={URL.createObjectURL(file)}
-                            alt={`${t('attachment')} ${index + 1}`}
-                            className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded border border-[#7a7a7a]/40"
-                          />
-                          <button
-                            onClick={() => removeAttachmentImage(index)}
-                            className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-[#18b5d8]/50 text-white rounded-full text-xs hover:bg-[#18b5d8] opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2">
+                        {block.images.map((img: any, i: number) => (
+                          <img key={i} src={buildImageUrl(img.url)} alt="" className="rounded-lg w-full max-h-[350px] object-contain" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).src = notfoundImg; }} />
+                        ))}
+                      </div>
+                    )
                   )}
                 </div>
-              </div>
-
-              <div className="space-y-4 sm:space-y-6">
-                <div className="flex items-center space-x-2 sm:space-x-4">
-                  <div className="text-xs sm:text-sm text-[#7a7a7a]">
-                    {product.isAvailable ? (
-                      <span className="text-[#18b5d8] font-medium">{t('available')}</span>
-              ) : (
-                <span className="text-red-400 font-medium">{t('unavailable')}</span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex space-x-2 gap-2 sm:space-x-4">
-                  <button
-                    onClick={addToCart}
-                    disabled={addingToCart || !product.isAvailable}
-                    className="flex-1 btn-pro btn-pro-lg space-x-1 sm:space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base group transition-all duration-300 hover:shadow-lg hover:shadow-[#18b5d5]/25 hover:scale-105 border border-[#18b5d5]/30"
-                  >
-                    {addingToCart ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white"></div>
-                        <span className="text-xs sm:text-sm lg:text-base">{t('adding')}</span>
-                      </>
-                    ) : (
-                      <>
-                        <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
-                        <span className="text-xs sm:text-sm lg:text-base">{t('add_to_cart')}</span>
-                      </>
-                    )}
-                  </button>
-                  
-                  <button
-                    onClick={addToWishlist}
-                    className="btn-pro-outline btn-pro-lg"
-                  >
-                    <Heart className="w-5 h-5 sm:w-6 sm:h-6" />
-                  </button>
-                </div>
-              </div>
-            </div>
+              );
+            })}
           </div>
-        </div>
+        ) : (
+          <RichTextDisplay content={getLocalizedContent('description')} className="text-sm text-white leading-relaxed" />
+        )}
+      </div>
+    </div>
+  </div>
+</div>
 
-        {/* Product Details Section */}
-        <div className="mt-6 sm:mt-8 lg:mt-12 space-y-4 sm:space-y-6 lg:space-y-8">
-          {(Array.isArray(getLocalizedRich('description')) ? (getLocalizedRich('description') as any[]).length > 0 : !!getLocalizedContent('description')) && (
-            <div className="rounded-2xl sm:rounded-3xl border border-white/10 p-4 sm:p-6 lg:p-8">
-              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-white mb-3 sm:mb-4 flex items-center gap-2 sm:gap-3">
-                <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-[#18b5d8]" />
-                {t('product_details')}
-              </h3>
-              {Array.isArray(getLocalizedRich('description')) ? (
-                <div className="space-y-6">
-                  <style>{`.prose-content * { color: #ffffff !important; }`}</style>
-                  {(getLocalizedRich('description') as any[]).map((block: any, idx: number) => {
-                    const hasImages = Array.isArray(block.images) && block.images.length > 0;
-                    const isHorizontal = hasImages && block.images.every((img: any) => img.orientation === 'horizontal');
-                    return (
-                      <div key={idx} className="space-y-3 font-white">
-                      {block.text && (
-                        <RichTextDisplay content={block.text} className="text-white" />
-                      )}
-                        {hasImages && (
-                          isHorizontal ? (
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-                              {block.images.map((img: any, i: number) => (
-                                <div key={i} className="rounded-lg overflow-hidden border border-white/10 bg-white/5 h-28 sm:h-36 lg:h-44">
-                                  <img src={buildImageUrl(img.url)} alt="" className="w-full h-full object-cover" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).src = notfoundImg; }} />
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="flex flex-col items-center gap-1 sm:gap-2">
-                              {block.images.map((img: any, i: number) => (
-                                <img key={i} src={buildImageUrl(img.url)} alt="" className="rounded-lg w-full sm:w-2/3 lg:w-1/2 max-h-[500px] object-contain" loading="lazy" style={{ margin: 0 }} onError={(e) => { (e.target as HTMLImageElement).src = notfoundImg; }} />
-                              ))}
-                            </div>
-                          )
-                        )}
-                      </div>
-                    );
-                  })}
+{/* Product Information Section - Improved Design */}
+<div className="bg-gradient-to-br from-[#1a1a1a]/90 via-[#2a2a2a]/80 to-[#1a1a1a]/90 rounded-2xl border border-[#18b5d8]/20 shadow-2xl p-4 sm:p-6 lg:p-8 mb-6">
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    {/* Right Side - Product Info */}
+    <div className="space-y-6">
+      <div>
+        <div className="flex flex-col gap-4">
+          <div className="p-4 bg-gradient-to-r from-[#18b5d8]/10 to-[#16a8cc]/5 rounded-xl border border-[#18b5d8]/30">
+            {product.originalPrice && product.originalPrice > product.price ? (
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <span className="text-lg text-[#7a7a7a] line-through">{formatPrice(product.originalPrice)}</span>
+                  <span className="bg-red-500/20 text-red-400 px-2 py-1 rounded text-sm font-bold">
+                    -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                  </span>
                 </div>
-              ) : (
-                <RichTextDisplay content={getLocalizedContent('description')} className="text-sm sm:text-base" />
-              )}
+                <PriceDisplay 
+                  price={product.price}
+                  className="text-4xl font-bold text-[#18b5d8]"
+                  size="xl"
+                />
+              </div>
+            ) : (
+              <PriceDisplay 
+                price={product.price}
+                className="text-4xl font-bold text-[#18b5d8]"
+                size="xl"
+              />
+            )}
+          </div>
+          {(selectedAddOns.length > 0 || productOptionsPriceModifier !== 0) && (
+            <div className="p-4 bg-gradient-to-r from-[#18b5d8]/10 to-[#16a8cc]/5 rounded-xl border border-[#18b5d8]/30">
+              <div className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+                <span className="text-[#18b5d8]">💰</span>
+                {t('total_price')}
+              </div>
+              <div className="space-y-2 mb-3">
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#c0c0c0]">{t('base_price')}</span>
+                  <span className="text-white font-medium">{formatPrice(product.price)}</span>
+                </div>
+                {productOptionsPriceModifier !== 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-[#c0c0c0]">{t('product_options')}</span>
+                    <span className={productOptionsPriceModifier > 0 ? 'text-[#18b5d8] font-medium' : 'text-red-400 font-medium'}>
+                      {productOptionsPriceModifier > 0 ? '+' : ''}{formatPrice(productOptionsPriceModifier)}
+                    </span>
+                  </div>
+                )}
+                {selectedAddOns.length > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-[#c0c0c0]">{t('addons')}</span>
+                    <span className="text-[#18b5d8] font-medium">+{formatPrice(getAddOnsPrice())}</span>
+                  </div>
+                )}
+              </div>
+              <div className="pt-3 border-t border-[#18b5d8]/20 flex justify-between items-center">
+                <span className="text-white font-semibold">{t('total')}</span>
+                <span className="text-2xl font-bold text-[#18b5d8]">{formatPrice(calculateTotalPrice())}</span>
+              </div>
             </div>
           )}
+        </div>
+      </div>
+      <div className="flex items-center gap-3 p-3 bg-[#0a0a0a]/50 rounded-lg border border-[#7a7a7a]/20">
+        {product.isAvailable ? (
+          <>
+            <div className="w-2 h-2 bg-[#18b5d8] rounded-full animate-pulse"></div>
+            <span className="text-[#18b5d8] font-medium text-sm">{t('available')}</span>
+          </>
+        ) : (
+          <>
+            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+            <span className="text-red-400 font-medium text-sm">{t('unavailable')}</span>
+          </>
+        )}
+      </div>
+      <div className="flex gap-3">
+        <button
+          onClick={addToCart}
+          disabled={addingToCart || !product.isAvailable}
+          className="flex-1 bg-gradient-to-r from-[#18b5d8] to-[#16a8cc] text-white px-6 py-4 rounded-xl font-semibold flex items-center justify-center gap-2 hover:shadow-xl hover:shadow-[#18b5d8]/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105"
+        >
+          {addingToCart ? (
+            <>
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+              <span>{t('adding')}</span>
+            </>
+          ) : (
+            <>
+              <ShoppingCart className="w-5 h-5" />
+              <span>{t('add_to_cart')}</span>
+            </>
+          )}
+        </button>
+        <button
+          onClick={addToWishlist}
+          className="bg-[#2a2a2a] hover:bg-[#3a3a3a] text-white p-4 rounded-xl transition-all border border-[#7a7a7a]/20 hover:border-[#18b5d8]/50 transform hover:scale-105"
+        >
+          <Heart className="w-6 h-6" />
+        </button>
+      </div>
+    </div>
+    {/* Left Side - Options & Add-ons */}
+    <div className="space-y-6">
+      {/* Product Options */}
+      {product.productOptions && product.productOptions.length > 0 && (
+        <div className="bg-[#0a0a0a]/50 rounded-xl p-5 border border-[#18b5d8]/20">
+          <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-[#18b5d8]" />
+            {t('product_options')}
+          </h3>
+          <ProductOptionsSelector
+            options={product.productOptions}
+            language={i18n.language}
+            onSelectionChange={handleProductOptionsChange}
+          />
+        </div>
+      )}
+      {/* Add-ons */}
+      {product.addOns && product.addOns.length > 0 && (
+        <div className="bg-[#0a0a0a]/50 rounded-xl p-5 border border-[#18b5d8]/20">
+          <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <Gift className="w-5 h-5 text-[#18b5d8]" />
+            {t('addons')}
+          </h3>
+          <div className="space-y-3">
+            {product.addOns.map((addOn, index) => {
+              const isSelected = selectedAddOns.some(item => item.name === addOn.name);
+              return (
+                <div
+                  key={index}
+                  onClick={() => toggleAddOn(addOn)}
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                    isSelected
+                      ? 'border-[#18b5d8] bg-[#18b5d8]/10'
+                      : 'border-[#2a2a2a] hover:border-[#18b5d8]/50 bg-[#1a1a1a]/30'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                          isSelected ? 'border-[#18b5d8] bg-[#18b5d8]' : 'border-[#7a7a7a]'
+                        }`}>
+                          {isSelected && <span className="text-white text-xs font-bold">✓</span>}
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-white text-sm">{getLocalizedContent('name', addOn)}</h4>
+                          {getLocalizedContent('description', addOn) && (
+                            <p className="text-xs text-[#7a7a7a] mt-1">{getLocalizedContent('description', addOn)}</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-base font-bold text-[#18b5d8] mr-3">
+                      +<PriceDisplay price={addOn.price} />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+      {/* Attachments - تحسين التصميم */}
+      <div className="bg-[#0a0a0a]/50 rounded-xl p-5 border border-[#18b5d8]/20">
+        <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+          <span className="text-[#18b5d8] text-lg">📎</span>
+          {t('additional_attachments')}
+        </h3>
+        <textarea
+          value={attachments.text}
+          onChange={(e) => handleAttachmentTextChange(e.target.value)}
+          rows={3}
+          className="w-full px-4 py-3 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg focus:ring-2 focus:ring-[#18b5d8] focus:border-[#18b5d8] text-white text-sm placeholder-[#7a7a7a] mb-4 transition-all"
+          placeholder={t('notes_placeholder')}
+        />
+        <div className="flex items-center gap-3">
+          <input
+            type="file"
+            onChange={handleAttachmentImagesChange}
+            accept="image/*"
+            multiple
+            className="hidden"
+            id="attachmentImages"
+          />
+          <label htmlFor="attachmentImages" className="flex-1 cursor-pointer">
+            <div className="flex items-center justify-center gap-2 p-3 border-2 border-dashed border-[#2a2a2a] rounded-lg hover:border-[#18b5d8] transition-all bg-[#1a1a1a]/50">
+              <span className="text-[#18b5d8] text-xl">📷</span>
+              <span className="text-sm text-[#c0c0c0]">{t('add_images')}</span>
+            </div>
+          </label>
+          {attachments.images.length > 0 && (
+            <div className="bg-[#18b5d8]/20 text-[#18b5d8] px-3 py-2 rounded-lg text-sm font-bold">
+              {attachments.images.length}
+            </div>
+          )}
+        </div>
+        {attachments.images.length > 0 && (
+          <div className="mt-4 flex gap-2 flex-wrap">
+            {attachments.images.map((file, index) => (
+              <div key={index} className="relative group">
+                <img
+                  src={URL.createObjectURL(file)}
+                  alt={`${t('attachment')} ${index + 1}`}
+                  className="w-16 h-16 object-cover rounded-lg border-2 border-[#2a2a2a]"
+                />
+                <button
+                  onClick={() => removeAttachmentImage(index)}
+                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center font-bold shadow-lg"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+</div>
 
+        {/* Product Details Section */}
+        <div className="mt-8 space-y-6">
 {/* FAQ Section - Matching Home FAQ Style */}
 {product.faqs && product.faqs.length > 0 && (
   <div className="bg-gradient-to-br from-[#292929]/95 via-[#7a7a7a]/30 to-[#292929]/90 rounded-2xl sm:rounded-3xl backdrop-blur-xl border border-white/10 shadow-2xl p-4 sm:p-6 lg:p-8">
@@ -1097,18 +1034,15 @@ const ProductDetail: React.FC = () => {
   </div>
 )}
         </div>
-
         {/* Comments Section with Interactive Animations */}
-        <div className="bg-gradient-to-br from-[#292929]/95 via-[#7a7a7a]/30 to-[#292929]/90 rounded-3xl backdrop-blur-xl border border-white/10 shadow-2xl p-8 mb-8 mt-12">
+        <div className="bg-gradient-to-br from-[#292929]/95 via-[#7a7a7a]/30 to-[#292929]/90 rounded-2xl sm:rounded-3xl backdrop-blur-xl border border-white/10 shadow-2xl p-4 sm:p-6 lg:p-8 mb-6 mt-8">
           <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
             <MessageSquare className="w-6 h-6 text-[#18b5d8]" />
             {t('comments')} ({comments.length})
           </h3>
-          
           {/* Add Comment Form with Glow Effects */}
           <div className="mb-8 p-6 bg-[#4a4a4a]/20 rounded-xl border border-[#7a7a7a]/40">
             <h4 className="text-lg font-semibold text-white mb-4">{t('add_comment')}</h4>
-            
             {!user ? (
               <div className="text-center py-8">
                 <User className="w-16 h-16 text-[#7a7a7a] mx-auto mb-4 animate-glow" />
@@ -1133,7 +1067,6 @@ const ProductDetail: React.FC = () => {
                     <p className="text-sm text-[#7a7a7a]">{user.email}</p>
                   </div>
                 </div>
-                
                 {/* Rating with Hover Animation */}
                 <div>
                   <label className="block text-sm font-medium text-white mb-2">
@@ -1141,7 +1074,6 @@ const ProductDetail: React.FC = () => {
                   </label>
                   {renderStars(commentRating, true, setCommentRating)}
                 </div>
-                
                 {/* Comment Text */}
                 <div>
                   <label className="block text-sm font-medium text-white mb-2">
@@ -1159,7 +1091,6 @@ const ProductDetail: React.FC = () => {
                     {commentText.length}/500
                   </div>
                 </div>
-                
                 <button 
                   onClick={handleSubmitComment}
                   disabled={isSubmittingComment || !commentText.trim()}
@@ -1183,7 +1114,6 @@ const ProductDetail: React.FC = () => {
               </div>
             )}
           </div>
-          
           {/* Comments List with Scroll-Triggered Animations */}
           <div className="space-y-4">
             {commentsLoading ? (
@@ -1227,10 +1157,8 @@ const ProductDetail: React.FC = () => {
             )}
           </div>
         </div>
-
         <RelatedProducts currentProductId={product.id} categoryId={product.categoryId} />
       </div>
-      
       {/* Auth Modal */}
       <AuthModal
         isOpen={isAuthModalOpen}
@@ -1271,7 +1199,23 @@ const RelatedProducts: React.FC<{ currentProductId: number; categoryId: number |
         apiCall(API_ENDPOINTS.PRODUCTS),
         apiCall(API_ENDPOINTS.CATEGORIES)
       ]);
-          } catch (error) {
+      const products = productsData.data || [];
+      const categories = categoriesData.data || [];
+
+      // Filter related products based on category or similarity
+      let filteredProducts = products.filter(p => p.id !== currentProductId);
+      
+      if (categoryId) {
+        filteredProducts = filteredProducts.filter(p => p.categoryId === categoryId);
+      }
+
+      // If no products found by category, show random ones
+      if (filteredProducts.length === 0) {
+        filteredProducts = products.filter(p => p.id !== currentProductId).slice(0, 3);
+      }
+
+      setRelatedProducts(filteredProducts.slice(0, 3));
+    } catch (error) {
       console.error('Error fetching related products:', error);
     }
   };
@@ -1284,8 +1228,6 @@ const RelatedProducts: React.FC<{ currentProductId: number; categoryId: number |
         <h2 className="text-2xl font-bold text-white mb-2">{t('related_products')}</h2>
         <div className="h-1 w-16 bg-gradient-to-r from-[#18b5d8] to-[#292929] mx-auto rounded-full"></div>
       </div>
-      
-      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {relatedProducts.map((product) => (
           <div 
