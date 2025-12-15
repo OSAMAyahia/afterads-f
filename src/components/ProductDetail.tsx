@@ -807,7 +807,7 @@ const ProductDetail: React.FC = () => {
       <div className="bg-[#0a0a0a]/50 rounded-xl p-5 border border-[#18b5d8]/20">
         <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-[#18b5d8]" />
-          {t('product_options')}
+          {t('product_optionss')}
         </h3>
         <ProductOptionsSelector
           options={product.productOptions}

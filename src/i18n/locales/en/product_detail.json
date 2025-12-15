@@ -41,5 +41,6 @@
   "comment_added": "Comment added successfully",
   "comment_add_error": "Error adding comment",
   "loading_product": "Loading product",
-  "please_wait": "Please wait..."
+  "please_wait": "Please wait...",
+  "product_optionss": "Product Options"
 }
