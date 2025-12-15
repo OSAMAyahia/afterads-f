@@ -145,7 +145,7 @@ const CategoryPage: React.FC = () => {
     <section className="min-h-screen bg-[#0a0a0a] relative overflow-hidden" dir={isRTL ? 'rtl' : 'ltr'}>
       <TechBackground />
       
-              <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-20 mt-[70px] sm:mt-[80px]">
+              <div className="relative max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-8 sm:py-12 lg:py-20 mt-[70px] sm:mt-[80px]">
         
   
 
@@ -231,7 +231,7 @@ const CategoryPage: React.FC = () => {
             <div
             className={
               viewMode === 'grid'
-                ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 auto-rows-max'
+                ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 xl:gap-6 auto-rows-max'
                 : 'flex flex-col gap-6 max-w-5xl mx-auto'
             }
           >

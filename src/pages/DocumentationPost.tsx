@@ -334,8 +334,8 @@ const DocumentationPost: React.FC = () => {
         <div className="max-w-[1600px] mx-auto px-3 sm:px-6 py-2 sm:py-3">
           <div className="flex items-center justify-between gap-2 sm:gap-4">
             {/* Logo */}
-            <Link to="/documentation" className="flex items-center gap-2 flex-shrink-0">
-              <img src={logo} alt="Logo" className="h-6 sm:h-8 w-auto" />
+            <Link to="/" className="flex items-center gap-2 flex-shrink-0">
+              <img src={logo} alt="Logo" className="h-5 sm:h-6 md:h-8 w-auto" />
             </Link>
             
             {/* Navigation Filters */}

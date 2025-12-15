@@ -307,9 +307,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid', v
   // ---- BLOG VARIANT GRID VIEW ----
   if (variant === 'blog') {
     return (
-      <div className="relative w-full px-2 py-3">
+      <div className="relative w-full px-1 py-2">
         {product.originalPrice && 
-          <div className="absolute top-4 right-4 bg-gradient-to-r from-red-600 to-red-500 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg backdrop-blur-sm z-10">
+          <div className="absolute top-3 right-3 bg-gradient-to-r from-red-600 to-red-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg backdrop-blur-sm z-10">
             {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
           </div>
         }
@@ -319,7 +319,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid', v
           onClick={handleProductClick}
           aria-label={t('product:view_product_details', { name: getLocalizedContent('name') })}
         >
-          <div className="relative h-48 overflow-hidden bg-[#3a3a3a]">
+          <div className="relative h-40 overflow-hidden bg-[#3a3a3a]">
             <img
               src={product.mainImage ? buildImageUrl(product.mainImage) : fallbackImg}
               alt={getLocalizedContent('name')}
@@ -328,38 +328,38 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid', v
             />
           </div>
 
-          <div className="p-6 flex flex-col flex-grow">
-            <div className="flex flex-wrap gap-2 mb-3">
-              <span className="text-xs bg-[#18b5d5]/30 text-white px-3 py-1 rounded-full">
+          <div className="p-4 flex flex-col flex-grow">
+            <div className="flex flex-wrap gap-1 mb-2">
+              <span className="text-xs bg-[#18b5d5]/30 text-white px-2 py-1 rounded-full">
                 {product.isAvailable ? t('available') : t('unavailable')}
               </span>
             </div>
 
-            <h3 className="text-xl font-bold mb-3 line-clamp-2   text-white transition-colors">
+            <h3 className="text-lg font-bold mb-2 line-clamp-2 text-white transition-colors">
               {getLocalizedContent('name')}
             </h3>
 
-            <p className="text-[#CCCCCC] text-sm mb-4 line-clamp-2 flex-grow">
+            <p className="text-[#CCCCCC] text-sm mb-3 line-clamp-2 flex-grow">
               {truncateDescription(getLocalizedContent('description'))}
             </p>
 
-            <div className="flex items-center justify-between text-xs text-[#BBBBBB] border-t border-[#444444] pt-4 mt-auto">
+            <div className="flex items-center justify-between text-xs text-[#BBBBBB] border-t border-[#444444] pt-3 mt-auto">
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-[#18b5d5]" />
                 <PriceDisplay 
                   price={product.price}
                   originalPrice={product.originalPrice}
-                  size="md"
+                  size="sm"
                   variant="card"
                 />
               </div>
               {product.isAvailable && (
                 <button
                   onClick={addToCart}
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#18b5d5]/40 text-white hover:bg-[#18b5d5]/20 transition-all"
+                  className="inline-flex items-center gap-2 px-3 py-1 rounded-lg border border-[#18b5d5]/40 text-white hover:bg-[#18b5d5]/20 transition-all text-sm"
                 >
                   <ShoppingCart className="w-4 h-4" />
-                  <span className="font-medium text-sm">{t('addToCart')}</span>
+                  <span className="font-medium text-xs">{t('addToCart')}</span>
                 </button>
               )}
             </div>
@@ -371,9 +371,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid', v
 
   // ---- GRID VIEW (DEFAULT) ----
   return (
-    <div className="relative w-full px-2 py-3">
+    <div className="relative w-full px-1 py-2">
       {product.originalPrice && 
-        <div className="absolute top-4 right-4 bg-gradient-to-r from-red-600 to-red-500 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg backdrop-blur-sm z-10">
+        <div className="absolute top-3 right-3 bg-gradient-to-r from-red-600 to-red-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg backdrop-blur-sm z-10">
           {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
         </div>
       }
@@ -385,7 +385,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid', v
           onClick={handleProductClick}
           aria-label={t('product:view_product_details', { name: getLocalizedContent('name') })}
         >
-        <div className="relative h-48 overflow-hidden bg-[#3a3a3a]">
+        <div className="relative h-40 overflow-hidden bg-[#3a3a3a]">
           <img
             src={product.mainImage ? buildImageUrl(product.mainImage) : fallbackImg}
             alt={getLocalizedContent('name')}
@@ -394,36 +394,36 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid', v
           />
         </div>
 
-          <div className="p-6 flex flex-col">
-          <div className="flex flex-wrap gap-2 mb-3">
-            <span className="text-xs bg-[#18b5d5]/30 text-white px-3 py-1 rounded-full">
+          <div className="p-4 flex flex-col">
+          <div className="flex flex-wrap gap-1 mb-2">
+            <span className="text-xs bg-[#18b5d5]/30 text-white px-2 py-1 rounded-full">
               {product.isAvailable ? t('available') : t('unavailable')}
             </span>
           </div>
 
-          <h3 className="text-xl font-bold mb-3 line-clamp-2   text-white transition-colors">
+          <h3 className="text-lg font-bold mb-2 line-clamp-2 text-white transition-colors">
             {getLocalizedContent('name')}
           </h3>
 
-          <p className="text-[#CCCCCC] text-sm mb-4 line-clamp-2 flex-grow">
+          <p className="text-[#CCCCCC] text-sm mb-3 line-clamp-2 flex-grow">
             {truncateDescription(getLocalizedContent('description'))}
           </p>
 
-          <div className="flex items-center gap-2 text-xs text-[#BBBBBB] border-t border-[#444444] pt-4">
+          <div className="flex items-center gap-2 text-xs text-[#BBBBBB] border-t border-[#444444] pt-3">
             <CheckCircle className="w-4 h-4 text-[#18b5d5]" />
             <PriceDisplay 
               price={product.price}
               originalPrice={product.originalPrice}
-              size="md"
+              size="sm"
               variant="card"
             />
           </div>
         </div>
         </Link>
-        <div className="flex items-center justify-end gap-2 px-6 pb-6 pt-2">
+        <div className="flex items-center justify-end gap-2 px-4 pb-4 pt-2">
           <button
             onClick={toggleWishlist}
-            className={`w-9 h-9 rounded-full border border-[#18b5d5]/40 flex items-center justify-center transition-all duration-200 ${
+            className={`w-8 h-8 rounded-full border border-[#18b5d5]/40 flex items-center justify-center transition-all duration-200 ${
               isInWishlist ? 'text-red-500 bg-red-500/10' : 'text-white hover:bg-[#18b5d5]/10'
             }`}
             type="button"
@@ -434,10 +434,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid', v
           {product.isAvailable && (
             <button
               onClick={addToCart}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-[#18b5d5]/40 text-white hover:bg-[#18b5d5]/20 transition-all"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[#18b5d5]/40 text-white hover:bg-[#18b5d5]/20 transition-all text-sm"
             >
               <ShoppingCart className="w-4 h-4" />
-              <span className="font-medium text-sm">{t('addToCart')}</span>
+              <span className="font-medium text-xs">{t('addToCart')}</span>
             </button>
           )}
         </div>

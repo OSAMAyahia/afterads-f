@@ -115,12 +115,12 @@ const AllCategories: React.FC = () => {
       return (
         <Link
           to={`/category/${categorySlug}`}
-          className="block bg-[#333333]/60 backdrop-blur border border-[#444444] rounded-2xl overflow-hidden hover:border-[#18b5d5] transition-all duration-300 hover:shadow-2xl hover:shadow-[#18b5d5]/25 group"
+          className="block bg-[#141414]/90 backdrop-blur-xl rounded-2xl border border-[#2a2a2a] overflow-hidden hover:border-[#18b5d5] transition-all duration-300 hover:shadow-2xl hover:shadow-[#18b5d5]/25 group"
           aria-label={t('common.categories.explore_category', { name: getLocalizedContent(category, 'name') })}
         >
           <div className="flex items-center p-6 gap-6">
             <div className="relative w-24 h-24 flex-shrink-0">
-              <div className="relative w-full h-full rounded-xl overflow-hidden border border-[#444444] bg-[#3a3a3a]">
+              <div className="relative w-full h-full rounded-xl overflow-hidden border border-[#2a2a2a] bg-[#1a1a1a]">
                 <img
                   src={buildImageUrl(category.image)}
                   alt={getLocalizedContent(category, 'name')}
@@ -140,7 +140,7 @@ const AllCategories: React.FC = () => {
               <h3 className="text-xl font-bold text-white mb-2   transition-colors duration-300 line-clamp-2">
                 {getLocalizedContent(category, 'name')}
               </h3>
-              <p className="text-[#CCCCCC] text-sm leading-relaxed line-clamp-2">
+              <p className="text-[#CCCCCC] text-sm leading-relaxed line-clamp-3 min-h-[60px]">
                 {getLocalizedContent(category, 'description') || t('categories.default_description')}
               </p>
             </div>
@@ -150,12 +150,12 @@ const AllCategories: React.FC = () => {
     }
 
     return (
-      <Link
+    <Link
         to={`/category/${categorySlug}`}
-        className="block bg-[#333333]/60 backdrop-blur border border-[#444444] rounded-2xl overflow-hidden hover:border-[#18b5d5] transition-all duration-300 hover:shadow-2xl hover:shadow-[#18b5d5]/25 h-full flex flex-col group"
+        className="block bg-[#141414]/90 backdrop-blur-xl rounded-2xl border border-[#2a2a2a] overflow-hidden hover:border-[#18b5d5] transition-all duration-300 hover:shadow-2xl hover:shadow-[#18b5d5]/25 h-full flex flex-col group w-full"
         aria-label={t('categories.explore_category', { name: getLocalizedContent(category, 'name') })}
       >
-        <div className="relative h-48 overflow-hidden bg-[#3a3a3a]">
+        <div className="relative h-48 overflow-hidden bg-[#1a1a1a]">
           <img
             src={buildImageUrl(category.image)}
             alt={getLocalizedContent(category, 'name')}
@@ -167,15 +167,15 @@ const AllCategories: React.FC = () => {
             }}
           />
         </div>
-        <div className="p-6 flex flex-col flex-grow min-h-[180px]">
+        <div className="p-6 flex flex-col flex-grow min-h-[220px]">
           
           <h3 className="text-xl font-bold mb-3 line-clamp-2 text-white transition-colors min-h-[56px]">
             {getLocalizedContent(category, 'name')}
           </h3>
-          <p className="text-[#CCCCCC] text-sm mb-4 line-clamp-3 flex-grow min-h-[60px]">
+          <p className="text-[#CCCCCC] text-sm mb-4 line-clamp-3 flex-grow min-h-[72px] max-h-[72px] overflow-hidden">
             {getLocalizedContent(category, 'description') || t('categories.default_description')}
           </p>
-          <div className="flex items-center justify-between text-xs text-[#BBBBBB] border-t border-[#444444] pt-4 mt-auto">
+          <div className="flex items-center justify-between text-xs text-[#BBBBBB] border-t border-[#2a2a2a] pt-4 mt-auto">
             <span className="text-[#18b5d5] text-sm font-medium">{t('categories.explore_products')}</span>
             <span className="text-white/80">{t('categories.view_all')}</span>
           </div>
@@ -185,9 +185,9 @@ const AllCategories: React.FC = () => {
   };
 
   return (
-    <section className="min-h-screen bg-[#292929] relative overflow-hidden " dir="rtl">
+    <section className="min-h-screen bg-[#0a0a0a] relative overflow-hidden " dir="rtl">
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#292929] via-[#4a4a4a] to-[#2a2a2a] opacity-90"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#0a0a0a] opacity-90"></div>
         <div className="absolute inset-0 opacity-20">
           <div className="absolute font-mono text-base text-[#7a7a7a] animate-pulse" style={{ top: '5%', left: '5%' }}>
             &lt;div className=&quot;categories&quot;&gt;
@@ -311,12 +311,12 @@ const AllCategories: React.FC = () => {
         `}
       </style>
 
-<div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 mt-[80px]">
-        <div className="text-center mb-12">
+<div className="relative max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-8 sm:py-12 lg:py-20 mt-[80px]">
+        <div className="text-center mb-12 sm:mb-16">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-[#18b5d5] via-[#18b5d5] to-[#18b5d5] bg-clip-text text-[#18b5d5]">
             {t('categories.all_categories')} {t('categories.available')}
           </h1>
-          <p className="text-lg sm:text-xl text-white max-w-3xl mx-auto px-4">
+          <p className="text-lg sm:text-xl text-white max-w-3xl mx-auto px-4 leading-relaxed">
             {t('categories.subtitle')}
           </p>
         </div>
@@ -334,11 +334,11 @@ const AllCategories: React.FC = () => {
         ) : filteredCategories.length > 0 ? (
           <div className={`${
             viewMode === 'grid' 
-              ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8 justify-items-center place-items-center' 
-              : 'space-y-4 sm:space-y-6'
-          } w-full max-w-7xl mx-auto`}>
+              ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 xl:gap-6 auto-rows-max' 
+              : 'flex flex-col gap-6 max-w-5xl mx-auto'
+          } w-full px-3 sm:px-4 lg:px-6`}>
             {filteredCategories.map(category => (
-              <div key={category.id} className="w-full max-w-sm mx-auto flex justify-center">
+              <div key={category.id} className="w-full">
                 <CategoryCard category={category} viewMode={viewMode} />
               </div>
             ))}
