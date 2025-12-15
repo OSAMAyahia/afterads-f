@@ -74,6 +74,21 @@ const AllCategories: React.FC = () => {
 
   const filterAndSortCategories = () => {
     let filtered = [...categories];
+    
+    // Filter out categories with names containing 'ثيم', 'theme', or 'ثيمات'
+    filtered = filtered.filter(category => {
+      const name = getLocalizedContent(category, 'name').toLowerCase();
+      const description = getLocalizedContent(category, 'description').toLowerCase();
+      
+      // Check for theme-related keywords in both name and description
+      const themeKeywords = ['ثيم', 'theme', 'ثيمات', 'themes'];
+      const hasThemeKeyword = themeKeywords.some(keyword => 
+        name.includes(keyword) || description.includes(keyword)
+      );
+      
+      return !hasThemeKeyword;
+    });
+    
     if (searchTerm) {
       filtered = filtered.filter(category =>
         getLocalizedContent(category, 'name').toLowerCase().includes(searchTerm.toLowerCase()) ||
