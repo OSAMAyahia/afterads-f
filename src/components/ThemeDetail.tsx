@@ -466,10 +466,10 @@ const ThemeDetail: React.FC = () => {
           <div className="group relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-[#18b5d5]/5 via-transparent to-[#18b5d5]/5 rounded-xl sm:rounded-3xl opacity-0 group-hover:opacity-100 transition-all duration-700 blur-xl"></div>
             <div className="relative bg-gradient-to-br from-[#292929]/60 via-[#1a1a1a]/80 to-[#292929]/60 rounded-xl sm:rounded-3xl border border-[#18b5d5]/20 group-hover:border-[#18b5d5]/40 transition-all duration-500 overflow-hidden group-hover:shadow-2xl group-hover:shadow-[#18b5d5]/10">
-              <div className={`flex ${currentDevice === 'mobile' ? 'flex-col' : 'flex-col xl:flex-row'}`}>
-                <div className={`${currentDevice === 'mobile' ? 'w-full' : 'w-full xl:w-40'} flex-shrink-0 relative`}>
-                  <div className="relative overflow-hidden rounded-t-xl sm:rounded-t-3xl xl:rounded-l-3xl xl:rounded-tr-none bg-white">
-                    <div className="relative h-32 sm:h-40 lg:h-48">
+              <div className={`flex ${currentDevice === 'mobile' ? 'flex-col' : 'flex-col xl:flex-row'} min-h-[8rem] sm:min-h-[10rem] lg:min-h-[12rem]`}>
+                <div className={`${currentDevice === 'mobile' ? 'w-full' : 'w-full xl:w-40'} flex-shrink-0 relative self-stretch`}>
+                  <div className="relative overflow-hidden rounded-t-xl sm:rounded-t-3xl xl:rounded-l-3xl xl:rounded-tr-none bg-white h-full">
+                    <div className="relative h-full min-h-[8rem] sm:min-h-[10rem] lg:min-h-[12rem]">
                       <div className="absolute top-0 left-0 w-16 h-16 bg-[#fec72d] transform -rotate-0 origin-top-left z-10">
                         <div className="absolute inset-0 flex items-center justify-center">
                           <Star className="w-6 h-6 text-gray-600" fill="currentColor" />
@@ -481,7 +481,7 @@ const ThemeDetail: React.FC = () => {
                         <img
                           src={getSafeImageUrl(component.backgroundImage)}
                           alt={component.title}
-                          className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-700"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                           onError={handleImageError}
                           loading="lazy"
                         />

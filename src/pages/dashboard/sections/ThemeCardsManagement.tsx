@@ -184,6 +184,7 @@ const ThemeCardsManagement: React.FC = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [iconSearch, setIconSearch] = useState('');
   const [iconCategory, setIconCategory] = useState('all');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   
   const [formData, setFormData] = useState<FormData>({
     title: '',
@@ -257,6 +258,19 @@ const ThemeCardsManagement: React.FC = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        smartToast.dashboard.error('يرجى اختيار ملف صورة صحيح');
+        return;
+      }
+      
+      // Validate file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        smartToast.dashboard.error('حجم الصورة يجب أن يكون أقل من 5 ميجابايت');
+        return;
+      }
+
+      setSelectedFile(file);
       setFormData(prev => ({ ...prev, backgroundImage: file }));
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -286,41 +300,61 @@ const ThemeCardsManagement: React.FC = () => {
     setIsLoading(true);
 
     try {
-    const submitData = new FormData();
-    submitData.append('title', formData.title);
-    submitData.append('description', formData.description);
-    submitData.append('overlayText', formData.overlayText);
-    submitData.append('orderNumber', String(formData.orderNumber));
-    submitData.append('category', formData.category);
-    submitData.append('features', JSON.stringify(formData.features.filter(f => f.trim())));
-    submitData.append('isActive', String(formData.isActive));
-    submitData.append('displayOrder', String(formData.displayOrder));
-        submitData.append('icon', formData.icon); 
-    submitData.append('galleryImages', JSON.stringify(formData.galleryImages || []));
+      // Validate required fields
+      if (!formData.title.trim()) {
+        smartToast.dashboard.error('العنوان مطلوب');
+        setIsLoading(false);
+        return;
+      }
 
-    
-    if (formData.backgroundImage && formData.backgroundImage instanceof File) {
-      submitData.append('backgroundImage', formData.backgroundImage);
-    }
+      const submitData = new FormData();
+      submitData.append('title', formData.title.trim());
+      submitData.append('description', formData.description.trim());
+      submitData.append('overlayText', formData.overlayText.trim());
+      submitData.append('orderNumber', String(formData.orderNumber));
+      submitData.append('category', formData.category.trim());
+      submitData.append('features', JSON.stringify(formData.features.filter(f => f.trim())));
+      submitData.append('isActive', String(formData.isActive));
+      submitData.append('displayOrder', String(formData.displayOrder));
+      submitData.append('icon', formData.icon); 
+      submitData.append('galleryImages', JSON.stringify(formData.galleryImages || []));
 
-    const endpoint = editingCard 
-      ? `theme-card/${editingCard._id}`
-      : 'theme-card';
-    const method = editingCard ? 'PUT' : 'POST';
-    const data = await apiCall(endpoint, { method, body: submitData });
-    if (data?.success !== false) {
-      queryClient.invalidateQueries({ queryKey: ['theme-cards'] });
-      closeModal();
-      smartToast.dashboard.success(editingCard ? 'تم التحديث بنجاح! ✓' : 'تم الإضافة بنجاح! ✓');
+      // Only append backgroundImage if it's a new file
+      if (formData.backgroundImage && formData.backgroundImage instanceof File) {
+        submitData.append('backgroundImage', formData.backgroundImage);
+      }
+
+      const endpoint = editingCard 
+        ? `theme-card/${editingCard._id}`
+        : 'theme-card';
+      const method = editingCard ? 'PUT' : 'POST';
+      
+      console.log('📤 Submitting form data:', {
+        endpoint,
+        method,
+        hasBackgroundImage: !!formData.backgroundImage,
+        isEditing: !!editingCard
+      });
+
+      const data = await apiCall(endpoint, { method, body: submitData });
+      
+      if (data?.success !== false) {
+        console.log('✅ Form submitted successfully:', data);
+        await queryClient.invalidateQueries({ queryKey: ['theme-cards'] });
+        closeModal();
+        smartToast.dashboard.success(editingCard ? 'تم التحديث بنجاح! ✓' : 'تم الإضافة بنجاح! ✓');
+      } else {
+        console.log('❌ Form submission failed:', data);
+        smartToast.dashboard.error(data?.message || 'فشلت العملية');
+      }
+    } catch (error) {
+      console.error('❌ Error saving theme card:', error);
+      const msg = (error as any)?.response?.data?.message || (error as any)?.message || 'حدث خطأ أثناء الحفظ ✗';
+      smartToast.dashboard.error(msg);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error('Error saving theme card:', error);
-    const msg = (error as any)?.response?.data?.message || (error as any)?.message || 'حدث خطأ أثناء الحفظ ✗';
-    smartToast.dashboard.error(msg);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   const handleEdit = (card: ThemeCard) => {
     setEditingCard(card);
@@ -370,6 +404,9 @@ const closeModal = () => {
   setIsModalOpen(false);
   setEditingCard(null);
   setImagePreview(null);
+  setSelectedFile(null);
+  
+  // Reset form data
   setFormData({
     title: '',
     description: '',
@@ -383,6 +420,12 @@ const closeModal = () => {
     icon: 'FaUser',
     galleryImages: []
   });
+  
+  // Clear file input
+  const fileInput = document.getElementById('imageUpload') as HTMLInputElement;
+  if (fileInput) {
+    fileInput.value = '';
+  }
 };
 
   const openPreview = (card: ThemeCard) => {
@@ -421,19 +464,24 @@ const closeModal = () => {
     src={buildImageUrl(card.backgroundImage)}
     alt={card.title}
     className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-700"
+    onError={(e) => {
+      console.error('❌ Image failed to load:', card.backgroundImage);
+      e.currentTarget.style.display = 'none';
+      const fallback = document.getElementById(`fallback-${card._id}`);
+      if (fallback) fallback.classList.remove('hidden');
+    }}
   />
-) : (
-  <div className="absolute inset-0 flex flex-col items-center justify-center p-6 gap-4">
-    {/* ✅ عرض الأيقونة */}
-    {card.icon && (() => {
-      const IconComponent = getIconComponent(card.icon);
-      return <IconComponent className="w-16 h-16 text-gray-600" />;
-    })()}
-    <p className="text-gray-800 text-lg font-semibold text-center">
-      {card.overlayText || card.title}
-    </p>
-  </div>
-)}
+) : null}
+<div id={`fallback-${card._id}`} className={`absolute inset-0 flex flex-col items-center justify-center p-6 gap-4 ${card.backgroundImage ? 'hidden' : ''}`}>
+  {/* ✅ عرض الأيقونة */}
+  {card.icon && (() => {
+    const IconComponent = getIconComponent(card.icon);
+    return <IconComponent className="w-16 h-16 text-gray-600" />;
+  })()}
+  <p className="text-gray-800 text-lg font-semibold text-center">
+    {card.overlayText || card.title}
+  </p>
+</div>
                   
                   <div className="absolute top-4 right-4 bg-gradient-to-r from-[#18b5d5]/90 to-[#18b5d5]/70 backdrop-blur-sm rounded-full px-3 py-1.5 border border-[#18b5d5]/30 z-20">
                     <span className="text-white text-xs font-bold">#{card.orderNumber}</span>
@@ -747,7 +795,7 @@ const closeModal = () => {
               
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">صورة الخلفية</label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#203f61] transition-all">
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#203f61] transition-all hover:bg-gray-50">
                   <input
                     type="file"
                     onChange={handleFileChange}
@@ -755,27 +803,46 @@ const closeModal = () => {
                     className="hidden"
                     id="imageUpload"
                   />
-                  <label htmlFor="imageUpload" className="cursor-pointer">
+                  <label htmlFor="imageUpload" className="cursor-pointer block">
                     {imagePreview ? (
                       <div className="relative">
-                        <img src={imagePreview} alt="Preview" className="max-h-48 mx-auto rounded" />
+                        <img src={imagePreview} alt="Preview" className="max-h-48 mx-auto rounded-lg shadow-md" />
                         <button
                           type="button"
                           onClick={(e) => {
                             e.preventDefault();
                             setImagePreview(null);
                             setFormData(prev => ({ ...prev, backgroundImage: null }));
+                            const fileInput = document.getElementById('imageUpload') as HTMLInputElement;
+                            if (fileInput) fileInput.value = '';
                           }}
-                          className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full"
+                          className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full shadow-lg transition-all"
                         >
                           <X className="w-4 h-4" />
                         </button>
+                        <div className="mt-2 text-sm text-gray-600">
+                          <p className="font-medium">✅ تم اختيار الصورة</p>
+                          <p className="text-xs">انقر على الصورة لتغييرها أو اضغط على ❌ لإزالتها</p>
+                        </div>
+                      </div>
+                    ) : editingCard?.backgroundImage ? (
+                      <div className="relative">
+                        <img 
+                          src={buildImageUrl(editingCard.backgroundImage)} 
+                          alt="Current" 
+                          className="max-h-32 mx-auto rounded-lg shadow-md mb-3"
+                        />
+                        <div className="text-sm text-gray-600 mb-3">
+                          <p className="font-medium">📸 الصورة الحالية</p>
+                          <p className="text-xs">انقر هنا لتحميل صورة جديدة</p>
+                        </div>
                       </div>
                     ) : (
                       <div>
                         <Upload className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                        <p className="text-gray-600">اضغط لرفع صورة</p>
-                        <p className="text-xs text-gray-500 mt-1">أو اترك الحقل فارغاً لعرض النص فقط</p>
+                        <p className="text-gray-600 font-medium">اضغط لرفع صورة</p>
+                        <p className="text-xs text-gray-500 mt-1">أو اترك الحقل فارغاً لعرض الأيقونة والنص</p>
+                        <p className="text-xs text-gray-400 mt-2">💡 يدعم: JPG, PNG, GIF, WebP (الحد الأقصى: 5 ميجابايت)</p>
                       </div>
                     )}
                   </label>

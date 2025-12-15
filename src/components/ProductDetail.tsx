@@ -795,107 +795,7 @@ const ProductDetail: React.FC = () => {
 {/* Product Information Section - Improved Design */}
 <div className="bg-gradient-to-br from-[#1a1a1a]/90 via-[#2a2a2a]/80 to-[#1a1a1a]/90 rounded-2xl border border-[#18b5d8]/20 shadow-2xl p-4 sm:p-6 lg:p-8 mb-6">
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    {/* Right Side - Product Info */}
-    <div className="space-y-6">
-      <div>
-        <div className="flex flex-col gap-4">
-          <div className="p-4 bg-gradient-to-r from-[#18b5d8]/10 to-[#16a8cc]/5 rounded-xl border border-[#18b5d8]/30">
-            {product.originalPrice && product.originalPrice > product.price ? (
-              <div className="space-y-2">
-                <div className="flex items-center gap-3">
-                  <span className="text-lg text-[#7a7a7a] line-through">{formatPrice(product.originalPrice)}</span>
-                  <span className="bg-red-500/20 text-red-400 px-2 py-1 rounded text-sm font-bold">
-                    -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
-                  </span>
-                </div>
-                <PriceDisplay 
-                  price={product.price}
-                  className="text-4xl font-bold text-[#18b5d8]"
-                  size="xl"
-                />
-              </div>
-            ) : (
-              <PriceDisplay 
-                price={product.price}
-                className="text-4xl font-bold text-[#18b5d8]"
-                size="xl"
-              />
-            )}
-          </div>
-          {(selectedAddOns.length > 0 || productOptionsPriceModifier !== 0) && (
-            <div className="p-4 bg-gradient-to-r from-[#18b5d8]/10 to-[#16a8cc]/5 rounded-xl border border-[#18b5d8]/30">
-              <div className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-                <span className="text-[#18b5d8]">💰</span>
-                {t('total_price')}
-              </div>
-              <div className="space-y-2 mb-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-[#c0c0c0]">{t('base_price')}</span>
-                  <span className="text-white font-medium">{formatPrice(product.price)}</span>
-                </div>
-                {productOptionsPriceModifier !== 0 && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-[#c0c0c0]">{t('product_options')}</span>
-                    <span className={productOptionsPriceModifier > 0 ? 'text-[#18b5d8] font-medium' : 'text-red-400 font-medium'}>
-                      {productOptionsPriceModifier > 0 ? '+' : ''}{formatPrice(productOptionsPriceModifier)}
-                    </span>
-                  </div>
-                )}
-                {selectedAddOns.length > 0 && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-[#c0c0c0]">{t('addons')}</span>
-                    <span className="text-[#18b5d8] font-medium">+{formatPrice(getAddOnsPrice())}</span>
-                  </div>
-                )}
-              </div>
-              <div className="pt-3 border-t border-[#18b5d8]/20 flex justify-between items-center">
-                <span className="text-white font-semibold">{t('total')}</span>
-                <span className="text-2xl font-bold text-[#18b5d8]">{formatPrice(calculateTotalPrice())}</span>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-      <div className="flex items-center gap-3 p-3 bg-[#0a0a0a]/50 rounded-lg border border-[#7a7a7a]/20">
-        {product.isAvailable ? (
-          <>
-            <div className="w-2 h-2 bg-[#18b5d8] rounded-full animate-pulse"></div>
-            <span className="text-[#18b5d8] font-medium text-sm">{t('available')}</span>
-          </>
-        ) : (
-          <>
-            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-            <span className="text-red-400 font-medium text-sm">{t('unavailable')}</span>
-          </>
-        )}
-      </div>
-      <div className="flex gap-3">
-        <button
-          onClick={addToCart}
-          disabled={addingToCart || !product.isAvailable}
-          className="flex-1 bg-gradient-to-r from-[#18b5d8] to-[#16a8cc] text-white px-6 py-4 rounded-xl font-semibold flex items-center justify-center gap-2 hover:shadow-xl hover:shadow-[#18b5d8]/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105"
-        >
-          {addingToCart ? (
-            <>
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-              <span>{t('adding')}</span>
-            </>
-          ) : (
-            <>
-              <ShoppingCart className="w-5 h-5" />
-              <span>{t('add_to_cart')}</span>
-            </>
-          )}
-        </button>
-        <button
-          onClick={addToWishlist}
-          className="bg-[#2a2a2a] hover:bg-[#3a3a3a] text-white p-4 rounded-xl transition-all border border-[#7a7a7a]/20 hover:border-[#18b5d8]/50 transform hover:scale-105"
-        >
-          <Heart className="w-6 h-6" />
-        </button>
-      </div>
-    </div>
-    {/* Left Side - Options & Add-ons */}
+     {/* Left Side - Options & Add-ons */}
     <div className="space-y-6">
       {/* Product Options */}
       {product.productOptions && product.productOptions.length > 0 && (
@@ -1012,6 +912,107 @@ const ProductDetail: React.FC = () => {
         )}
       </div>
     </div>
+    {/* Right Side - Product Info */}
+    <div className="space-y-6">
+      <div>
+        <div className="flex flex-col gap-4">
+          <div className="p-4 bg-gradient-to-r from-[#18b5d8]/10 to-[#16a8cc]/5 rounded-xl border border-[#18b5d8]/30">
+            {product.originalPrice && product.originalPrice > product.price ? (
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <span className="text-lg text-[#7a7a7a] line-through">{formatPrice(product.originalPrice)}</span>
+                  <span className="bg-red-500/20 text-red-400 px-2 py-1 rounded text-sm font-bold">
+                    -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                  </span>
+                </div>
+                <PriceDisplay 
+                  price={product.price}
+                  className="text-4xl font-bold text-[#18b5d8]"
+                  size="xl"
+                />
+              </div>
+            ) : (
+              <PriceDisplay 
+                price={product.price}
+                className="text-4xl font-bold text-[#18b5d8]"
+                size="xl"
+              />
+            )}
+          </div>
+          {(selectedAddOns.length > 0 || productOptionsPriceModifier !== 0) && (
+            <div className="p-4 bg-gradient-to-r from-[#18b5d8]/10 to-[#16a8cc]/5 rounded-xl border border-[#18b5d8]/30">
+              <div className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+                <span className="text-[#18b5d8]">💰</span>
+                {t('total_price')}
+              </div>
+              <div className="space-y-2 mb-3">
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#c0c0c0]">{t('base_price')}</span>
+                  <span className="text-white font-medium">{formatPrice(product.price)}</span>
+                </div>
+                {productOptionsPriceModifier !== 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-[#c0c0c0]">{t('product_options')}</span>
+                    <span className={productOptionsPriceModifier > 0 ? 'text-[#18b5d8] font-medium' : 'text-red-400 font-medium'}>
+                      {productOptionsPriceModifier > 0 ? '+' : ''}{formatPrice(productOptionsPriceModifier)}
+                    </span>
+                  </div>
+                )}
+                {selectedAddOns.length > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-[#c0c0c0]">{t('addons')}</span>
+                    <span className="text-[#18b5d8] font-medium">+{formatPrice(getAddOnsPrice())}</span>
+                  </div>
+                )}
+              </div>
+              <div className="pt-3 border-t border-[#18b5d8]/20 flex justify-between items-center">
+                <span className="text-white font-semibold">{t('total')}</span>
+                <span className="text-2xl font-bold text-[#18b5d8]">{formatPrice(calculateTotalPrice())}</span>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="flex items-center gap-3 p-3 bg-[#0a0a0a]/50 rounded-lg border border-[#7a7a7a]/20">
+        {product.isAvailable ? (
+          <>
+            <div className="w-2 h-2 bg-[#18b5d8] rounded-full animate-pulse"></div>
+            <span className="text-[#18b5d8] font-medium text-sm">{t('available')}</span>
+          </>
+        ) : (
+          <>
+            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+            <span className="text-red-400 font-medium text-sm">{t('unavailable')}</span>
+          </>
+        )}
+      </div>
+      <div className="flex gap-3">
+        <button
+          onClick={addToCart}
+          disabled={addingToCart || !product.isAvailable}
+          className="flex-1 bg-gradient-to-r from-[#18b5d8] to-[#16a8cc] text-white px-6 py-4 rounded-xl font-semibold flex items-center justify-center gap-2 hover:shadow-xl hover:shadow-[#18b5d8]/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105"
+        >
+          {addingToCart ? (
+            <>
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+              <span>{t('adding')}</span>
+            </>
+          ) : (
+            <>
+              <ShoppingCart className="w-5 h-5" />
+              <span>{t('add_to_cart')}</span>
+            </>
+          )}
+        </button>
+        <button
+          onClick={addToWishlist}
+          className="bg-[#2a2a2a] hover:bg-[#3a3a3a] text-white p-4 rounded-xl transition-all border border-[#7a7a7a]/20 hover:border-[#18b5d8]/50 transform hover:scale-105"
+        >
+          <Heart className="w-6 h-6" />
+        </button>
+      </div>
+    </div>
+   
   </div>
 </div>
 

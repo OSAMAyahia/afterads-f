@@ -47,6 +47,11 @@ export const buildImageUrl = (imagePath: string): string => {
     return `${baseUrl}${imagePath}`;
   }
   
+  // إذا كان المسار يبدأ بـ /uploads/ فهو مسار نسبي من الباك إند (لـ multer uploads)
+  if (imagePath.startsWith('/uploads/')) {
+    return `${baseUrl}${imagePath}`;
+  }
+  
   // إذا كان المسار يبدأ بـ /images/ فهو مسار نسبي من الباك إند
   if (imagePath.startsWith('/images/')) {
     return `${baseUrl}${imagePath}`;
