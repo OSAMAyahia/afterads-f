@@ -27,14 +27,14 @@ const HomeSectionsCMS: React.FC = () => {
   }), []);
 
   const labels: Record<string, string> = useMemo(() => ({
-    hero: 'قسم الهيرو',
-    themes: 'قسم الثيمات',
-    services: 'قسم الخدمات',
-    categories: 'قسم التصنيفات',
-    testimonials: 'قسم آراء العملاء',
-    clients: 'قسم عملاؤنا',
-    faq: 'قسم الأسئلة الشائعة',
-    contact: 'قسم التواصل',
+    hero: 'البداية',
+    themes: 'ثيم ملاك',
+    services: 'لماذا نحن',
+    categories: 'الخدمات',
+    testimonials: 'آراء العملاء',
+    clients: 'عملاؤنا',
+    faq: 'الأسئلة الشائعة',
+    contact: 'اتصل بنا',
   }), []);
 
   const [sections, setSections] = useState<VisibilityMap>(defaultSections);

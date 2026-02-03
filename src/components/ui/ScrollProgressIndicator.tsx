@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslation } from 'react-i18next';
+import { useApiQuery } from '../../hooks/useApiQuery';
+import { API_ENDPOINTS } from '../../config/api';
 
 interface Section {
   id: string;
@@ -11,7 +13,31 @@ const ScrollProgressIndicator: React.FC = () => {
   const [currentSection, setCurrentSection] = useState<number>(0);
   const [isVisible, setIsVisible] = useState<boolean>(false);
 
-  const sections: Section[] = [
+  const { data: homeSectionsResp } = useApiQuery<any>({
+    endpoint: API_ENDPOINTS.HOME_SECTIONS_VISIBILITY,
+    queryKey: ['home-sections-visibility'],
+    staleTime: 60 * 60 * 1000
+  });
+
+  const homeSectionsVisibility = useMemo(() => {
+    const defaults: Record<string, boolean> = {
+      hero: true,
+      themes: true,
+      services: true,
+      categories: true,
+      testimonials: true,
+      clients: true,
+      faq: true,
+      contact: true,
+    };
+    const obj = Array.isArray(homeSectionsResp) ? homeSectionsResp[0] : (homeSectionsResp?.data ?? homeSectionsResp);
+    if (obj?.sections && typeof obj.sections === 'object') {
+      return { ...defaults, ...obj.sections };
+    }
+    return defaults;
+  }, [homeSectionsResp]);
+
+  const sections: Section[] = useMemo(() => ([
     { id: "hero", name: t('scroll_progress.beginning') },
     { id: "themes", name: t('scroll_progress.theme_malak') },
     { id: "services", name: t('scroll_progress.why_us') },
@@ -20,7 +46,7 @@ const ScrollProgressIndicator: React.FC = () => {
     { id: "clients", name: t('scroll_progress.our_clients') },
     { id: "faq", name: t('scroll_progress.faq') },
     { id: "contact", name: t('scroll_progress.contact_us') },
-  ];
+  ]).filter(section => homeSectionsVisibility[section.id] !== false), [t, homeSectionsVisibility]);
 
   const handleScroll = useCallback(() => {
     const scrollTop = window.scrollY;

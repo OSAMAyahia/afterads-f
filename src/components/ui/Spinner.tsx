@@ -10,29 +10,32 @@ type SpinnerProps = {
 };
 
 const Spinner: React.FC<SpinnerProps> = ({
-  size = 8,
+  size = 4,
   overlay = false,
   className = '',
-  primaryColor = '#18b5d8',
-  secondaryColor = '#4fd1c5',
-  trackColor = 'rgba(24, 181, 216, 0.2)',
+  primaryColor = '#6b7280',
+  secondaryColor = '#9ca3af',
+  trackColor = 'rgba(107, 114, 128, 0.2)',
 }) => {
-  const borderWidth = Math.max(1, Math.round(size / 25));
+  const adjustedSize = Math.max(4, Math.round(size * 0.6));
+  const padding = Math.max(1, Math.round(adjustedSize / 6));
   const spinner = (
-    <div className={`relative ${className}`} style={{ width: size, height: size }}>
-      <div
-        className="absolute inset-0 rounded-full animate-spin"
-        style={{
-          borderWidth,
-          borderStyle: 'solid',
-          borderColor: trackColor,
-          borderTopColor: primaryColor,
-          borderRightColor: primaryColor,
-          borderBottomColor: secondaryColor,
-          borderLeftColor: secondaryColor,
-        }}
-      />
-    </div>
+    <div
+      className={`relative ${className} animate-spin`}
+      style={{
+        width: adjustedSize,
+        height: adjustedSize,
+        padding,
+        aspectRatio: '1',
+        borderRadius: '50%',
+        background: `conic-gradient(${primaryColor}, ${secondaryColor})`,
+        WebkitMask: 'conic-gradient(#0000 10%, #000), linear-gradient(#000 0 0) content-box',
+        mask: 'conic-gradient(#0000 10%, #000), linear-gradient(#000 0 0) content-box',
+        WebkitMaskComposite: 'source-out',
+        maskComposite: 'subtract',
+        boxShadow: `0 0 0 1px ${trackColor}`,
+      }}
+    />
   );
 
   if (!overlay) return spinner;
