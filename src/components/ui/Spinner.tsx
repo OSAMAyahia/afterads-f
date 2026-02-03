@@ -10,14 +10,14 @@ type SpinnerProps = {
 };
 
 const Spinner: React.FC<SpinnerProps> = ({
-  size = 14,
+  size = 8,
   overlay = false,
   className = '',
   primaryColor = '#18b5d8',
   secondaryColor = '#4fd1c5',
   trackColor = 'rgba(24, 181, 216, 0.2)',
 }) => {
-  const borderWidth = Math.max(1, Math.round(size / 10));
+  const borderWidth = Math.max(1, Math.round(size / 25));
   const spinner = (
     <div className={`relative ${className}`} style={{ width: size, height: size }}>
       <div

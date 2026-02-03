@@ -489,8 +489,8 @@ const ProductDetail: React.FC = () => {
     return (
       <div className="min-h-screen bg-[#292929] flex items-center justify-center px-4">
           <div className="text-center max-w-md mx-auto">
-            <div className="flex justify-center mb-4">
-              <Spinner size={28} />
+            <div className="flex justify-center mb-4 -mt-10">
+              <Spinner size={22} />
             </div>
             <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">{t('loading_product')}</h2>
             <p className="text-[#7a7a7a]">{t('please_wait')}</p>
@@ -503,8 +503,8 @@ const ProductDetail: React.FC = () => {
     return (
       <div className="min-h-screen bg-[#292929] flex items-center justify-center px-4" dir="rtl">
         <div className="text-center">
-          <div className="flex justify-center mb-4">
-            <Spinner size={20} />
+          <div className="flex justify-center mb-4 -mt-10">
+            <Spinner size={18} />
           </div>
           <h1 className="text-2xl font-bold text-white mb-4">{t('loading_product')}</h1>
           <p className="text-[#7a7a7a] mb-6">{t('loading_product_data')}</p>

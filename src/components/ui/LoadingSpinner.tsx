@@ -17,14 +17,14 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ message }) => {
         </div>
         
         <h2 className="text-2xl font-bold text-white mb-3">{resolvedMessage}</h2>
-        <p className="text-[#7a7a7a]">{t('common.please_wait')}</p>
+        {/* <p className="text-[#7a7a7a]">{t('common.please_wait')}</p> */}
         
         {/* Dots animation */}
-        <div className="flex justify-center gap-2 mt-4">
+        {/* <div className="flex justify-center gap-2 mt-4">
           <div className="w-2 h-2 bg-[#18b5d8] rounded-full animate-bounce"></div>
           <div className="w-2 h-2 bg-[#18b5d8] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
           <div className="w-2 h-2 bg-[#18b5d8] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
