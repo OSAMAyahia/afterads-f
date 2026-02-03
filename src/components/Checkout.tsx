@@ -8,6 +8,7 @@ import { useApiQuery } from '../hooks/useApiQuery';
 import { useQueryClient } from '@tanstack/react-query';
 import PriceDisplay from './ui/PriceDisplay';
 import LoadingSpinner from './ui/LoadingSpinner';
+import Spinner from './ui/Spinner';
 import { useCurrency } from '../contexts/CurrencyContext';
 
 interface Product {
@@ -1114,7 +1115,13 @@ const getFinalTotal = () => {
               >
                 {placing ? (
                   <div className="flex items-center justify-center gap-2 sm:gap-3">
-                    <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white"></div>
+                    <Spinner
+                      size={20}
+                      className="inline-block"
+                      primaryColor="#ffffff"
+                      secondaryColor="#ffffff"
+                      trackColor="rgba(255, 255, 255, 0.3)"
+                    />
                     {t('checkout.processingOrder')}
                   </div>
                 ) : (

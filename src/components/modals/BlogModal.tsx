@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Upload, Image as ImageIcon, Save } from 'lucide-react';
 import { smartToast } from '../../utils/toastConfig';
 import { buildApiUrl } from '../../config/api';
+import Spinner from '../ui/Spinner';
 
 interface BlogPost {
   id: number;
@@ -699,7 +700,13 @@ const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, onSave, editingP
             className="px-6 py-2.5 bg-black text-white rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center gap-2"
           >
             {loading && (
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <Spinner
+                size={16}
+                className="inline-block"
+                primaryColor="#ffffff"
+                secondaryColor="#ffffff"
+                trackColor="rgba(255, 255, 255, 0.3)"
+              />
             )}
             {loading ? 'جاري الحفظ...' : (
               <>

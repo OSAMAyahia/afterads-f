@@ -5,13 +5,13 @@ import {
   Search,
   Eye,
   Trash2,
-  RefreshCw,
   Star,
   Calendar,
   User,
   X
 } from 'lucide-react';
 import { commentService, Comment, CommentsQuery } from '../../services/commentService';
+import Spinner from '../../components/ui/Spinner';
 
 const CommentsManagement: React.FC = () => {
   const [comments, setComments] = useState<Comment[]>([]);
@@ -142,7 +142,9 @@ const CommentsManagement: React.FC = () => {
       <div className="bg-black rounded-lg shadow">
         {loading ? (
           <div className="text-center py-12">
-            <RefreshCw className="w-8 h-8 animate-spin mx-auto text-gray-400 mb-4" />
+            <div className="flex justify-center mb-4">
+              <Spinner size={32} primaryColor="#9ca3af" secondaryColor="#9ca3af" trackColor="rgba(156, 163, 175, 0.3)" />
+            </div>
             <p className="text-gray-500">جاري تحميل التعليقات...</p>
           </div>
         ) : comments.length === 0 ? (

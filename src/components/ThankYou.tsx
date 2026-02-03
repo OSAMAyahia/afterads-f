@@ -25,6 +25,7 @@ import {
 import { buildImageUrl } from '../config/api';
 import PriceDisplay from './ui/PriceDisplay';
 import { useCurrency } from '../contexts/CurrencyContext';
+import Spinner from './ui/Spinner';
 
 interface OrderItem {
   id: number;
@@ -285,9 +286,9 @@ const ThankYou: React.FC = () => {
       <div className="min-h-screen bg-[#292929] flex items-center justify-center px-4">
         <div className="text-center">
           <div className="relative mb-8">
-            <div className="w-20 h-20 border-4 border-[#18b5d8] border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <div className="absolute inset-0 w-20 h-20 border-4 border-[#18b5d8]/20 rounded-full animate-pulse mx-auto"></div>
-            <Sparkles className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 text-[#18b5d8] animate-bounce" />
+            <div className="flex justify-center">
+              <Spinner size={80} />
+            </div>
           </div>
           <h2 className="text-2xl font-black text-white bg-gradient-to-r from-[#18b5d8] to-[#16a2c7] bg-clip-text text-transparent">
             {t('thankYou.loading')}

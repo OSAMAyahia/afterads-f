@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Phone, Mail, MapPin, Clock, MessageSquare, Send, CheckCircle } from 'lucide-react';
+import Spinner from '../components/ui/Spinner';
 import { FaInstagram, FaWhatsapp, FaTwitter, FaFacebookF, FaEnvelope, FaPhone } from 'react-icons/fa';
 
 const Contact: React.FC = () => {
@@ -290,7 +291,13 @@ const Contact: React.FC = () => {
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <Spinner
+                        size={16}
+                        className="inline-block"
+                        primaryColor="#ffffff"
+                        secondaryColor="#ffffff"
+                        trackColor="rgba(255, 255, 255, 0.3)"
+                      />
                       {t('contact.form.sending')}
                     </>
                   ) : (

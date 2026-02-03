@@ -81,7 +81,7 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
     }
     
     const adminToken = localStorage.getItem('adminToken');
-    if (adminToken && (endpoint.includes('auth/') || endpoint.includes('users') || endpoint.includes('activity-logs') || endpoint.includes('logs/') || endpoint.includes('orders/') || endpoint.includes('customers') || endpoint.includes('admin-pin') || endpoint.includes('navigation-visibility'))) {
+    if (adminToken && (endpoint.includes('auth/') || endpoint.includes('users') || endpoint.includes('activity-logs') || endpoint.includes('logs/') || endpoint.includes('orders/') || endpoint.includes('customers') || endpoint.includes('admin-pin') || endpoint.includes('navigation-visibility') || endpoint.includes('home-sections-visibility'))) {
       headers['Authorization'] = `Bearer ${adminToken}`;
     }
     
@@ -238,6 +238,8 @@ export const API_ENDPOINTS = {
   ANNOUNCEMENT_BAR_ACTIVE: 'announcement-bar/active',
   NAVIGATION_VISIBILITY: 'navigation-visibility',
   NAVIGATION_VISIBILITY_ENTRY: 'navigation-visibility/entry',
+  HOME_SECTIONS_VISIBILITY: 'home-sections-visibility',
+  HOME_SECTIONS_VISIBILITY_ENTRY: 'home-sections-visibility/entry',
 
   // Testimonials endpoints
   TESTIMONIALS: 'testimonials',

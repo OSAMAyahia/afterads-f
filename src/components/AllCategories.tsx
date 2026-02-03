@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { smartToast } from '../utils/toastConfig';
 import { Search, Grid, List, FolderOpen, X, ArrowUpDown } from 'lucide-react';
+import Spinner from './ui/Spinner';
 import GlobalFooter from './layout/GlobalFooter';
 import { createCategorySlug } from '../utils/slugify';
 import { apiCall, API_ENDPOINTS, buildImageUrl } from '../config/api';
@@ -340,8 +341,8 @@ const AllCategories: React.FC = () => {
 
         {loading ? (
           <div className="text-center py-16 px-4">
-            <div className="relative w-20 h-20 mx-auto mb-8">
-              <div className="absolute inset-0 border-4 border-[#7a7a7a]/30 rounded-full animate-spin border-t-[#18b5d8]"></div>
+            <div className="flex justify-center mb-8">
+              <Spinner size={80} />
             </div>
             <h3 className="text-2xl font-bold text-white mb-4">{t('categories.loading')}</h3>
             <p className="text-lg text-gray-100">{t('categories.loading_message')}</p>

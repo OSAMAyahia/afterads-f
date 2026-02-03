@@ -36,6 +36,7 @@ import CouponModal from '../../components/modals/CouponModal';
 import CategoryModal from '../../components/modals/CategoryModal';
 import SubcategoryModal from '../../components/modals/SubcategoryModal';
 import ProductModal from '../../components/modals/ProductModal';
+import Spinner from '../../components/ui/Spinner';
 
 import PortfolioModal from '../../components/modals/PortfolioModal';
 import PortfolioCategoryModal from '../../components/modals/PortfolioCategoryModal';
@@ -4151,7 +4152,7 @@ const Dashboard: React.FC = () => {
               {/* Loading State */}
               {loading && (
                 <div className="text-center py-16">
-                  <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                  <Spinner size={48} primaryColor="#2563eb" secondaryColor="#2563eb" trackColor="rgba(37, 99, 235, 0.2)" />
                   <p className="mt-4 text-gray-600">جاري تحميل بيانات العملاء...</p>
                 </div>
               )}
@@ -7211,7 +7212,9 @@ className="block w-full text-center bg-gray-100 text-black px-3 py-2 rounded-lg 
       <div className="p-6">
         {commentsLoading ? (
           <div className="text-center py-16">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+            <div className="flex justify-center mb-4">
+              <Spinner size={48} primaryColor="#111827" secondaryColor="#111827" trackColor="rgba(17, 24, 39, 0.2)" />
+            </div>
             <p className="text-gray-600 font-medium">جاري تحميل التعليقات...</p>
           </div>
         ) : filteredComments.length > 0 ? (
@@ -8229,7 +8232,13 @@ className="block w-full text-center bg-gray-100 text-black px-3 py-2 rounded-lg 
                   >
                     {pinLoading ? (
                       <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <Spinner
+                          size={16}
+                          className="inline-block"
+                          primaryColor="#ffffff"
+                          secondaryColor="#ffffff"
+                          trackColor="rgba(255, 255, 255, 0.3)"
+                        />
                         جاري التحقق...
                       </>
                     ) : (
@@ -8340,7 +8349,7 @@ className="block w-full text-center bg-gray-100 text-black px-3 py-2 rounded-lg 
               {/* Activity Logs Content */}
               {logsLoading ? (
                 <div className="text-center py-12">
-                  <RefreshCw className="h-12 w-12 animate-spin text-black mx-auto mb-4" />
+                  <Spinner size={48} primaryColor="#000000" secondaryColor="#000000" trackColor="rgba(0, 0, 0, 0.2)" />
                   <p className="text-gray-700">جاري تحميل سجلات النشاط...</p>
                 </div>
               ) : activityLogs.length === 0 ? (
@@ -8506,7 +8515,7 @@ className="block w-full text-center bg-gray-100 text-black px-3 py-2 rounded-lg 
               {/* Login Logs Content */}
               {logsLoading ? (
                 <div className="text-center py-12">
-                  <RefreshCw className="h-12 w-12 animate-spin text-black mx-auto mb-4" />
+                  <Spinner size={48} primaryColor="#000000" secondaryColor="#000000" trackColor="rgba(0, 0, 0, 0.2)" />
                   <p className="text-gray-700">جاري تحميل سجلات الدخول...</p>
                 </div>
               ) : loginLogs.length === 0 ? (
@@ -8709,7 +8718,7 @@ className="block w-full text-center bg-gray-100 text-black px-3 py-2 rounded-lg 
               {/* Logs Content */}
               {logsLoading ? (
                 <div className="text-center py-12">
-                  <RefreshCw className="h-12 w-12 animate-spin text-black mx-auto mb-4" />
+                  <Spinner size={48} primaryColor="#000000" secondaryColor="#000000" trackColor="rgba(0, 0, 0, 0.2)" />
                   <p className="text-gray-700">جاري تحميل السجلات...</p>
                 </div>
               ) : (

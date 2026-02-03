@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Save, Image as ImageIcon } from 'lucide-react';
 import { BlogService } from '../../config/api';
+import Spinner from '../ui/Spinner';
 
 interface BlogPost {
   id?: number;
@@ -291,7 +292,13 @@ const BlogForm: React.FC<BlogFormProps> = ({ isOpen, onClose, onSave, editingPos
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {loading ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <Spinner
+                  size={16}
+                  className="inline-block"
+                  primaryColor="#ffffff"
+                  secondaryColor="#ffffff"
+                  trackColor="rgba(255, 255, 255, 0.3)"
+                />
               ) : (
                 <Save className="w-4 h-4" />
               )}

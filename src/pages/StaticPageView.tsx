@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { apiCall, API_ENDPOINTS, buildImageUrl } from '../config/api';
 import { useApiQuery } from '../hooks/useApiQuery';
 import RichTextDisplay from '../components/ui/RichTextDisplay';
+import Spinner from '../components/ui/Spinner';
 
 interface StaticPage {
   id: number;
@@ -51,7 +52,9 @@ const StaticPageView: React.FC = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#1a1a1a] via-[#2a2a2a] to-[#1a1a1a] flex items-center justify-center px-3 sm:px-4" dir={isRTL ? 'rtl' : 'ltr'}>
         <div className="text-center animate-fadeInUp">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 border-3 sm:border-4 border-[#7a7a7a] border-t-transparent rounded-full animate-spin mx-auto mb-3 sm:mb-4"></div>
+          <div className="flex justify-center mb-3 sm:mb-4">
+            <Spinner size={48} primaryColor="#7a7a7a" secondaryColor="#18b5d8" trackColor="rgba(122, 122, 122, 0.3)" />
+          </div>
           <div className="text-lg sm:text-xl text-white font-medium">{t('nav.loading')}</div>
         </div>
       </div>

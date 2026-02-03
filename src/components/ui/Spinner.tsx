@@ -4,14 +4,35 @@ type SpinnerProps = {
   size?: number;
   overlay?: boolean;
   className?: string;
+  primaryColor?: string;
+  secondaryColor?: string;
+  trackColor?: string;
 };
 
-const Spinner: React.FC<SpinnerProps> = ({ size = 28, overlay = false, className = '' }) => {
+const Spinner: React.FC<SpinnerProps> = ({
+  size = 14,
+  overlay = false,
+  className = '',
+  primaryColor = '#18b5d8',
+  secondaryColor = '#4fd1c5',
+  trackColor = 'rgba(24, 181, 216, 0.2)',
+}) => {
+  const borderWidth = Math.max(1, Math.round(size / 10));
   const spinner = (
-    <div
-      className={`animate-spin rounded-full border-4 border-gray-300 border-t-[#203f61] ${className}`}
-      style={{ width: size, height: size }}
-    />
+    <div className={`relative ${className}`} style={{ width: size, height: size }}>
+      <div
+        className="absolute inset-0 rounded-full animate-spin"
+        style={{
+          borderWidth,
+          borderStyle: 'solid',
+          borderColor: trackColor,
+          borderTopColor: primaryColor,
+          borderRightColor: primaryColor,
+          borderBottomColor: secondaryColor,
+          borderLeftColor: secondaryColor,
+        }}
+      />
+    </div>
   );
 
   if (!overlay) return spinner;

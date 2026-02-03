@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { smartToast } from '../utils/toastConfig';
 import { apiCall, API_ENDPOINTS, buildApiUrl, buildImageUrl } from '../config/api';
-import { RefreshCw } from 'lucide-react';
+import Spinner from '../components/ui/Spinner';
 
 interface Category {
   id: number;
@@ -104,10 +104,7 @@ const CategoryEdit: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4" dir="rtl">
         <div className="text-center">
-          <svg className="animate-spin h-6 w-6 sm:h-8 sm:w-8 text-orange-600 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
+          <Spinner size={32} primaryColor="#ea580c" secondaryColor="#ea580c" trackColor="rgba(234, 88, 12, 0.2)" />
           <p className="text-gray-600 text-sm sm:text-base">جارٍ تحميل بيانات التصنيف...</p>
         </div>
       </div>
@@ -118,7 +115,7 @@ const CategoryEdit: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4" dir="rtl">
         <div className="text-center">
-          <RefreshCw className="h-8 w-8 animate-spin mx-auto text-orange-600 mb-3" />
+          <Spinner size={32} primaryColor="#ea580c" secondaryColor="#ea580c" trackColor="rgba(234, 88, 12, 0.2)" />
           <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">جاري التحميل...</h2>
           <p className="text-gray-600 text-sm">يتم تحميل بيانات التصنيف</p>
         </div>
@@ -214,10 +211,13 @@ const CategoryEdit: React.FC = () => {
                   >
                     {loading ? (
                       <>
-                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
+                        <Spinner
+                          size={20}
+                          className="-ml-1 mr-3"
+                          primaryColor="#ffffff"
+                          secondaryColor="#ffffff"
+                          trackColor="rgba(255, 255, 255, 0.3)"
+                        />
                         جارٍ التحديث...
                       </>
                     ) : (

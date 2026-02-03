@@ -5,6 +5,7 @@ import { apiCall, API_ENDPOINTS } from '../../../config/api';
 import { useApiQuery } from '../../../hooks/useApiQuery';
 import { useQueryClient } from '@tanstack/react-query';
 import { smartToast } from '../../../utils/toastConfig';
+import Spinner from '../../../components/ui/Spinner';
 
 // تعريف نوع البيانات للإعلان
 interface Announcement {
@@ -206,10 +207,12 @@ const AnnouncementBarManagement: React.FC = () => {
 
   const activeCount = announcements.filter(a => a.isActive).length;
 
-  const Spinner = () => (
+  const LoadingOverlay = () => (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-xl shadow-2xl">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#203f61] mx-auto"></div>
+        <div className="flex justify-center">
+          <Spinner size={48} primaryColor="#203f61" secondaryColor="#203f61" trackColor="rgba(32, 63, 97, 0.2)" />
+        </div>
         <p className="mt-4 text-gray-700 font-medium">جاري المعالجة...</p>
       </div>
     </div>
@@ -297,7 +300,7 @@ const AnnouncementBarManagement: React.FC = () => {
         </div>
       </div>
 
-      {loading && <Spinner />}
+      {loading && <LoadingOverlay />}
 
       {/* Announcements Table */}
       <div className="bg-white rounded-xl shadow-lg border border-gray-100">

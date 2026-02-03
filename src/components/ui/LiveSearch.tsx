@@ -6,6 +6,7 @@ import { useApiQuery } from '../../hooks/useApiQuery';
 import { createProductSlug } from '../../utils/slugify';
 import { useTranslation } from 'react-i18next';
 import PriceDisplay from './PriceDisplay';
+import Spinner from './Spinner';
 
 interface Product {
   id: number;
@@ -326,7 +327,7 @@ const LiveSearch: React.FC<LiveSearchProps> = ({ onClose, className = '' }) => {
                  {isLoading ? (
                    <div className="p-8 text-center">
                      <div className="inline-flex items-center justify-center">
-                       <div className="animate-spin rounded-full h-10 w-10 border-4 border-white/20 border-t-[#18b5d8]"></div>
+                       <Spinner size={40} primaryColor="#18b5d8" secondaryColor="#4fd1c5" trackColor="rgba(255, 255, 255, 0.2)" />
                      </div>
                      <p className="text-white/90 font-medium text-base mt-4">{t('live_search.loading', 'جاري التحميل...')}</p>
                    </div>

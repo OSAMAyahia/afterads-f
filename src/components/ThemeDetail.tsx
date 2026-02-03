@@ -58,6 +58,7 @@ import theme7 from '../assets/screencapture-phone2.png';
 import angel from '../assets/angel.webp';
 import LoadingSpinner from './ui/LoadingSpinner';
 import { FeatureCounter } from './ui/FeatureCounter';
+import Spinner from './ui/Spinner';
 import ThemeWorks from './ThemeWorks';
 import fallbackImg from '../assets/search_not_found.png';
 
@@ -1335,7 +1336,7 @@ const goToImage = (i: number) => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                 {componentsLoading ? (
                   <div className="col-span-2 flex justify-center items-center py-20">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#18b5d5]"></div>
+                    <Spinner size={48} />
                   </div>
                 ) : dynamicComponents.length > 0 ? (
                   dynamicComponents.map((component, index) => (

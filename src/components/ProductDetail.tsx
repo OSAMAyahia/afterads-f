@@ -34,6 +34,7 @@ import notfoundImg from '../assets/search_not_found.png';
 import ProductOptionsSelector from './ui/ProductOptionsSelector';
 import { useCurrency } from '../contexts/CurrencyContext';
 import RichTextDisplay from './ui/RichTextDisplay';
+import Spinner from './ui/Spinner';
 interface ProductOption {
   id: string;
   type: 'dropdown' | 'radio' | 'checkbox' | 'text' | 'number' | 'color';
@@ -487,11 +488,13 @@ const ProductDetail: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#292929] flex items-center justify-center px-4">
-        <div className="text-center max-w-md mx-auto">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#18b5d8] mx-auto mb-4"></div>
-          <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">{t('loading_product')}</h2>
-          <p className="text-[#7a7a7a]">{t('please_wait')}</p>
-        </div>
+          <div className="text-center max-w-md mx-auto">
+            <div className="flex justify-center mb-4">
+              <Spinner size={28} />
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">{t('loading_product')}</h2>
+            <p className="text-[#7a7a7a]">{t('please_wait')}</p>
+          </div>
       </div>
     );
   }
@@ -500,7 +503,9 @@ const ProductDetail: React.FC = () => {
     return (
       <div className="min-h-screen bg-[#292929] flex items-center justify-center px-4" dir="rtl">
         <div className="text-center">
-          <RefreshCw className="h-8 w-8 animate-spin mx-auto text-[#18b5d8] mb-4" />
+          <div className="flex justify-center mb-4">
+            <Spinner size={20} />
+          </div>
           <h1 className="text-2xl font-bold text-white mb-4">{t('loading_product')}</h1>
           <p className="text-[#7a7a7a] mb-6">{t('loading_product_data')}</p>
         </div>
@@ -900,7 +905,7 @@ const ProductDetail: React.FC = () => {
       >
         {addingToCart ? (
           <>
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+            <Spinner size={16} className="text-white" />
             <span>{t('adding')}</span>
           </>
         ) : (
@@ -1065,7 +1070,7 @@ const ProductDetail: React.FC = () => {
           >
             {isSubmittingComment ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <Spinner size={14} className="text-white" />
                 {t('sending')}
               </>
             ) : (
@@ -1082,7 +1087,9 @@ const ProductDetail: React.FC = () => {
     <div className="space-y-4">
       {commentsLoading ? (
         <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#18b5d8] mx-auto mb-3"></div>
+          <div className="flex justify-center mb-3">
+            <Spinner size={24} />
+          </div>
           <p className="text-[#7a7a7a]">{t('loading_comments')}</p>
         </div>
       ) : comments.length > 0 ? (

@@ -4,6 +4,7 @@ import { User, Calendar, Search, Filter, Plus, Edit, Trash2, ExternalLink } from
 import { apiCall, API_ENDPOINTS, buildImageUrl } from '../config/api';
 import { smartToast } from '../utils/toastConfig';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
+import Spinner from '../components/ui/Spinner';
 import logo from '../assets/logo.webp';
 
 interface Client {
@@ -197,7 +198,17 @@ const Clients: React.FC = () => {
               disabled={loading}
               className="inline-flex items-center px-8 py-4 text-lg font-bold rounded-2xl text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
-              <Search className={`w-6 h-6 ml-3 ${loading ? 'animate-spin' : ''}`} />
+              {loading ? (
+                <Spinner
+                  size={24}
+                  className="ml-3"
+                  primaryColor="#ffffff"
+                  secondaryColor="#ffffff"
+                  trackColor="rgba(255, 255, 255, 0.3)"
+                />
+              ) : (
+                <Search className="w-6 h-6 ml-3" />
+              )}
               تحديث البيانات
             </button>
           </div>

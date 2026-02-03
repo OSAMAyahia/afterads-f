@@ -27,6 +27,7 @@ import { apiCall, API_ENDPOINTS, buildImageUrl } from '../../config/api';
 import { getUserOrders } from '../../utils/api';
 import OrderTrackingModal from '../modals/OrderTrackingModal';
 import PriceDisplay from '../ui/PriceDisplay';
+import Spinner from '../ui/Spinner';
 
 interface UserData {
   _id: string;
@@ -416,7 +417,9 @@ const UserProfile: React.FC = () => {
     return (
       <div className="min-h-screen bg-[#1a1a1a] flex items-center justify-center px-4">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#18b5d5] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="flex justify-center mb-4">
+            <Spinner size={64} />
+          </div>
           <p className="text-white text-lg">{t('user_profile.loading_data')}</p>
         </div>
       </div>

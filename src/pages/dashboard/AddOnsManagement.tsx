@@ -4,6 +4,7 @@ import { Plus, Edit, Trash2, Package, DollarSign, FileText, HelpCircle, MessageS
 import { smartToast } from '../../utils/toastConfig';
 import { apiCall, API_ENDPOINTS } from '../../config/api';
 import { useApiQuery } from '../../hooks/useApiQuery';
+import Spinner from '../../components/ui/Spinner';
 
 interface AddOn {
   id?: number;
@@ -253,7 +254,7 @@ const AddOnsManagement: React.FC<AddOnsManagementProps> = ({ onClose }) => {
   if (loading || productsLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+        <Spinner size={48} primaryColor="#000000" secondaryColor="#000000" trackColor="rgba(0, 0, 0, 0.2)" />
       </div>
     );
   }

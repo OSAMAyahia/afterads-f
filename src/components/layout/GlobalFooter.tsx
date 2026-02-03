@@ -302,7 +302,7 @@ const { data: pagesResp } = useApiQuery<any>({
          <div className="flex items-center gap-3">
 
   {/* مصر */}
-  <img 
+  {/* <img 
     src={R} 
     alt="Egypt" 
     className="w-12 h-9  "
@@ -310,19 +310,19 @@ const { data: pagesResp } = useApiQuery<any>({
   />
 
   {/* قلب */}
-  <img 
+  {/* <img 
     src={Heart} 
     alt="Love" 
     className="w-6 h-6 object-contain animate-pulse"
-  />
+  /> */}
 
   {/* السعودية */}
-  <img 
+  {/* <img 
     src={KSA} 
     alt="Saudi Arabia" 
     className="w-12 h-9 object-contain"
     title="السعودية"
-  />
+  /> */} 
 </div>
 
 

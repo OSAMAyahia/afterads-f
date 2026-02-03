@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, ArrowRight, Package, Filter, Grid, List, RefreshCw } from 'lucide-react';
+import { ChevronLeft, ArrowRight, Package, Filter, Grid, List } from 'lucide-react';
 import ProductCard from './ui/ProductCard';
 import { extractIdFromSlug, isValidSlug, createProductSlug } from '../utils/slugify';
 import { apiCall, API_ENDPOINTS, buildImageUrl } from '../config/api';
 import { useApiQuery } from '../hooks/useApiQuery';
+import Spinner from './ui/Spinner';
 
 interface Product {
   id: number;
@@ -77,7 +78,9 @@ const ProductsByCategory: React.FC = () => {
     return (
       <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 mt-[70px] sm:mt-[80px]" dir="rtl">
         <div className="text-center py-6 sm:py-8">
-          <RefreshCw className="h-6 w-6 sm:h-8 sm:w-8 animate-spin mx-auto text-green-600 mb-2 sm:mb-3" />
+          <div className="flex justify-center mb-2 sm:mb-3">
+            <Spinner size={32} primaryColor="#16a34a" secondaryColor="#16a34a" trackColor="rgba(22, 163, 74, 0.2)" />
+          </div>
           <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">جاري التحميل...</h3>
           <p className="text-xs sm:text-sm text-gray-600">يتم تحميل منتجات التصنيف</p>
         </div>

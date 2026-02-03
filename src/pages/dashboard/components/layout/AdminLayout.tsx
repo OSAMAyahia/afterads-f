@@ -20,6 +20,7 @@ import ThemeWorksManagement from "../../sections/ThemeWorksManagement";
 import DocumentationManagement from "../../sections/DocumentationManagement";
 import AnnouncementBarManagement from '../../sections/AnnouncementBarManagement';
 import NavigationVisibilitySettings from "../../sections/NavigationVisibilitySettings";
+import HomeSectionsCMS from "../../sections/HomeSectionsCMS";
 
 const AdminLayout: React.FC = () => {
 
@@ -61,6 +62,7 @@ const AdminLayout: React.FC = () => {
           <Route path="theme-works" element={<ThemeWorksManagement />} />
           <Route path="announcement-bar" element={<AnnouncementBarManagement />} />
           <Route path="navigation-visibility" element={<NavigationVisibilitySettings />} />
+          <Route path="cms" element={<HomeSectionsCMS />} />
         </Routes>
       </div>
     </div>

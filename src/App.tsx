@@ -90,6 +90,8 @@ interface Client {
   createdAt: string;
 }
 
+type VisibilityMap = Record<string, boolean>;
+
 // Memoized Components
 const MemoizedThemesSection = memo(ThemesSection);
 const MemoizedCategoriesSection = memo(CategoriesSection);
@@ -165,6 +167,7 @@ const App: React.FC = () => {
   const { data: staticResp, isLoading: staticLoading } = useApiQuery<any>({ endpoint: API_ENDPOINTS.STATIC_PAGES, queryKey: ['static-pages'] });
   const { data: testimonialsResp, isLoading: testimonialsLoading } = useApiQuery<any>({ endpoint: API_ENDPOINTS.TESTIMONIALS, queryKey: ['testimonials'] });
   const { data: clientsResp, isLoading: clientsLoading } = useApiQuery<any>({ endpoint: API_ENDPOINTS.CLIENTS, queryKey: ['clients'] });
+  const { data: homeSectionsResp } = useApiQuery<any>({ endpoint: API_ENDPOINTS.HOME_SECTIONS_VISIBILITY, queryKey: ['home-sections-visibility'], staleTime: 60 * 60 * 1000 });
 
   useEffect(() => {
     const cats = Array.isArray(categoriesResp) ? categoriesResp : [];
@@ -218,6 +221,24 @@ const App: React.FC = () => {
       setClients([]);
     }
   }, [clientsResp]);
+
+  const homeSectionsVisibility: VisibilityMap = useMemo(() => {
+    const defaults: VisibilityMap = {
+      hero: true,
+      themes: true,
+      services: true,
+      categories: true,
+      testimonials: true,
+      clients: true,
+      faq: true,
+      contact: true,
+    };
+    const obj = Array.isArray(homeSectionsResp) ? homeSectionsResp[0] : (homeSectionsResp?.data ?? homeSectionsResp);
+    if (obj?.sections && typeof obj.sections === 'object') {
+      return { ...defaults, ...obj.sections };
+    }
+    return defaults;
+  }, [homeSectionsResp]);
 
   useEffect(() => {
     const loadingDerived = categoriesLoading || productsLoading || staticLoading || testimonialsLoading || clientsLoading;
@@ -348,42 +369,57 @@ const App: React.FC = () => {
     >      
       
       <div className="pt-0">
-        <section data-section="hero">
-          <MemoizedHeroSection />
-        </section>
+        {homeSectionsVisibility.hero && (
+          <section data-section="hero">
+            <MemoizedHeroSection />
+          </section>
+        )}
 
-        <section data-section="themes">
-          <MemoizedThemesSection themes={themes} />
-        </section>
+        {homeSectionsVisibility.themes && (
+          <section data-section="themes">
+            <MemoizedThemesSection themes={themes} />
+          </section>
+        )}
 
-        <section data-section="services">
-          <MemoizedAboutUsSection />
-        </section>
+        {homeSectionsVisibility.services && (
+          <section data-section="services">
+            <MemoizedAboutUsSection />
+          </section>
+        )}
  
 
-
-        <section data-section="categories">
-          <MemoizedCategoriesSection 
-            loading={categoriesLoading || productsLoading}
-            categoryProducts={categoryProducts}
-          />
-        </section>
+        {homeSectionsVisibility.categories && (
+          <section data-section="categories">
+            <MemoizedCategoriesSection 
+              loading={categoriesLoading || productsLoading}
+              categoryProducts={categoryProducts}
+            />
+          </section>
+        )}
      
-        <section data-section="testimonials">
-          <MemoizedTestimonialsSection testimonials={testimonials} />
-        </section>
+        {homeSectionsVisibility.testimonials && (
+          <section data-section="testimonials">
+            <MemoizedTestimonialsSection testimonials={testimonials} />
+          </section>
+        )}
 
-        <section data-section="clients">
-          <MemoizedClientsSection clients={clients} />
-        </section>
+        {homeSectionsVisibility.clients && (
+          <section data-section="clients">
+            <MemoizedClientsSection clients={clients} />
+          </section>
+        )}
 
-        <section data-section="faq">
-          <MemoizedFAQSection />
-        </section>
+        {homeSectionsVisibility.faq && (
+          <section data-section="faq">
+            <MemoizedFAQSection />
+          </section>
+        )}
 
-        <section data-section="contact">
-          <MemoizedContactSection />
-        </section>
+        {homeSectionsVisibility.contact && (
+          <section data-section="contact">
+            <MemoizedContactSection />
+          </section>
+        )}
       </div>
 
       <ScrollToTopButton />

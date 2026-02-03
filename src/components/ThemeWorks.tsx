@@ -4,6 +4,7 @@ import { apiCall, API_ENDPOINTS, buildImageUrl } from '../config/api';
 import { useApiQuery } from '../hooks/useApiQuery';
 import fallbackImg from '../assets/search_not_found.png';
 import { useTranslation } from 'react-i18next';
+import Spinner from './ui/Spinner';
 
 interface ThemeWork {
   _id?: string;
@@ -350,7 +351,7 @@ const ThemeWorks: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-20">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#18b5d8]"></div>
+        <Spinner size={48} />
       </div>
     );
   }

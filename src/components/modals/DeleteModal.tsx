@@ -1,4 +1,5 @@
 import React from 'react';
+import Spinner from '../ui/Spinner';
 
 interface DeleteModalProps {
   isOpen: boolean;
@@ -114,7 +115,13 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
             >
               {loading ? (
                 <>
-                  <div className="animate-spin rounded-full h-3 h-3 sm:h-4 sm:w-4 border-b-2 border-white mr-2"></div>
+                  <Spinner
+                    size={16}
+                    className="mr-2"
+                    primaryColor="#ffffff"
+                    secondaryColor="#ffffff"
+                    trackColor="rgba(255, 255, 255, 0.3)"
+                  />
                   <span className="hidden sm:inline">جاري الحذف...</span>
                   <span className="sm:hidden">حذف...</span>
                 </>

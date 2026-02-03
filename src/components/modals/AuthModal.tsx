@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
-import { X, Mail, Lock, User, Phone, Eye, EyeOff, AlertCircle, Loader } from 'lucide-react';
+import { X, Mail, Lock, User, Phone, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { smartToast } from '../../utils/toastConfig';
 import { apiCall, API_ENDPOINTS } from '../../config/api';
 import { useTranslation } from 'react-i18next';
+import Spinner from '../ui/Spinner';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -330,7 +331,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
               >
                 {loading ? (
                   <>
-                    <Loader className="w-5 h-5 animate-spin" />
+                    <Spinner
+                      size={20}
+                      className="inline-block"
+                      primaryColor="#ffffff"
+                      secondaryColor="#ffffff"
+                      trackColor="rgba(255, 255, 255, 0.3)"
+                    />
                     <span>{t('auth.messages.loggingIn')}</span>
                   </>
                 ) : (
@@ -497,7 +504,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
               >
                 {loading ? (
                   <>
-                    <Loader className="w-4 h-4 animate-spin" />
+                    <Spinner
+                      size={16}
+                      className="inline-block"
+                      primaryColor="#ffffff"
+                      secondaryColor="#ffffff"
+                      trackColor="rgba(255, 255, 255, 0.3)"
+                    />
                     <span>{t('auth.messages.creatingAccount')}</span>
                   </>
                 ) : (

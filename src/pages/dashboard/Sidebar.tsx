@@ -252,6 +252,12 @@ const Sidebar: React.FC<SidebarProps> = ({
           role: 'admin'
         },
         {
+          path: 'cms',
+          name: 'CMS الرئيسية',
+          icon: <Settings className="w-5 h-5" />,
+          role: 'admin'
+        },
+        {
           path: 'testimonials',
           name: 'شهادة العملاء',
           icon: <MessageSquare className="w-5 h-5" />,

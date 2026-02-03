@@ -1341,7 +1341,13 @@
                   >
                     {loading ? (
                       <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <Spinner
+                          size={16}
+                          className="inline-block"
+                          primaryColor="#ffffff"
+                          secondaryColor="#ffffff"
+                          trackColor="rgba(255, 255, 255, 0.3)"
+                        />
                         جاري الحفظ...
                       </>
                     ) : (

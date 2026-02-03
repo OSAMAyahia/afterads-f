@@ -8,7 +8,6 @@ import {
   FileSpreadsheet,
   Search,
   Filter,
-  RefreshCw,
   CheckCircle,
   Clock,
   AlertCircle,
@@ -18,9 +17,9 @@ import {
   Share2
 } from 'lucide-react';
 import { smartToast } from '../../../utils/toastConfig';
+import Spinner from '../../../components/ui/Spinner';
 import { apiCall, API_ENDPOINTS, buildApiUrl } from '../../../config/api';
 import { useApiQuery } from '../../../hooks/useApiQuery';
-import Spinner from '../../../components/ui/Spinner';
 
 interface OrderItem {
   productId: number;
@@ -645,7 +644,13 @@ const InvoiceManagement: React.FC = () => {
               className="w-full flex items-center justify-center px-6 py-3 bg-gradient-to-r from-[#203f61] to-[#2a537e] text-white rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium"
             >
               {isGenerating ? (
-                <RefreshCw className="w-5 h-5 animate-spin ml-2" />
+                <Spinner
+                  size={20}
+                  className="ml-2"
+                  primaryColor="#ffffff"
+                  secondaryColor="#ffffff"
+                  trackColor="rgba(255, 255, 255, 0.3)"
+                />
               ) : (
                 <FileSpreadsheet className="w-5 h-5 ml-2" />
               )}
@@ -714,7 +719,13 @@ const InvoiceManagement: React.FC = () => {
               className="w-full flex items-center justify-center px-6 py-3 bg-gradient-to-r from-[#203f61] to-[#2a537e] text-white rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium"
             >
               {isGenerating ? (
-                <RefreshCw className="w-5 h-5 animate-spin ml-2" />
+                <Spinner
+                  size={20}
+                  className="ml-2"
+                  primaryColor="#ffffff"
+                  secondaryColor="#ffffff"
+                  trackColor="rgba(255, 255, 255, 0.3)"
+                />
               ) : (
                 <FileSpreadsheet className="w-5 h-5 ml-2" />
               )}

@@ -3,6 +3,7 @@ import { X, Upload, Image as ImageIcon, ExternalLink } from 'lucide-react';
 import { smartToast } from '../../utils/toastConfig';
 import { apiCall, API_ENDPOINTS, buildApiUrl, buildImageUrl } from '../../config/api';
 import { getPortfolioCategories, createPortfolio, updatePortfolio } from '../../utils/api';
+import Spinner from '../ui/Spinner';
 
 interface Portfolio {
   id: number;
@@ -420,7 +421,13 @@ const PortfolioModal: React.FC<PortfolioModalProps> = ({ isOpen, onClose, onSucc
             className="px-6 py-2.5 bg-black text-white rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center gap-2"
           >
             {loading && (
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <Spinner
+                size={16}
+                className="inline-block"
+                primaryColor="#ffffff"
+                secondaryColor="#ffffff"
+                trackColor="rgba(255, 255, 255, 0.3)"
+              />
             )}
             {loading ? 'جاري الحفظ...' : (
               portfolio ? 'تحديث العمل' : 'إضافة العمل'

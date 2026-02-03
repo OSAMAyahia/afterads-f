@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircle, XCircle, AlertTriangle, RefreshCw, Wifi, WifiOff, Database, User, ShoppingCart } from 'lucide-react';
 import { apiCall, API_ENDPOINTS } from '../config/api';
+import Spinner from './ui/Spinner';
 
 interface DiagnosticResult {
   name: string;
@@ -185,7 +186,17 @@ const CartDiagnostics: React.FC = () => {
               disabled={isRunning}
               className="flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg hover:bg-white/30 transition-all duration-300 font-semibold disabled:opacity-50"
             >
-              <RefreshCw className={`w-4 h-4 ${isRunning ? 'animate-spin' : ''}`} />
+              {isRunning ? (
+                <Spinner
+                  size={16}
+                  className="inline-block"
+                  primaryColor="#ffffff"
+                  secondaryColor="#ffffff"
+                  trackColor="rgba(255, 255, 255, 0.3)"
+                />
+              ) : (
+                <RefreshCw className="w-4 h-4" />
+              )}
               <span>إعادة الفحص</span>
             </button>
           </div>
@@ -194,7 +205,7 @@ const CartDiagnostics: React.FC = () => {
         <div className="p-6">
           {isRunning ? (
             <div className="text-center py-8">
-              <RefreshCw className="w-8 h-8 text-blue-500 animate-spin mx-auto mb-4" />
+              <Spinner size={32} primaryColor="#3b82f6" secondaryColor="#3b82f6" trackColor="rgba(59, 130, 246, 0.2)" />
               <p className="text-gray-600">جاري فحص النظام...</p>
             </div>
           ) : (

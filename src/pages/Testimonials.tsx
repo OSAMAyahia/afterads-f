@@ -4,6 +4,7 @@ import { User, Search, Plus, Edit, Trash2 } from 'lucide-react';
 import { apiCall, API_ENDPOINTS, buildImageUrl } from '../config/api';
 import { smartToast } from '../utils/toastConfig'; 
 import logo from '../assets/logo.webp'; 
+import Spinner from '../components/ui/Spinner';
 
 interface Testimonial {
   id: number;
@@ -101,7 +102,7 @@ const Testimonials: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center" dir="rtl">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+          <Spinner size={128} primaryColor="#2563eb" secondaryColor="#2563eb" trackColor="rgba(37, 99, 235, 0.2)" />
           <p className="mt-4 text-gray-600">جاري تحميل الشهادات...</p>
         </div>
       </div>

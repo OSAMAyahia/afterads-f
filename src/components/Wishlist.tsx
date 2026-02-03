@@ -10,6 +10,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import PriceDisplay from './ui/PriceDisplay';
 import notfoundImg from '../assets/search_not_found.png';
 import ConfirmationModal from './modals/ConfirmationModal';
+import Spinner from './ui/Spinner';
 
 interface Product {
   id: number;
@@ -253,7 +254,7 @@ const Wishlist: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-br from-[#18b5d8]/20 to-[#16a2c7]/10 backdrop-blur-md border border-[#18b5d8]/30 transition-all duration-500" style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}></div>
               <div className="absolute inset-2 bg-gradient-to-br from-[#18b5d8]/15 to-transparent transition-all duration-700" style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}></div>
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#18b5d8]"></div>
+                <Spinner size={48} />
               </div>
             </div>
             <p className="text-white text-lg sm:text-xl font-black">جاري تحميل قائمة المفضلة...</p>

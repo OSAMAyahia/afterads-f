@@ -7,6 +7,7 @@ import { ChevronLeft, Package, Sparkles } from 'lucide-react';
 import { createCategorySlug } from './utils/slugify';
 import { apiCall, API_ENDPOINTS, buildImageUrl } from './config/api';
 import PriceDisplay from './components/ui/PriceDisplay';
+import Spinner from './components/ui/Spinner';
 
 interface Product {
   id: number;
@@ -68,7 +69,7 @@ const App: React.FC = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-pink-50 to-rose-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-pink-500 mx-auto mb-4"></div>
+          <Spinner size={128} primaryColor="#ec4899" secondaryColor="#ec4899" trackColor="rgba(236, 72, 153, 0.2)" />
           <h2 className="text-2xl font-bold text-gray-800 mb-2">جاري التحميل...</h2>
           <p className="text-gray-600">يرجى الانتظار</p>
         </div>
