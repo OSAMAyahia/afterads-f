@@ -17,6 +17,8 @@ const HomeSectionsCMS: React.FC = () => {
 
   const defaultSections: VisibilityMap = useMemo(() => ({
     hero: true,
+    heroThemeButton: true,
+    heroMoreDetailsButton: true,
     themes: true,
     services: true,
     categories: true,
@@ -28,6 +30,8 @@ const HomeSectionsCMS: React.FC = () => {
 
   const labels: Record<string, string> = useMemo(() => ({
     hero: 'البداية',
+    heroThemeButton: 'زر "عرض الثيم"',
+    heroMoreDetailsButton: 'زر "تفاصيل أكثر"',
     themes: 'ثيم ملاك',
     services: 'لماذا نحن',
     categories: 'الخدمات',

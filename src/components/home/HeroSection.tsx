@@ -8,7 +8,15 @@ import malakImage from '../../assets/malak-removebg-preview.png';
 // 1. إضافة video cache في بداية الملف
 const videoCache = new Map<string, Blob>();
 
-const HeroSection: React.FC = () => {
+type HeroSectionProps = {
+  showThemeButton?: boolean;
+  showMoreDetailsButton?: boolean;
+};
+
+const HeroSection: React.FC<HeroSectionProps> = ({
+  showThemeButton = true,
+  showMoreDetailsButton = true,
+}) => {
   const { t } = useTranslation();
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [videoBlobUrl, setVideoBlobUrl] = useState<string | null>(null);
@@ -29,10 +37,10 @@ const HeroSection: React.FC = () => {
         // إذا ما كان موجود، حمّله
         const response = await fetch(hero);
         if (!response.ok) throw new Error('Failed to fetch video');
-        
+
         const blob = await response.blob();
         videoCache.set(hero, blob);
-        
+
         const blobUrl = URL.createObjectURL(blob);
         setVideoBlobUrl(blobUrl);
       } catch (error) {
@@ -56,7 +64,7 @@ const HeroSection: React.FC = () => {
           console.warn('Autoplay prevented:', error);
           // محاولة تشغيل بدون صوت إذا فشل
           v.muted = true;
-          v.play().catch(() => {});
+          v.play().catch(() => { });
         });
     };
 
@@ -76,13 +84,12 @@ const HeroSection: React.FC = () => {
   return (
     <section className="relative h-screen w-full overflow-hidden pt-28">
       {/* Background Placeholder Image */}
-      <div 
-        className={`absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat z-0 transition-opacity duration-500 ${
-          videoLoaded ? 'opacity-0' : 'opacity-100'
-        }`}
+      <div
+        className={`absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat z-0 transition-opacity duration-500 ${videoLoaded ? 'opacity-0' : 'opacity-100'
+          }`}
         style={{ backgroundImage: `url(${heroImage})` }}
       />
-      
+
       {/* 4. استخدام blob URL إذا كان موجود، وإضافة preload الفيديو */}
       <video
         ref={videoRef}
@@ -92,9 +99,8 @@ const HeroSection: React.FC = () => {
         playsInline
         preload="metadata"
         poster={heroImage}
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-          videoLoaded ? 'opacity-100' : 'opacity-0'
-        }`}
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${videoLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
         src={videoBlobUrl || hero}
         onLoadedData={() => setVideoLoaded(true)}
         onCanPlay={() => setVideoLoaded(true)}
@@ -109,10 +115,10 @@ const HeroSection: React.FC = () => {
       {/* المحتوى الرئيسي */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full w-full text-center px-8 space-y-5">
 
-      {/* صورة مالك */}
+        {/* صورة مالك */}
         <div className="relative">
-          <img 
-            src={malakImage} 
+          <img
+            src={malakImage}
             alt="Malak"
             className="w-24 sm:w-32 lg:w-40 h-auto object-contain drop-shadow-2xl transform hover:scale-105 transition-transform duration-500"
           />
@@ -120,38 +126,42 @@ const HeroSection: React.FC = () => {
           <div className="absolute inset-0 bg-[#18b5d5]/20 blur-3xl -z-10 animate-pulse"></div>
         </div>
 
-     
+
 
         <div className="relative group flex gap-2 mt-16 sm:mt-16 md:mt-12 lg:mt-10">
-         <button
-  onClick={() => {
-    const section = document.querySelector('[data-section="themes"]');
-    section?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }}
-  className="btn btn-outline btn-standard-outline px-6 py-2 text-sm sm:px-8 sm:py-3 sm:text-base md:px-10 md:py-4 md:text-lg border-white/30 text-white rounded-lg sm:rounded-xl md:rounded-2xl backdrop-blur-md"
-  style={{
-    border: '2px solid rgba(255,255,255,0.3)'
-  }}
->
-  <span className="relative z-10">
-    {t('home.hero.theme_showcase')}
-  </span>
-</button>
+          {showThemeButton && (
+            <button
+              onClick={() => {
+                const section = document.querySelector('[data-section="themes"]');
+                section?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+              className="btn btn-outline btn-standard-outline px-6 py-2 text-sm sm:px-8 sm:py-3 sm:text-base md:px-10 md:py-4 md:text-lg border-white/30 text-white rounded-lg sm:rounded-xl md:rounded-2xl backdrop-blur-md"
+              style={{
+                border: '2px solid rgba(255,255,255,0.3)'
+              }}
+            >
+              <span className="relative z-10">
+                {t('home.hero.theme_showcase')}
+              </span>
+            </button>
+          )}
 
-        <button
-  onClick={() => {
-    const section = document.querySelector('[data-section="services"]');
-    section?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }}
-  className="btn btn-outline btn-standard-outline px-6 py-2 text-sm sm:px-8 sm:py-3 sm:text-base md:px-10 md:py-4 md:text-lg border-white/30 text-white rounded-lg sm:rounded-xl md:rounded-2xl backdrop-blur-md"
-  style={{
-    border: '2px solid rgba(255,255,255,0.3)'
-  }}
->
-  <span className="relative z-10">
-    {t('home.hero.why_us')}
-  </span>
-</button>
+          {showMoreDetailsButton && (
+            <button
+              onClick={() => {
+                const section = document.querySelector('[data-section="services"]');
+                section?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+              className="btn btn-outline btn-standard-outline px-6 py-2 text-sm sm:px-8 sm:py-3 sm:text-base md:px-10 md:py-4 md:text-lg border-white/30 text-white rounded-lg sm:rounded-xl md:rounded-2xl backdrop-blur-md"
+              style={{
+                border: '2px solid rgba(255,255,255,0.3)'
+              }}
+            >
+              <span className="relative z-10">
+                {t('home.hero.why_us')}
+              </span>
+            </button>
+          )}
 
           {/* الهالة الخارجية */}
           {/* <div className="absolute inset-0 rounded-2xl bg-[#18b5d5] opacity-0 group-hover:opacity-30 blur-xl scale-75 group-hover:scale-125 transition-all duration-700 -z-30"></div> */}

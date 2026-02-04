@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { smartToast } from '../utils/toastConfig';
  
@@ -324,11 +324,7 @@ const PreviewModal: React.FC<{
 const ThemeDetail: React.FC = () => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
-  const { param } = useParams<{ param?: string }>();
   const navigate = useNavigate();
-  const location = useLocation();
-  const isNumericId = param && /^\d+$/.test(param);
-  const themeId = isNumericId ? param : undefined;
 
   const purchaseSectionRef = useRef<HTMLDivElement>(null);
   const featuresRef = useRef<HTMLDivElement>(null);
@@ -359,6 +355,7 @@ const ThemeDetail: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalImages, setModalImages] = useState<string[]>([]);
   const [modalTitle, setModalTitle] = useState('');
+  const [themeProductId, setThemeProductId] = useState<number | string | null>(null);
 
   const [isScrolling, setIsScrolling] = useState(false);
   const [currentScrollDevice, setCurrentScrollDevice] = useState<'desktop' | 'tablet' | 'mobile' | null>(null);
@@ -651,8 +648,42 @@ const goToImage = (i: number) => {
   });
 };
 
-  const { data: themeResp, isLoading: themeLoading } = useApiQuery<any>({ endpoint: themeId ? API_ENDPOINTS.PRODUCT_BY_ID(themeId) : '', queryKey: ['theme', themeId], enabled: !!themeId });
+  const { data: productsResp, isLoading: productsLoading } = useApiQuery<any>({ endpoint: API_ENDPOINTS.PRODUCTS, queryKey: ['products-for-theme'] });
+  const { data: themeResp, isLoading: themeLoading } = useApiQuery<any>({ endpoint: themeProductId ? API_ENDPOINTS.PRODUCT_BY_ID(themeProductId) : '', queryKey: ['theme', themeProductId], enabled: !!themeProductId });
   const { data: categoryResp, isLoading: categoryLoading } = useApiQuery<any>({ endpoint: themeResp?.categoryId ? API_ENDPOINTS.CATEGORY_BY_ID(themeResp.categoryId) : '', queryKey: ['category', themeResp?.categoryId], enabled: !!themeResp?.categoryId });
+
+  useEffect(() => {
+    if (!productsResp) return;
+    const arr = Array.isArray(productsResp) ? productsResp : (productsResp?.products || productsResp?.data || []);
+    const themeProducts = Array.isArray(arr)
+      ? arr.filter((p: any) => {
+          const type = (p.productType || '').toLowerCase();
+          const name = (p.name || '').toLowerCase();
+          const nameAr = (p.name_ar || '').toLowerCase();
+          const nameEn = (p.name_en || '').toLowerCase();
+          return type === 'theme' || name.includes('ثيم') || nameAr.includes('ثيم') || nameEn.includes('theme');
+        })
+      : [];
+    const uniqueThemes = Array.from(new Map(themeProducts.map((p: any) => [String(p.name || p.id).trim().toLowerCase(), p])).values());
+    const picked = uniqueThemes[0] || themeProducts[0];
+    setThemeProductId(picked?.id ?? null);
+  }, [productsResp]);
+
+  useEffect(() => {
+    if (productsLoading || themeLoading) {
+      setLoading(true);
+    }
+  }, [productsLoading, themeLoading]);
+
+  useEffect(() => {
+    if (productsLoading) return;
+    if (!themeProductId) {
+      setError('لم يتم العثور على الثيم');
+      setLoading(false);
+      return;
+    }
+    setError(null);
+  }, [productsLoading, themeProductId]);
 
   useEffect(() => {
     if (!themeResp) return;

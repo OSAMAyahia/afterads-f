@@ -225,6 +225,8 @@ const App: React.FC = () => {
   const homeSectionsVisibility: VisibilityMap = useMemo(() => {
     const defaults: VisibilityMap = {
       hero: true,
+      heroThemeButton: true,
+      heroMoreDetailsButton: true,
       themes: true,
       services: true,
       categories: true,
@@ -371,7 +373,10 @@ const App: React.FC = () => {
       <div className="pt-0">
         {homeSectionsVisibility.hero && (
           <section data-section="hero">
-            <MemoizedHeroSection />
+            <MemoizedHeroSection
+              showThemeButton={homeSectionsVisibility.heroThemeButton !== false}
+              showMoreDetailsButton={homeSectionsVisibility.heroMoreDetailsButton !== false}
+            />
           </section>
         )}
 

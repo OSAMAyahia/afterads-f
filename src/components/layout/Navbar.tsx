@@ -14,6 +14,8 @@ import { createCategorySlug } from '../../utils/slugify';
 import { apiCall, API_ENDPOINTS, buildImageUrl } from '../../config/api';
 import { useApiQuery } from '../../hooks/useApiQuery';
 
+const THEME_MALAK_HREF = '/theme/ثيم-ملاك';
+
 interface CartItem {
   id: number;
   productId: number;
@@ -887,7 +889,7 @@ function Navbar() {
                       </button>
                     )}
                   </div>
-                                ) : isTablet ? (
+                ) : isTablet ? (
                   // Tablet: Show logo only
                   <Link to="/" onClick={() => setIsMenuOpen(false)} className="cursor-pointer">
                     <img src={logo} alt="Logo" className="h-6 md:h-8 w-auto" />
@@ -904,12 +906,12 @@ function Navbar() {
                 {[
                   { name: t('nav.home'), href: '/' },
                   // { name: t('nav.products'), href: '/products' },
-                  { name: t('nav.theme_malak'), href: '/theme/55' },
+                  { name: t('nav.theme_malak'), href: THEME_MALAK_HREF, visibilityKey: '/theme/55' },
                   { name: t('nav.blog'), href: '/blog' },
                   { name: t('nav.documentation', { defaultValue: 'التوثيق' }), href: '/documentation' },
                   { name: t('nav.products'), href: '/categories' },
                   { name: t('nav.contact'), href: '/contact' }
-                ].filter(link => shouldShowLink('navbar', link.href)).map((link) => (
+                ].filter((link: any) => shouldShowLink('navbar', link.visibilityKey ?? link.href)).map((link) => (
                   <Link
                     key={link.name}
                     to={link.href}
@@ -1292,12 +1294,12 @@ function Navbar() {
                 {[
                   { name: t('nav.home'), href: '/', icon: Home, color: '#18b5d8' },
                   // { name: t('nav.products'), href: '/products', icon: Grid3X3, color: '#0891b2' },
-                  { name: t('nav.theme_malak'), href: '/theme/55', icon: Crown, color: '#f59e0b' },
+                  { name: t('nav.theme_malak'), href: THEME_MALAK_HREF, visibilityKey: '/theme/55', icon: Crown, color: '#f59e0b' },
                   { name: t('nav.blog'), href: '/blog', icon: BookOpen, color: '#10b981' },
                   { name: t('nav.documentation', { defaultValue: 'التوثيق' }), href: '/documentation', icon: FileText, color: '#60a5fa' },
                   { name: t('nav.products'), href: '/categories', icon: Package, color: '#f97316' },
                   { name: t('nav.contact'), href: '/contact', icon: Phone, color: '#ef4444' }
-                ].filter(link => shouldShowLink('navbar', link.href)).map((link, index) => (
+                ].filter((link: any) => shouldShowLink('navbar', link.visibilityKey ?? link.href)).map((link, index) => (
                   <Link
                     key={link.name}
                     to={link.href}

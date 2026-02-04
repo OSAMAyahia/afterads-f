@@ -151,6 +151,8 @@
       setCategories(data);
     }, [categoriesResp]);
 
+    const hasThemeProduct = products.some((p) => p.productType === 'theme' && (!editingProduct || p.id !== editingProduct.id));
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -170,6 +172,14 @@
     if (!formData.categoryId) {
       setError('الرجاء اختيار تصنيف المنتج');
       smartToast.dashboard.error('الرجاء اختيار تصنيف المنتج');
+      return;
+    }
+
+    const normalizedProductType = (formData.productType || 'product') as 'product' | 'theme';
+    if (normalizedProductType === 'theme' && hasThemeProduct) {
+      const msg = 'يمكن إضافة ثيم واحد فقط';
+      setError(msg);
+      smartToast.dashboard.error(msg);
       return;
     }
 
@@ -198,7 +208,7 @@
         price: Number(formData.price),
         isAvailable: formData.isAvailable ?? true,
         categoryId: Number(formData.categoryId),
-        productType: formData.productType || 'product',
+        productType: normalizedProductType,
         mainImage: formData.mainImage?.trim() || '',
         detailedImages: Array.isArray(formData.detailedImages) ? formData.detailedImages : [],
         isActive: formData.isActive ?? true,
@@ -857,7 +867,7 @@
       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61] transition-all bg-white"
     >
       <option value="product">منتج</option>
-      <option value="theme">ثيم</option>
+      <option value="theme" disabled={hasThemeProduct}>ثيم</option>
     </select>
   </div>
                       </div>
