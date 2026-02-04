@@ -92,6 +92,8 @@ interface Client {
 
 type VisibilityMap = Record<string, boolean>;
 
+const HOME_SECTIONS_STORAGE_KEY = 'ui_home_sections_visibility';
+
 // Memoized Components
 const MemoizedThemesSection = memo(ThemesSection);
 const MemoizedCategoriesSection = memo(CategoriesSection);
@@ -235,11 +237,30 @@ const App: React.FC = () => {
       faq: true,
       contact: true,
     };
+
+    let fromStorage: VisibilityMap | null = null;
+    try {
+      const raw = localStorage.getItem(HOME_SECTIONS_STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : null;
+      if (parsed && typeof parsed === 'object') {
+        fromStorage = parsed;
+      }
+    } catch { }
+
     const obj = Array.isArray(homeSectionsResp) ? homeSectionsResp[0] : (homeSectionsResp?.data ?? homeSectionsResp);
     if (obj?.sections && typeof obj.sections === 'object') {
-      return { ...defaults, ...obj.sections };
+      return { ...defaults, ...(fromStorage || {}), ...obj.sections };
     }
-    return defaults;
+    return { ...defaults, ...(fromStorage || {}) };
+  }, [homeSectionsResp]);
+
+  useEffect(() => {
+    const obj = Array.isArray(homeSectionsResp) ? homeSectionsResp[0] : (homeSectionsResp?.data ?? homeSectionsResp);
+    if (obj?.sections && typeof obj.sections === 'object') {
+      try {
+        localStorage.setItem(HOME_SECTIONS_STORAGE_KEY, JSON.stringify(obj.sections));
+      } catch { }
+    }
   }, [homeSectionsResp]);
 
   useEffect(() => {

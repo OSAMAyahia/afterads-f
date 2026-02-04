@@ -8,6 +8,8 @@ interface Section {
   name: string;
 }
 
+const HOME_SECTIONS_STORAGE_KEY = 'ui_home_sections_visibility';
+
 const ScrollProgressIndicator: React.FC = () => {
   const { t } = useTranslation();
   const [currentSection, setCurrentSection] = useState<number>(0);
@@ -30,11 +32,21 @@ const ScrollProgressIndicator: React.FC = () => {
       faq: true,
       contact: true,
     };
+
+    let fromStorage: Record<string, boolean> | null = null;
+    try {
+      const raw = localStorage.getItem(HOME_SECTIONS_STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : null;
+      if (parsed && typeof parsed === 'object') {
+        fromStorage = parsed;
+      }
+    } catch { }
+
     const obj = Array.isArray(homeSectionsResp) ? homeSectionsResp[0] : (homeSectionsResp?.data ?? homeSectionsResp);
     if (obj?.sections && typeof obj.sections === 'object') {
-      return { ...defaults, ...obj.sections };
+      return { ...defaults, ...(fromStorage || {}), ...obj.sections };
     }
-    return defaults;
+    return { ...defaults, ...(fromStorage || {}) };
   }, [homeSectionsResp]);
 
   const sections: Section[] = useMemo(() => ([

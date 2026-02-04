@@ -7,6 +7,8 @@ import smartToast from '../../../utils/toastConfig';
 
 type VisibilityMap = Record<string, boolean>;
 
+const HOME_SECTIONS_STORAGE_KEY = 'ui_home_sections_visibility';
+
 const HomeSectionsCMS: React.FC = () => {
   const queryClient = useQueryClient();
   const { data: savedResp } = useApiQuery<any>({
@@ -48,8 +50,19 @@ const HomeSectionsCMS: React.FC = () => {
     const obj = Array.isArray(savedResp) ? savedResp[0] : (savedResp?.data ?? savedResp);
     if (obj?.sections && typeof obj.sections === 'object') {
       setSections({ ...defaultSections, ...obj.sections });
+      try {
+        localStorage.setItem(HOME_SECTIONS_STORAGE_KEY, JSON.stringify(obj.sections));
+      } catch { }
       return;
     }
+    try {
+      const raw = localStorage.getItem(HOME_SECTIONS_STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : null;
+      if (parsed && typeof parsed === 'object') {
+        setSections({ ...defaultSections, ...parsed });
+        return;
+      }
+    } catch { }
     setSections(defaultSections);
   }, [defaultSections, savedResp]);
 
@@ -72,6 +85,10 @@ const HomeSectionsCMS: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sections })
       });
+      try {
+        localStorage.setItem(HOME_SECTIONS_STORAGE_KEY, JSON.stringify(sections));
+      } catch { }
+      queryClient.setQueryData(['home-sections-visibility'], { sections });
       queryClient.invalidateQueries({ queryKey: ['home-sections-visibility'] });
       smartToast.dashboard.success('تم حفظ إعدادات أقسام الرئيسية');
     } catch (e) {
