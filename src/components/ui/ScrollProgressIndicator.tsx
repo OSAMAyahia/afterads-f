@@ -157,38 +157,41 @@ const ScrollProgressIndicator: React.FC = () => {
       }} />
       <div className="relative" style={{ height: `${containerHeight}px` }}>
         <div className="absolute left-2 top-0 w-0.5 h-full bg-gradient-to-b from-[#18B5D5] to-[#1AC8E8]"></div>
-        <div className="absolute left-0.5 top-0 w-4 h-4 active-dot rounded-full"></div>
-        {sections.map((section, index) => (
-          <div key={section.id} className="relative">
-            <div
-              className={`absolute w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${
-                index === currentSection 
-                  ? 'scale-125 active-dot' 
-                  : 'white-dot hover:scale-125 animate-wiggle'
-              }`}
-              style={{ 
-                left: '5px', 
-                top: `${30 + (index * 35)}px` 
-              }}
-              onClick={() => handleSectionClick(index)}
-            ></div>
-            <div
-              className={`absolute cursor-pointer transition-all duration-300 ${
-                index === currentSection 
-                  ? 'text-[#18B5D5] font-semibold active-text' 
-                  : 'text-white hover:text-[#1AC8E8]'
-              }`}
-              style={{ 
-                left: '20px', 
-                top: `${22 + (index * 35)}px` 
-              }}
-              onClick={() => handleSectionClick(index)}
-            >
-              <span className="text-sm whitespace-nowrap font-medium">{section.name}</span>
+        <div className="absolute left-0 top-0 w-4 h-4 active-dot rounded-full"></div>
+        {sections.map((section, index) => {
+          const y = 30 + (index * 35);
+          return (
+            <div key={section.id} className="relative">
+              <div
+                className={`absolute -translate-y-1/2 w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${
+                  index === currentSection
+                    ? 'scale-125 active-dot'
+                    : 'white-dot hover:scale-125 animate-wiggle'
+                }`}
+                style={{
+                  left: '5px',
+                  top: `${y}px`
+                }}
+                onClick={() => handleSectionClick(index)}
+              ></div>
+              <div
+                className={`absolute -translate-y-1/2 cursor-pointer transition-all duration-300 ${
+                  index === currentSection
+                    ? 'text-[#18B5D5] font-semibold active-text'
+                    : 'text-white hover:text-[#1AC8E8]'
+                }`}
+                style={{
+                  left: '22px',
+                  top: `${y}px`
+                }}
+                onClick={() => handleSectionClick(index)}
+              >
+                <span className="text-sm whitespace-nowrap font-medium">{section.name}</span>
+              </div>
             </div>
-          </div>
-        ))}
-        <div className="absolute left-0.5 bottom-0 w-4 h-4 active-dot rounded-full"></div>
+          );
+        })}
+        <div className="absolute left-0 bottom-0 w-4 h-4 active-dot rounded-full"></div>
       </div>
     </div>
   );
