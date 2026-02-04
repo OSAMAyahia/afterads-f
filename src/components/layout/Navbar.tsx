@@ -42,6 +42,9 @@ interface StaticPage {
   isActive?: boolean;
 }
 
+const THEME_NAV_KEY = '/theme';
+const THEME_NAV_LEGACY_KEY = '/theme/55';
+
 function Navbar() {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
@@ -83,8 +86,15 @@ function Navbar() {
       Object.keys(m).forEach(k => { r[k] = (m as any)[k]; });
       return r;
     };
+    const navbar = normalize(obj?.navbar);
+    if (Object.prototype.hasOwnProperty.call(navbar, THEME_NAV_LEGACY_KEY) && !Object.prototype.hasOwnProperty.call(navbar, THEME_NAV_KEY)) {
+      navbar[THEME_NAV_KEY] = navbar[THEME_NAV_LEGACY_KEY];
+    }
+    if (Object.prototype.hasOwnProperty.call(navbar, THEME_NAV_LEGACY_KEY)) {
+      delete navbar[THEME_NAV_LEGACY_KEY];
+    }
     return {
-      navbar: normalize(obj?.navbar),
+      navbar,
       footerImportant: normalize(obj?.footerImportant),
       footerQuick: normalize(obj?.footerQuick),
       footerStaticPages: normalize(obj?.footerStaticPages)
@@ -92,14 +102,19 @@ function Navbar() {
   }, [navVisibilityResp]);
   const shouldShowLink = (section: keyof typeof navVisibility, key: string) => {
     const s = (navVisibility as any)[section] as Record<string, boolean>;
-    if (s && Object.prototype.hasOwnProperty.call(s, key)) {
-      return s[key] !== false;
+    const keysToCheck = key === THEME_NAV_KEY ? [THEME_NAV_KEY, THEME_NAV_LEGACY_KEY] : [key];
+    if (s) {
+      for (const k of keysToCheck) {
+        if (Object.prototype.hasOwnProperty.call(s, k)) return s[k] !== false;
+      }
     }
     try {
       const raw = localStorage.getItem('ui_navigation_visibility');
       const parsed = raw ? JSON.parse(raw) : {};
       const map = parsed[section] || {};
-      if (Object.prototype.hasOwnProperty.call(map, key)) return map[key] !== false;
+      for (const k of keysToCheck) {
+        if (Object.prototype.hasOwnProperty.call(map, k)) return map[k] !== false;
+      }
     } catch { }
     return true;
   };
@@ -943,7 +958,7 @@ function Navbar() {
                 {[
                   { name: t('nav.home'), href: '/' },
                   // { name: t('nav.products'), href: '/products' },
-                  { name: t('nav.theme_malak'), href: themeNav.href, visibilityKey: '/theme/55' },
+                  { name: t('nav.theme_malak'), href: themeNav.href, visibilityKey: THEME_NAV_KEY },
                   { name: t('nav.blog'), href: '/blog' },
                   { name: t('nav.documentation', { defaultValue: 'التوثيق' }), href: '/documentation' },
                   { name: t('nav.products'), href: '/categories' },
@@ -1331,7 +1346,7 @@ function Navbar() {
                 {[
                   { name: t('nav.home'), href: '/', icon: Home, color: '#18b5d8' },
                   // { name: t('nav.products'), href: '/products', icon: Grid3X3, color: '#0891b2' },
-                  { name: t('nav.theme_malak'), href: themeNav.href, visibilityKey: '/theme/55', icon: Crown, color: '#f59e0b' },
+                  { name: t('nav.theme_malak'), href: themeNav.href, visibilityKey: THEME_NAV_KEY, icon: Crown, color: '#f59e0b' },
                   { name: t('nav.blog'), href: '/blog', icon: BookOpen, color: '#10b981' },
                   { name: t('nav.documentation', { defaultValue: 'التوثيق' }), href: '/documentation', icon: FileText, color: '#60a5fa' },
                   { name: t('nav.products'), href: '/categories', icon: Package, color: '#f97316' },

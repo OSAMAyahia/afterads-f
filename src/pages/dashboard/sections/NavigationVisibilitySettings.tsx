@@ -15,6 +15,8 @@ interface VisibilitySettings {
 }
 
 const STORAGE_KEY = 'ui_navigation_visibility';
+const THEME_NAV_KEY = '/theme';
+const THEME_NAV_LEGACY_KEY = '/theme/55';
 
 const NavigationVisibilitySettings: React.FC = () => {
   const { t } = useTranslation();
@@ -22,10 +24,21 @@ const NavigationVisibilitySettings: React.FC = () => {
   const { data: savedResp } = useApiQuery<any>({ endpoint: API_ENDPOINTS.NAVIGATION_VISIBILITY, queryKey: ['navigation-visibility'], staleTime: 60 * 60 * 1000 });
   const queryClient = useQueryClient();
 
+  const normalizeNavbar = (map?: VisibilityMap): VisibilityMap => {
+    const next: VisibilityMap = { ...(map || {}) };
+    if (Object.prototype.hasOwnProperty.call(next, THEME_NAV_LEGACY_KEY) && !Object.prototype.hasOwnProperty.call(next, THEME_NAV_KEY)) {
+      next[THEME_NAV_KEY] = next[THEME_NAV_LEGACY_KEY];
+    }
+    if (Object.prototype.hasOwnProperty.call(next, THEME_NAV_LEGACY_KEY)) {
+      delete next[THEME_NAV_LEGACY_KEY];
+    }
+    return next;
+  };
+
   const defaultSettings: VisibilitySettings = useMemo(() => ({
     navbar: {
       '/': true,
-      '/theme/55': true,
+      '/theme': true,
       '/blog': true,
       '/documentation': true,
       '/categories': true,
@@ -53,7 +66,7 @@ const NavigationVisibilitySettings: React.FC = () => {
     const obj = Array.isArray(savedResp) ? savedResp[0] : (savedResp?.data ?? savedResp);
     if (obj) {
       setSettings({
-        navbar: { ...defaultSettings.navbar, ...(obj.navbar || {}) },
+        navbar: { ...defaultSettings.navbar, ...normalizeNavbar(obj.navbar || {}) },
         footerImportant: { ...defaultSettings.footerImportant, ...(obj.footerImportant || {}) },
         footerQuick: { ...defaultSettings.footerQuick, ...(obj.footerQuick || {}) },
         footerStaticPages: { ...(obj.footerStaticPages || {}) },
@@ -65,7 +78,7 @@ const NavigationVisibilitySettings: React.FC = () => {
       if (raw) {
         const parsed = JSON.parse(raw);
         setSettings({
-          navbar: { ...defaultSettings.navbar, ...(parsed.navbar || {}) },
+          navbar: { ...defaultSettings.navbar, ...normalizeNavbar(parsed.navbar || {}) },
           footerImportant: { ...defaultSettings.footerImportant, ...(parsed.footerImportant || {}) },
           footerQuick: { ...defaultSettings.footerQuick, ...(parsed.footerQuick || {}) },
           footerStaticPages: { ...(parsed.footerStaticPages || {}) },
