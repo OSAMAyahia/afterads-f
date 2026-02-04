@@ -10,11 +10,17 @@ import notfoundImg from '../../assets/istockphoto-1300845620-612x612-removebg-pr
 import malakImg from '../../assets/malak-removebg-preview.png';
 import LiveSearch from '../ui/LiveSearch';
 import LanguageCurrencySelector from '../ui/LanguageCurrencySelector';
-import { createCategorySlug } from '../../utils/slugify';
+import { createCategorySlug, createProductSlugNameOnly } from '../../utils/slugify';
 import { apiCall, API_ENDPOINTS, buildImageUrl } from '../../config/api';
 import { useApiQuery } from '../../hooks/useApiQuery';
 
-const THEME_MALAK_HREF = '/theme/ثيم-ملاك';
+interface ThemeProductLite {
+  id: number;
+  name?: string;
+  name_ar?: string;
+  name_en?: string;
+  productType?: string;
+}
 
 interface CartItem {
   id: number;
@@ -97,6 +103,37 @@ function Navbar() {
     } catch { }
     return true;
   };
+
+  const { data: productsResp } = useApiQuery<any>({
+    endpoint: API_ENDPOINTS.PRODUCTS,
+    queryKey: ['products'],
+    staleTime: 60 * 60 * 1000
+  });
+  const themeNav = React.useMemo(() => {
+    const arr = Array.isArray(productsResp?.products)
+      ? productsResp.products
+      : (Array.isArray(productsResp) ? productsResp : (productsResp?.data || []));
+
+    const themeProducts = Array.isArray(arr)
+      ? arr.filter((p: ThemeProductLite) => {
+          const type = String(p?.productType || '').toLowerCase();
+          const name = String(p?.name || '').toLowerCase();
+          const nameAr = String(p?.name_ar || '').toLowerCase();
+          const nameEn = String(p?.name_en || '').toLowerCase();
+          return type === 'theme' || name.includes('ثيم') || nameAr.includes('ثيم') || nameEn.includes('theme');
+        })
+      : [];
+
+    const picked = themeProducts[0] as ThemeProductLite | undefined;
+    const displayName = picked
+      ? (isRTL ? (picked.name_ar || picked.name || picked.name_en) : (picked.name_en || picked.name || picked.name_ar))
+      : undefined;
+
+    const safeName = String(displayName || t('nav.theme_malak')).trim();
+    const href = picked?.id ? `/theme/${createProductSlugNameOnly(safeName)}` : '/theme/55';
+
+    return { href };
+  }, [isRTL, productsResp, t]);
 
 
   // Function to get first letter of each name for mobile display
@@ -906,7 +943,7 @@ function Navbar() {
                 {[
                   { name: t('nav.home'), href: '/' },
                   // { name: t('nav.products'), href: '/products' },
-                  { name: t('nav.theme_malak'), href: THEME_MALAK_HREF, visibilityKey: '/theme/55' },
+                  { name: t('nav.theme_malak'), href: themeNav.href, visibilityKey: '/theme/55' },
                   { name: t('nav.blog'), href: '/blog' },
                   { name: t('nav.documentation', { defaultValue: 'التوثيق' }), href: '/documentation' },
                   { name: t('nav.products'), href: '/categories' },
@@ -1294,7 +1331,7 @@ function Navbar() {
                 {[
                   { name: t('nav.home'), href: '/', icon: Home, color: '#18b5d8' },
                   // { name: t('nav.products'), href: '/products', icon: Grid3X3, color: '#0891b2' },
-                  { name: t('nav.theme_malak'), href: THEME_MALAK_HREF, visibilityKey: '/theme/55', icon: Crown, color: '#f59e0b' },
+                  { name: t('nav.theme_malak'), href: themeNav.href, visibilityKey: '/theme/55', icon: Crown, color: '#f59e0b' },
                   { name: t('nav.blog'), href: '/blog', icon: BookOpen, color: '#10b981' },
                   { name: t('nav.documentation', { defaultValue: 'التوثيق' }), href: '/documentation', icon: FileText, color: '#60a5fa' },
                   { name: t('nav.products'), href: '/categories', icon: Package, color: '#f97316' },

@@ -867,7 +867,9 @@
       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#203f61] focus:border-[#203f61] transition-all bg-white"
     >
       <option value="product">منتج</option>
-      <option value="theme" disabled={hasThemeProduct}>ثيم</option>
+      {(!hasThemeProduct || editingProduct?.productType === 'theme') && (
+        <option value="theme">ثيم</option>
+      )}
     </select>
   </div>
                       </div>
