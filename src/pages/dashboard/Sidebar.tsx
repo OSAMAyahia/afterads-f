@@ -4,8 +4,13 @@ import {
   Package,
   Grid,
   FileText,
+  Files,
+  BookOpen,
+  Receipt,
   ShoppingCart,
   Users,
+  UsersRound,
+  UserCog,
   Tag,
   MessageSquare,
   TrendingUp,
@@ -17,7 +22,9 @@ import {
   Star,
   Briefcase,
   Megaphone,
-  Settings
+  Settings,
+  LayoutDashboard,
+  Eye
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import UserSection from './sections/UserSection';
@@ -190,7 +197,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         {
           path: 'invoices',
           name: 'إدارة الفواتير',
-          icon: <FileText className="w-5 h-5" />,
+          icon: <Receipt className="w-5 h-5" />,
           role: 'admin'
         }
       ]
@@ -230,13 +237,13 @@ const Sidebar: React.FC<SidebarProps> = ({
         {
           path: 'static-pages',
           name: ' صفحات ثابتة',
-          icon: <FileText className="w-5 h-5" />,
+          icon: <Files className="w-5 h-5" />,
           role: 'admin'
         },
         {
           path: 'documentation',
           name: 'التوثيق',
-          icon: <FileText className="w-5 h-5" />,
+          icon: <BookOpen className="w-5 h-5" />,
           role: 'admin'
         },
         {
@@ -248,13 +255,13 @@ const Sidebar: React.FC<SidebarProps> = ({
         {
           path: 'navigation-visibility',
           name: 'إعدادات ظهور الصفحات',
-          icon: <Settings className="w-5 h-5" />,
+          icon: <Eye className="w-5 h-5" />,
           role: 'admin'
         },
         {
           path: 'cms',
           name: 'CMS الرئيسية',
-          icon: <Settings className="w-5 h-5" />,
+          icon: <LayoutDashboard className="w-5 h-5" />,
           role: 'admin'
         },
         {
@@ -266,7 +273,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         {
           path: 'clients',
           name: 'عملائنا',
-          icon: <Users className="w-5 h-5" />,
+          icon: <UsersRound className="w-5 h-5" />,
           role: 'admin'
         },
         {
@@ -289,7 +296,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         {
           path: 'employees',
           name: 'إدارة الموظفين',
-          icon: <Users className="w-5 h-5" />,
+          icon: <UserCog className="w-5 h-5" />,
           role: 'admin'
         }
       ]
@@ -385,12 +392,6 @@ const Sidebar: React.FC<SidebarProps> = ({
                       >
                         <div className="relative flex-shrink-0">
                           {item.icon}
-                          {!isOpen && (
-                            <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-2 rounded-lg bg-gray-800 text-white text-sm opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity duration-200 shadow-xl z-50">
-                              {item.name}
-                              <div className="absolute left-1/2 -translate-x-1/2 top-full -translate-y-1 w-2 h-2 bg-gray-800 rotate-45"></div>
-                            </div>
-                          )}
                         </div>
                         <span className={`flex-1 text-right duration-200 ${!isOpen && 'hidden'}`}>
                           {item.name}
