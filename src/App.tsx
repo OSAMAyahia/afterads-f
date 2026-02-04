@@ -241,6 +241,21 @@ const App: React.FC = () => {
     return null;
   }, [homeSectionsResp]);
 
+  const homeSectionsReady = useMemo(() => {
+    return Boolean(serverHomeSections) || Boolean(storedHomeSections);
+  }, [serverHomeSections, storedHomeSections]);
+
+  const resolveHomeSectionVisibility = useCallback((key: string, fallback: boolean) => {
+    if (!homeSectionsReady) return false;
+    if (serverHomeSections && Object.prototype.hasOwnProperty.call(serverHomeSections, key)) {
+      return serverHomeSections[key] !== false;
+    }
+    if (storedHomeSections && Object.prototype.hasOwnProperty.call(storedHomeSections, key)) {
+      return storedHomeSections[key] !== false;
+    }
+    return fallback;
+  }, [homeSectionsReady, serverHomeSections, storedHomeSections]);
+
   const homeSectionsVisibility: VisibilityMap = useMemo(() => {
     const defaults: VisibilityMap = {
       hero: true,
@@ -254,8 +269,14 @@ const App: React.FC = () => {
       faq: true,
       contact: true,
     };
+    if (!homeSectionsReady) {
+      return Object.keys(defaults).reduce((acc: VisibilityMap, k) => {
+        acc[k] = false;
+        return acc;
+      }, {});
+    }
     return { ...defaults, ...(storedHomeSections || {}), ...(serverHomeSections || {}) };
-  }, [serverHomeSections, storedHomeSections]);
+  }, [homeSectionsReady, serverHomeSections, storedHomeSections]);
 
   useEffect(() => {
     if (serverHomeSections) {
@@ -266,24 +287,12 @@ const App: React.FC = () => {
   }, [serverHomeSections]);
 
   const showThemeButton = useMemo(() => {
-    if (serverHomeSections && Object.prototype.hasOwnProperty.call(serverHomeSections, 'heroThemeButton')) {
-      return serverHomeSections.heroThemeButton !== false;
-    }
-    if (storedHomeSections && Object.prototype.hasOwnProperty.call(storedHomeSections, 'heroThemeButton')) {
-      return storedHomeSections.heroThemeButton !== false;
-    }
-    return false;
-  }, [serverHomeSections, storedHomeSections]);
+    return resolveHomeSectionVisibility('heroThemeButton', true);
+  }, [resolveHomeSectionVisibility]);
 
   const showMoreDetailsButton = useMemo(() => {
-    if (serverHomeSections && Object.prototype.hasOwnProperty.call(serverHomeSections, 'heroMoreDetailsButton')) {
-      return serverHomeSections.heroMoreDetailsButton !== false;
-    }
-    if (storedHomeSections && Object.prototype.hasOwnProperty.call(storedHomeSections, 'heroMoreDetailsButton')) {
-      return storedHomeSections.heroMoreDetailsButton !== false;
-    }
-    return false;
-  }, [serverHomeSections, storedHomeSections]);
+    return resolveHomeSectionVisibility('heroMoreDetailsButton', true);
+  }, [resolveHomeSectionVisibility]);
 
   useEffect(() => {
     const loadingDerived = categoriesLoading || productsLoading || staticLoading || testimonialsLoading || clientsLoading;

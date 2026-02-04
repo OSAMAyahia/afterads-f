@@ -43,10 +43,15 @@ const ScrollProgressIndicator: React.FC = () => {
     } catch { }
 
     const obj = Array.isArray(homeSectionsResp) ? homeSectionsResp[0] : (homeSectionsResp?.data ?? homeSectionsResp);
-    if (obj?.sections && typeof obj.sections === 'object') {
-      return { ...defaults, ...(fromStorage || {}), ...obj.sections };
+    const fromServer = obj?.sections && typeof obj.sections === 'object' ? obj.sections : null;
+    const ready = Boolean(fromStorage) || Boolean(fromServer);
+    if (!ready) {
+      return Object.keys(defaults).reduce((acc: Record<string, boolean>, k) => {
+        acc[k] = false;
+        return acc;
+      }, {});
     }
-    return { ...defaults, ...(fromStorage || {}) };
+    return { ...defaults, ...(fromStorage || {}), ...(fromServer || {}) };
   }, [homeSectionsResp]);
 
   const sections: Section[] = useMemo(() => ([
