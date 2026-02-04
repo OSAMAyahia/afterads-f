@@ -110,6 +110,11 @@ const ScrollProgressIndicator: React.FC = () => {
     });
   }, [sections]);
 
+  const step = 35;
+  const firstDotOffset = 30;
+  const endPadding = 60;
+  const containerHeight = Math.max(140, firstDotOffset + Math.max(0, sections.length - 1) * step + endPadding);
+
   if (!isVisible || sections.length === 0) return null;
 
   return (
@@ -150,35 +155,40 @@ const ScrollProgressIndicator: React.FC = () => {
           }
         `
       }} />
-      <div className="relative">
-        <div className="absolute left-2 top-2 bottom-2 w-0.5 bg-gradient-to-b from-[#18B5D5] to-[#1AC8E8]" />
-        <div className="relative max-h-[60vh] overflow-y-auto py-2 pr-2">
-          <div className="absolute left-0.5 top-2 w-4 h-4 active-dot rounded-full" />
-          <div className="absolute left-0.5 bottom-2 w-4 h-4 active-dot rounded-full" />
-          <div className="flex flex-col gap-3">
-            {sections.map((section, index) => (
-              <div
-                key={section.id}
-                className="flex items-center gap-3 cursor-pointer select-none"
-                onClick={() => handleSectionClick(index)}
-              >
-                <div
-                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    index === currentSection ? 'scale-125 active-dot' : 'white-dot hover:scale-125 animate-wiggle'
-                  }`}
-                  style={{ marginLeft: '5px' }}
-                />
-                <span
-                  className={`text-sm whitespace-nowrap font-medium transition-all duration-300 ${
-                    index === currentSection ? 'text-[#18B5D5] font-semibold active-text' : 'text-white hover:text-[#1AC8E8]'
-                  }`}
-                >
-                  {section.name}
-                </span>
-              </div>
-            ))}
+      <div className="relative" style={{ height: `${containerHeight}px` }}>
+        <div className="absolute left-2 top-0 w-0.5 h-full bg-gradient-to-b from-[#18B5D5] to-[#1AC8E8]"></div>
+        <div className="absolute left-0.5 top-0 w-4 h-4 active-dot rounded-full"></div>
+        {sections.map((section, index) => (
+          <div key={section.id} className="relative">
+            <div
+              className={`absolute w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${
+                index === currentSection 
+                  ? 'scale-125 active-dot' 
+                  : 'white-dot hover:scale-125 animate-wiggle'
+              }`}
+              style={{ 
+                left: '5px', 
+                top: `${30 + (index * 35)}px` 
+              }}
+              onClick={() => handleSectionClick(index)}
+            ></div>
+            <div
+              className={`absolute cursor-pointer transition-all duration-300 ${
+                index === currentSection 
+                  ? 'text-[#18B5D5] font-semibold active-text' 
+                  : 'text-white hover:text-[#1AC8E8]'
+              }`}
+              style={{ 
+                left: '20px', 
+                top: `${22 + (index * 35)}px` 
+              }}
+              onClick={() => handleSectionClick(index)}
+            >
+              <span className="text-sm whitespace-nowrap font-medium">{section.name}</span>
+            </div>
           </div>
-        </div>
+        ))}
+        <div className="absolute left-0.5 bottom-0 w-4 h-4 active-dot rounded-full"></div>
       </div>
     </div>
   );
