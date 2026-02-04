@@ -14,7 +14,7 @@ const HomeSectionsCMS: React.FC = () => {
   const { data: savedResp } = useApiQuery<any>({
     endpoint: API_ENDPOINTS.HOME_SECTIONS_VISIBILITY,
     queryKey: ['home-sections-visibility'],
-    staleTime: 60 * 60 * 1000
+    staleTime: Infinity
   });
 
   const defaultSections: VisibilityMap = useMemo(() => ({

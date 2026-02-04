@@ -16,9 +16,9 @@ const ScrollProgressIndicator: React.FC = () => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
 
   const { data: homeSectionsResp } = useApiQuery<any>({
-    endpoint: API_ENDPOINTS.HOME_SECTIONS_VISIBILITY,
+    endpoint: API_ENDPOINTS.HOME_SECTIONS_VISIBILITY_ENTRY,
     queryKey: ['home-sections-visibility'],
-    staleTime: 60 * 60 * 1000
+    staleTime: Infinity
   });
 
   const homeSectionsVisibility = useMemo(() => {

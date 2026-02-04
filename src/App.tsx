@@ -169,7 +169,16 @@ const App: React.FC = () => {
   const { data: staticResp, isLoading: staticLoading } = useApiQuery<any>({ endpoint: API_ENDPOINTS.STATIC_PAGES, queryKey: ['static-pages'] });
   const { data: testimonialsResp, isLoading: testimonialsLoading } = useApiQuery<any>({ endpoint: API_ENDPOINTS.TESTIMONIALS, queryKey: ['testimonials'] });
   const { data: clientsResp, isLoading: clientsLoading } = useApiQuery<any>({ endpoint: API_ENDPOINTS.CLIENTS, queryKey: ['clients'] });
-  const { data: homeSectionsResp } = useApiQuery<any>({ endpoint: API_ENDPOINTS.HOME_SECTIONS_VISIBILITY, queryKey: ['home-sections-visibility'], staleTime: 60 * 60 * 1000 });
+  const { data: homeSectionsResp } = useApiQuery<any>({ endpoint: API_ENDPOINTS.HOME_SECTIONS_VISIBILITY_ENTRY, queryKey: ['home-sections-visibility'], staleTime: Infinity });
+
+  const storedHomeSections = useMemo<VisibilityMap | null>(() => {
+    try {
+      const raw = localStorage.getItem(HOME_SECTIONS_STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : null;
+      if (parsed && typeof parsed === 'object') return parsed;
+    } catch { }
+    return null;
+  }, []);
 
   useEffect(() => {
     const cats = Array.isArray(categoriesResp) ? categoriesResp : [];
@@ -224,6 +233,14 @@ const App: React.FC = () => {
     }
   }, [clientsResp]);
 
+  const serverHomeSections = useMemo<VisibilityMap | null>(() => {
+    const obj = Array.isArray(homeSectionsResp) ? homeSectionsResp[0] : (homeSectionsResp?.data ?? homeSectionsResp);
+    if (obj?.sections && typeof obj.sections === 'object') {
+      return obj.sections;
+    }
+    return null;
+  }, [homeSectionsResp]);
+
   const homeSectionsVisibility: VisibilityMap = useMemo(() => {
     const defaults: VisibilityMap = {
       hero: true,
@@ -237,31 +254,36 @@ const App: React.FC = () => {
       faq: true,
       contact: true,
     };
-
-    let fromStorage: VisibilityMap | null = null;
-    try {
-      const raw = localStorage.getItem(HOME_SECTIONS_STORAGE_KEY);
-      const parsed = raw ? JSON.parse(raw) : null;
-      if (parsed && typeof parsed === 'object') {
-        fromStorage = parsed;
-      }
-    } catch { }
-
-    const obj = Array.isArray(homeSectionsResp) ? homeSectionsResp[0] : (homeSectionsResp?.data ?? homeSectionsResp);
-    if (obj?.sections && typeof obj.sections === 'object') {
-      return { ...defaults, ...(fromStorage || {}), ...obj.sections };
-    }
-    return { ...defaults, ...(fromStorage || {}) };
-  }, [homeSectionsResp]);
+    return { ...defaults, ...(storedHomeSections || {}), ...(serverHomeSections || {}) };
+  }, [serverHomeSections, storedHomeSections]);
 
   useEffect(() => {
-    const obj = Array.isArray(homeSectionsResp) ? homeSectionsResp[0] : (homeSectionsResp?.data ?? homeSectionsResp);
-    if (obj?.sections && typeof obj.sections === 'object') {
+    if (serverHomeSections) {
       try {
-        localStorage.setItem(HOME_SECTIONS_STORAGE_KEY, JSON.stringify(obj.sections));
+        localStorage.setItem(HOME_SECTIONS_STORAGE_KEY, JSON.stringify(serverHomeSections));
       } catch { }
     }
-  }, [homeSectionsResp]);
+  }, [serverHomeSections]);
+
+  const showThemeButton = useMemo(() => {
+    if (serverHomeSections && Object.prototype.hasOwnProperty.call(serverHomeSections, 'heroThemeButton')) {
+      return serverHomeSections.heroThemeButton !== false;
+    }
+    if (storedHomeSections && Object.prototype.hasOwnProperty.call(storedHomeSections, 'heroThemeButton')) {
+      return storedHomeSections.heroThemeButton !== false;
+    }
+    return false;
+  }, [serverHomeSections, storedHomeSections]);
+
+  const showMoreDetailsButton = useMemo(() => {
+    if (serverHomeSections && Object.prototype.hasOwnProperty.call(serverHomeSections, 'heroMoreDetailsButton')) {
+      return serverHomeSections.heroMoreDetailsButton !== false;
+    }
+    if (storedHomeSections && Object.prototype.hasOwnProperty.call(storedHomeSections, 'heroMoreDetailsButton')) {
+      return storedHomeSections.heroMoreDetailsButton !== false;
+    }
+    return false;
+  }, [serverHomeSections, storedHomeSections]);
 
   useEffect(() => {
     const loadingDerived = categoriesLoading || productsLoading || staticLoading || testimonialsLoading || clientsLoading;
@@ -395,8 +417,8 @@ const App: React.FC = () => {
         {homeSectionsVisibility.hero && (
           <section data-section="hero">
             <MemoizedHeroSection
-              showThemeButton={homeSectionsVisibility.heroThemeButton !== false}
-              showMoreDetailsButton={homeSectionsVisibility.heroMoreDetailsButton !== false}
+              showThemeButton={showThemeButton}
+              showMoreDetailsButton={showMoreDetailsButton}
             />
           </section>
         )}
