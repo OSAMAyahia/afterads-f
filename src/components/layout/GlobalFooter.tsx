@@ -58,7 +58,13 @@ const { data: pagesResp } = useApiQuery<any>({
   console.log("✅ [Footer] Active pages:", activePages);
   setStaticPages(activePages);
 }, [pagesResp]);
-  const { data: navVisibilityResp } = useApiQuery<any>({ endpoint: API_ENDPOINTS.NAVIGATION_VISIBILITY, queryKey: ['navigation-visibility'], staleTime: Infinity });
+  const { data: navVisibilityResp } = useApiQuery<any>({
+    endpoint: API_ENDPOINTS.NAVIGATION_VISIBILITY,
+    queryKey: ['navigation-visibility'],
+    staleTime: Infinity,
+    refetchInterval: 30000,
+    refetchOnMount: 'always'
+  });
   const navVisibility = React.useMemo(() => {
     const obj = Array.isArray(navVisibilityResp) ? navVisibilityResp[0] : (navVisibilityResp?.data ?? navVisibilityResp);
     const normalize = (m?: Record<string, boolean>) => {
@@ -74,17 +80,26 @@ const { data: pagesResp } = useApiQuery<any>({
       footerStaticPages: normalize(obj?.footerStaticPages)
     };
   }, [navVisibilityResp]);
+  useEffect(() => {
+    const obj = Array.isArray(navVisibilityResp) ? navVisibilityResp[0] : (navVisibilityResp?.data ?? navVisibilityResp);
+    if (!obj) return;
+    try {
+      localStorage.setItem('ui_navigation_visibility', JSON.stringify(navVisibility));
+    } catch { }
+  }, [navVisibility, navVisibilityResp]);
   const shouldShowLink = (section: keyof typeof navVisibility, key: string) => {
     const s = (navVisibility as any)[section] as Record<string, boolean>;
     if (s && Object.prototype.hasOwnProperty.call(s, key)) {
       return s[key] !== false;
     }
-    try {
-      const raw = localStorage.getItem('ui_navigation_visibility');
-      const parsed = raw ? JSON.parse(raw) : {};
-      const map = parsed[section] || {};
-      if (Object.prototype.hasOwnProperty.call(map, key)) return map[key] !== false;
-    } catch {}
+    if (!navVisibilityResp) {
+      try {
+        const raw = localStorage.getItem('ui_navigation_visibility');
+        const parsed = raw ? JSON.parse(raw) : {};
+        const map = parsed[section] || {};
+        if (Object.prototype.hasOwnProperty.call(map, key)) return map[key] !== false;
+      } catch { }
+    }
     return true;
   };
   const scrollToTop = () => {

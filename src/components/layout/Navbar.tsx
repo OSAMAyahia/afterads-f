@@ -77,7 +77,13 @@ function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { data: navVisibilityResp } = useApiQuery<any>({ endpoint: API_ENDPOINTS.NAVIGATION_VISIBILITY, queryKey: ['navigation-visibility'], staleTime: Infinity });
+  const { data: navVisibilityResp } = useApiQuery<any>({
+    endpoint: API_ENDPOINTS.NAVIGATION_VISIBILITY,
+    queryKey: ['navigation-visibility'],
+    staleTime: Infinity,
+    refetchInterval: 30000,
+    refetchOnMount: 'always'
+  });
   const navVisibility = React.useMemo(() => {
     const obj = Array.isArray(navVisibilityResp) ? navVisibilityResp[0] : (navVisibilityResp?.data ?? navVisibilityResp);
     const normalize = (m?: Record<string, boolean>) => {
@@ -100,6 +106,13 @@ function Navbar() {
       footerStaticPages: normalize(obj?.footerStaticPages)
     };
   }, [navVisibilityResp]);
+  useEffect(() => {
+    const obj = Array.isArray(navVisibilityResp) ? navVisibilityResp[0] : (navVisibilityResp?.data ?? navVisibilityResp);
+    if (!obj) return;
+    try {
+      localStorage.setItem('ui_navigation_visibility', JSON.stringify(navVisibility));
+    } catch { }
+  }, [navVisibility, navVisibilityResp]);
   const shouldShowLink = (section: keyof typeof navVisibility, key: string) => {
     const s = (navVisibility as any)[section] as Record<string, boolean>;
     const keysToCheck = key === THEME_NAV_KEY ? [THEME_NAV_KEY, THEME_NAV_LEGACY_KEY] : [key];
@@ -108,14 +121,16 @@ function Navbar() {
         if (Object.prototype.hasOwnProperty.call(s, k)) return s[k] !== false;
       }
     }
-    try {
-      const raw = localStorage.getItem('ui_navigation_visibility');
-      const parsed = raw ? JSON.parse(raw) : {};
-      const map = parsed[section] || {};
-      for (const k of keysToCheck) {
-        if (Object.prototype.hasOwnProperty.call(map, k)) return map[k] !== false;
-      }
-    } catch { }
+    if (!navVisibilityResp) {
+      try {
+        const raw = localStorage.getItem('ui_navigation_visibility');
+        const parsed = raw ? JSON.parse(raw) : {};
+        const map = parsed[section] || {};
+        for (const k of keysToCheck) {
+          if (Object.prototype.hasOwnProperty.call(map, k)) return map[k] !== false;
+        }
+      } catch { }
+    }
     return true;
   };
 

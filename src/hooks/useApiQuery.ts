@@ -8,6 +8,10 @@ type UseApiQueryParams<TData> = {
   select?: (data: any) => TData;
   enabled?: boolean;
   staleTime?: number;
+  refetchInterval?: number | false;
+  refetchOnMount?: boolean | 'always';
+  refetchOnWindowFocus?: boolean | 'always';
+  refetchOnReconnect?: boolean | 'always';
 };
 
 type MockDataFactory = () => any;
@@ -535,7 +539,11 @@ export function useApiQuery<TData = any>({
   requestInit,
   select,
   enabled = true,
-  staleTime
+  staleTime,
+  refetchInterval,
+  refetchOnMount,
+  refetchOnWindowFocus,
+  refetchOnReconnect
 }: UseApiQueryParams<TData>) {
   return useQuery<TData>({
     queryKey: queryKey ?? [endpoint, requestInit],
@@ -557,6 +565,10 @@ export function useApiQuery<TData = any>({
     },
     select,
     enabled,
-    staleTime
+    staleTime,
+    refetchInterval,
+    refetchOnMount,
+    refetchOnWindowFocus,
+    refetchOnReconnect
   });
 }

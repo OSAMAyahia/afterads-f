@@ -18,7 +18,9 @@ const ScrollProgressIndicator: React.FC = () => {
   const { data: homeSectionsResp } = useApiQuery<any>({
     endpoint: API_ENDPOINTS.HOME_SECTIONS_VISIBILITY_ENTRY,
     queryKey: ['home-sections-visibility'],
-    staleTime: Infinity
+    staleTime: Infinity,
+    refetchInterval: 30000,
+    refetchOnMount: 'always'
   });
 
   const homeSectionsVisibility = useMemo(() => {
@@ -52,6 +54,13 @@ const ScrollProgressIndicator: React.FC = () => {
       }, {});
     }
     return { ...defaults, ...(fromStorage || {}), ...(fromServer || {}) };
+  }, [homeSectionsResp]);
+  useEffect(() => {
+    const obj = Array.isArray(homeSectionsResp) ? homeSectionsResp[0] : (homeSectionsResp?.data ?? homeSectionsResp);
+    if (!(obj?.sections && typeof obj.sections === 'object')) return;
+    try {
+      localStorage.setItem(HOME_SECTIONS_STORAGE_KEY, JSON.stringify(obj.sections));
+    } catch { }
   }, [homeSectionsResp]);
 
   const sections: Section[] = useMemo(() => ([

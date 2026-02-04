@@ -169,7 +169,13 @@ const App: React.FC = () => {
   const { data: staticResp, isLoading: staticLoading } = useApiQuery<any>({ endpoint: API_ENDPOINTS.STATIC_PAGES, queryKey: ['static-pages'] });
   const { data: testimonialsResp, isLoading: testimonialsLoading } = useApiQuery<any>({ endpoint: API_ENDPOINTS.TESTIMONIALS, queryKey: ['testimonials'] });
   const { data: clientsResp, isLoading: clientsLoading } = useApiQuery<any>({ endpoint: API_ENDPOINTS.CLIENTS, queryKey: ['clients'] });
-  const { data: homeSectionsResp } = useApiQuery<any>({ endpoint: API_ENDPOINTS.HOME_SECTIONS_VISIBILITY_ENTRY, queryKey: ['home-sections-visibility'], staleTime: Infinity });
+  const { data: homeSectionsResp } = useApiQuery<any>({
+    endpoint: API_ENDPOINTS.HOME_SECTIONS_VISIBILITY_ENTRY,
+    queryKey: ['home-sections-visibility'],
+    staleTime: Infinity,
+    refetchInterval: 30000,
+    refetchOnMount: 'always'
+  });
 
   const storedHomeSections = useMemo<VisibilityMap | null>(() => {
     try {
