@@ -951,9 +951,9 @@ function Navbar() {
                         />
                       </Link>
                     ) : (
-                      <button onClick={openAuthModal} aria-label={t('nav.login')} className="relative w-8 h-8 rounded-lg overflow-hidden border border-white/20 hover:border-white/30 hover:bg-white/10 transition-all duration-200">
-                        <img src={malakImg} alt="Login" className="w-full h-full object-contain" />
-                      </button>
+                      <Link to="/" onClick={() => setIsMenuOpen(false)} className="cursor-pointer">
+                        <img src={logo} alt="Logo" className="h-6 w-auto" />
+                      </Link>
                     )}
                   </div>
                 ) : isTablet ? (
@@ -1149,13 +1149,13 @@ function Navbar() {
                   />
                 </div>
               ) : (
-                <div className="h-10 sm:h-12 w-28 sm:w-32 rounded-lg overflow-hidden   border-white/20">
+                <Link to="/" onClick={() => setIsMenuOpen(false)} className="cursor-pointer">
                   <img
                     src={logo}
                     alt={storeName}
-                    className="w-full h-full object-contain"
+                    className="h-10 sm:h-12 w-auto object-contain"
                   />
-                </div>
+                </Link>
               )}
               {isVIP && (
                 <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-400 text-black font-bold text-xs shadow-md">
